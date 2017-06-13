@@ -22,9 +22,9 @@ so to create a task
  1. Enter the repo (MAVRIC-<TeamName>)
  2. Click Issues
  3. Click New
- 4. Enter your data
-  - Assign team members
-  - Assign milestones
+ 4. Enter title and description
+ 5. Assign team members
+ 6. Assign milestones
 
 Don't forget to use labels. Labels help organize what an issue is about (is it a bug, an enhancement, etc.) 
 To create labels:
