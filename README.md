@@ -9,8 +9,4 @@ Examples:
   - CAD files used by multiple units
   - Etc.
 
-Please do not use this for:
- - Datasheets used by specific units
- - CAD files of parts for specific units
- - Code for specific units
- - Design Documents for sepecific units
+Please do not use this for files that pertain only to a specific unit.
