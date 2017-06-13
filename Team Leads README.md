@@ -2,7 +2,7 @@
 This repo is managed by you.
 The team has read-only access, the intent of this is to make sure
 that someone in leadership is aware of everyhting here. We don;t want things to get lost, 
-so please keep track of what you put here. For now, the organization of content is open.
+so please keep track of what you put here. For now, the organization of content is somewhat open.
 As we go on and know what we need, we'll put it in.
 
 ## Team Lead responsibilities (for github)
