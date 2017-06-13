@@ -6,7 +6,7 @@ so please keep track of what you put here. For now, the organization of content 
 As we go on and know what we need, we'll put it in.
 
 ## Team Lead responsibilities (for github)
- - Manage your repo (MAVRIC-<TeamName>)
+ - Manage your repo (MAVRIC-TeamName)
   - Make sure things get put on task boards and get done
   - Make sure files are entered in a way we can find
  
@@ -19,7 +19,7 @@ As we go on and know what we need, we'll put it in.
 Github has these wonderful things called projects. Projects are just a way to manage work into groups.
 To use projects, you need work items, these are called issues (sometimes misleading). Issues live in repositories
 so to create a task
- 1. Enter the repo (MAVRIC-<TeamName>)
+ 1. Enter the repo (MAVRIC-TeamName)
  2. Click Issues
  3. Click New
  4. Enter title and description
