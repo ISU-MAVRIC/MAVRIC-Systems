@@ -10,3 +10,5 @@ Examples:
   - Etc.
 
 Please do not use this for files that pertain only to a specific unit.
+
+## See the Git Quickstart Guide for help
