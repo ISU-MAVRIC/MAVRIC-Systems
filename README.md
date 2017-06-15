@@ -11,4 +11,5 @@ Examples:
 
 Please do not use this for files that pertain only to a specific unit.
 
-## See the Git Quickstart Guide for help
+## See the GitHub Quickstart Guide for help
+It's the file right next to this one (called "GitHub Quickstart Guide.md" )
