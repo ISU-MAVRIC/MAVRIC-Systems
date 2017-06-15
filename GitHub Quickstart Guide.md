@@ -1,7 +1,7 @@
 # What is GitHub
 You may know most (or all) of this, but some dont:
 GitHub is, at its simplest, a file management system for projects.
-It uses a tool called [Git](www.git-scm.com) to manage the files.
+It uses a tool called [Git](http://www.git-scm.com) to manage the files.
 The newer side of git is a project management system. We'll walk through both.
 
 ### Terms
