@@ -2,7 +2,7 @@
 This repository is intended for documents/issues/project boards that are not associated with a functional unit.
 Examples:
  - Meeting minutes
- - High-Level Design (system acrhitecture)
+ - High-Level Design (system architecture)
  - System CAD files/renderings
  - Shared documents
   - Datasheets used by multiple units
