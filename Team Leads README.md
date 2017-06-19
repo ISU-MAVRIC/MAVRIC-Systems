@@ -34,5 +34,5 @@ To create labels:
 
 To assign a label to an issue:
  1. Go to the issue
- 2. Click the icon next to Lables on the right
+ 2. Click the icon next to Labels on the right
  3. Start typing the name of the label.
