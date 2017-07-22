@@ -3,10 +3,10 @@
 
 #include <sstream>
 
-int main(int argc, char* argv) {
+int main(int argc, char* argv[]) {
   ros::init(argc, argv, "external");
   ros::NodeHandle thisNode;
-  ros::Publisher publisher = thisNode.advertise<std::msgs::String>("external-debug", 1000);
+  ros::Publisher publisher = thisNode.advertise<std_msgs::String>("mstr_cntl_brd_debug", 1000);
   ros::Rate loop_rate(10);
 
   int count = 0;
