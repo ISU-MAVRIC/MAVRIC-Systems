@@ -1,8 +1,0 @@
-EESchema-DOCLIB  Version 2.0
-#
-$CMP DMMT5401
-D Transistor PNP (general)
-K pnp transistor
-$ENDCMP
-#
-#End Doc Library
