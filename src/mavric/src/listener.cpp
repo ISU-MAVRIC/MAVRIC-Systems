@@ -6,10 +6,10 @@ void mavric_debug_callback(const std_msgs::String::ConstPtr& msg) {
 }
 
 int main(int argc, char* argv[]) {
-  ros::init(argc, argv, "mavric");
+  ros::init(argc, argv, "mstr_cntl_brd_debug");
   ros::NodeHandle thisNode;
 
-  ros::Subscriber subscription = thisNode.subscribe("mstr_cntl_brd-debug", 1000, mavric_debug_callback);
+  ros::Subscriber subscription = thisNode.subscribe("mstr_cntl_brd_debug", 1000, mavric_debug_callback);
 
   ros::spin();
 
