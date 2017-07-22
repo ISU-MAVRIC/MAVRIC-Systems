@@ -1,24 +1,38 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h"
-
-#include <sstream>
+#include "std_msgs/Byte.h"
 
 int main(int argc, char* argv[]) {
   ros::init(argc, argv, "external");
   ros::NodeHandle thisNode;
-  ros::Publisher publisher = thisNode.advertise<std_msgs::String>("mstr_cntl_brd_debug", 1000);
-  ros::Rate loop_rate(10);
+  ros::Publisher publishers[9];
+  int i;
+  for (i = 0; i < 9; i++) {
+    char* topicName = (char*)malloc(50);
+    sprintf(topicName, "mstr_cntl_brd/debug/gpio/%d", i+2);
+    ROS_INFO("%s", topicName);
+    publishers[i] = thisNode.advertise<std_msgs::Byte>(topicName, 1000);
+  }
+  ros::Rate loop_rate(30);
 
-  int count = 0;
+  char states[9] = {0};
   while (ros::ok()) {
-    std_msgs::String msg;
-
-    std::stringstream ss;
-    ss << count;
-    msg.data = ss.str();
-    publisher.publish(msg);
+    std_msgs::Byte msg;
+    
+    int index;
+    scanf("%d", &index);
+    if (index == 0) {
+      msg.data = 0;
+      for (i = 0; i < 9; i++) {
+	states[i] = 0;
+	publishers[i].publish(msg);
+	ROS_INFO("clearing %d", i);
+      }
+    } else {
+      index--;
+      states[index] ^= 1;
+      msg.data = states[index];
+      publishers[index].publish(msg);
+    }
     ros::spinOnce();
-    loop_rate.sleep();
-    count++;
   }
 }
