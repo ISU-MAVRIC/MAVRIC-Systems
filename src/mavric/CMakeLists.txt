@@ -200,3 +200,6 @@ include_directories(
 #include_directories(include ${catkin_LIBRARIES})
 add_executable(mstr_cntl_brd-debug src/listener.cpp)
 target_link_libraries(mstr_cntl_brd-debug ${catkin_LIBRARIES})
+
+add_executable(external-debug src/talker.cpp)
+target_link_libraries(external-debug ${catkin_LIBRARIES})
