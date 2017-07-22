@@ -197,3 +197,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+#include_directories(include ${catkin_LIBRARIES})
+add_executable(mstr_cntl_brd-debug src/listener.cpp)
+target_link_libraries(mstr_cntl_brd-debug ${catkin_LIBRARIES})
