@@ -38,14 +38,28 @@ Description: Control of the drive system. Includes basic forward, backward, and 
 
 Notes: Phoenix will need to have at least serial comms, but we should finalize a communications stack before we get too far on this. We can simulate a Rocket system by hooking everything up on a local network. If we go with a network-bridge solution like the Rocket, we will most likely use sockets. Sockets will give us the flexibility to open up multiple 'channels' to and from Phoenix.
 ### Tasks
- * ?
- * ?
- * ?
+ * Establish basic connectivity with the rover
+   * Most likely either Sockets or Serial.
+   * Requires a master Control Board and Drive Control Board
+ * Define control parameters
+   * Open Loop: (`Output Power`, `Left/Right Output Ratio`)
+   * Open Loop Direct: (`Left Output Power`, `Right Output Power`)
+   * Closed Loop: (`Velocity`, `Turn Radius`)
+   * Closed Loop Direct: (`Left Velocity`, `Right Velocity`)
+ * Implement Control Nodes
+   * `/mavric/master-control/control-interface`
+   * `/mavric/drive-control/control-interface`
+   * `/mavric/drive-control/*` [any PID or other subsystems]
 
 ### Deliverables
- * ?
- * ?
- * ?
+ * System architecture document with drive system finalized
+   * ROS architecture
+   * Electrical architecture
+ * Video of Phoenix Driving in the Howe atrium
+ * Description of control systems in place, including safety systems
+   * Communication setup
+   * Control Parameters chosen
+   * Hartbeat signal
 
 ## Milestone 2: ?
 Description: ?
