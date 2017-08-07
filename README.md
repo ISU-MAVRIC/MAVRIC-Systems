@@ -50,16 +50,21 @@ Notes: Phoenix will need to have at least serial comms, but we should finalize a
    * `/mavric/master-control/control-interface`
    * `/mavric/drive-control/control-interface`
    * `/mavric/drive-control/*` [any PID or other subsystems]
+ * Implement sensing
+   * GPS
+   * Compass
 
 ### Deliverables
  * System architecture document with drive system finalized
    * ROS architecture
    * Electrical architecture
  * Video of Phoenix Driving in the Howe atrium
- * Description of control systems in place, including safety systems
+ * Description of control systems and sensors in place, including safety systems
    * Communication setup
    * Control Parameters chosen
    * Hartbeat signal
+   * Positioning
+   * Heading
 
 ## Milestone 2: ?
 Description: ?
