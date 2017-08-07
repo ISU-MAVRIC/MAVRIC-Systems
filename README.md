@@ -26,17 +26,17 @@ Members:
    |> ?                // We still need to decide more about this
 ```
 
-# Milestones
+# Milestones [Proposed]
 |                     | Milestone 1 | Milestone 2 | Milestone 3 | Milestone 4 |
 |:--------------------|:-----------:|:-----------:|:-----------:|:-----------:|
-| Name                |      ?      |      ?      |      ?      |      ?      |
-| Due Date            |      ?      |      ?      |      ?      |      ?      |
+| Name                |Drive System |      ?      |      ?      |      ?      |
+| Due Date            |  Sept. 17   |      ?      |      ?      |      ?      |
 | Primary Team Member |      ?      |      ?      |      ?      |      ?      |
 
-## Milestone 1:  link to the milestone on github: [NAME](https://github.com/m2i/MAVRIC-General/milestones/?)
-Description: ?
+## Milestone 1:  [Drive System](https://github.com/m2i/MAVRIC-Electrical/milestone/2)
+Description: Control of the drive system. Includes basic forward, backward, and turn maneuvers as well as heading and position feedback to the controller.
 
-Notes: [any notes (progress, issues, etc)]
+Notes: Phoenix will need to have at least serial comms, but we should finalize a communications stack before we get too far on this. We can simulate a Rocket system by hooking everything up on a local network. If we go with a network-bridge solution like the Rocket, we will most likely use sockets. Sockets will give us the flexibility to open up multiple 'channels' to and from Phoenix.
 ### Tasks
  * ?
  * ?
