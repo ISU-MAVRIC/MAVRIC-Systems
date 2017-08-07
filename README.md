@@ -31,7 +31,6 @@ Members:
 |:--------------------|:-----------:|:-----------:|:-----------:|:-----------:|
 | Name                |Drive System |      ?      |      ?      |      ?      |
 | Due Date            |  Sept. 17   |      ?      |      ?      |      ?      |
-| Primary Team Member |      ?      |      ?      |      ?      |      ?      |
 
 ## Milestone 1:  [Drive System](https://github.com/m2i/MAVRIC-Electrical/milestone/2)
 Description: Control of the drive system. Includes basic forward, backward, and turn maneuvers as well as heading and position feedback to the controller.
