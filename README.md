@@ -2,13 +2,11 @@
 The repository for the E-Team. Includes designs and documentation.
 
 # Team Structure
-Team Lead: ? @?
+Team Lead: James Talbert @Talonj
 
 Members:
- * ?
- * ?
- * ?
- * ?
+ * Gabe
+ * Isaiah
 
 # Folder Structure:
 
@@ -27,10 +25,10 @@ Members:
 ```
 
 # Milestones [Proposed]
-|                     | Milestone 1 | Milestone 2 | Milestone 3 | Milestone 4 |
-|:--------------------|:-----------:|:-----------:|:-----------:|:-----------:|
-| Name                |Drive System |      ?      |      ?      |      ?      |
-| Due Date            |  Sept. 17   |      ?      |      ?      |      ?      |
+|                     | Milestone 1  | Milestone 2 | Milestone 3 |
+|:--------------------|:------------:|:-----------:|:-----------:|
+| Name                | Drive System | Refinement  | Arm Control |
+| Due Date            | Oct. 1       |      ?      |      ?      |
 
 ## Milestone 1:  [Drive System](https://github.com/m2i/MAVRIC-Electrical/milestone/2)
 Description: Control of the drive system. Includes basic forward, backward, and turn maneuvers as well as heading and position feedback to the controller.
@@ -54,55 +52,56 @@ Notes: Phoenix will need to have at least serial comms, but we should finalize a
    * Compass
 
 ### Deliverables
- * System architecture document with drive system finalized
-   * ROS architecture
-   * Electrical architecture
  * Video of Phoenix Driving in the Howe atrium
  * Description of control systems and sensors in place, including safety systems
    * Communication setup
    * Control Parameters chosen
    * Hartbeat signal
-   * Positioning
-   * Heading
+   * Positioning?
+   * Heading?
 
-## Milestone 2: ?
-Description: ?
-
-Notes: 
-### Tasks
- * ?
- * ?
- * ?
-
-### Deliverables
- * ?
- * ?
- * ?
-
-## Milestone 3: ?
-Description: ?
+## Milestone 2: System Refinement
+Description: After we have a drivable rover, we will refine the internals
+to enhance the extensibility and maintainability of the system. This will
+allow us to integrate new components easier.
 
 Notes: 
 ### Tasks
- * ?
- * ?
- * ?
+ * Refine communicatiosn protocol
+   * Extensible packet structure with different commands
+ * Refine Firmware Systems
+   * Modularize the components
+   * Structure the IPC namespaces
+ * Refine the Electrical systems
+   * Check wiring
+   * Evaluate the need for fuses and other HW saftety systems
 
 ### Deliverables
- * ?
- * ?
- * ?
- 
-## Milestone 4: ?
-Description: ?
+ * System architecture documents
+   * ROS architecture
+   * Electrical architecture
+ * Electrical Changes summary
+   * A summary of the changes made to the electrical system
+   * Includes any changes evaluated, but not made
+
+## Milestone 3: Arm Control
+Description: Add the ability to control a robotic arm, as specified by the Mechanical team.
+The arm has:
+ * 2-axis Shoulder Joint (DC Motors)
+ * Elbow Joint (DC Motors)
+ * 3-axis Wrist (Servos?)
+ * Claw (?)
 
 Notes: 
 ### Tasks
- * ?
- * ?
- * ?
+ * Develop logic-level hardware drivers
+ * Develop power systems (power supply and H-bridges)
+ * Develop control systems
+ * Define Communication protocol for the base station
 
 ### Deliverables
- * ?
- * ?
- * ?
+ * Updated System architecture documents
+   * ROS architecture
+   * Electrical architecture
+ * Packet structure writeup
+ * Video of an operator manipulating each joint
