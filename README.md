@@ -2,7 +2,7 @@
 The repository for the E-Team. Includes designs and documentation.
 
 # Team Structure
-Team Lead: James Talbert @Talonj
+Team Lead: James Talbert (@Talonj123)
 
 Members:
  * Gabe Gatmaitan
