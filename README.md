@@ -5,13 +5,10 @@ The repository for the E-Team. Includes designs and documentation.
 Team Lead: James Talbert (@Talonj123)
 
 Members:
- * Gabe Gatmaitan
- * Isaiah Exley-Schuman
- * Stephen Davis
  * Morgan Foley
  * Jefferson O'Brien
  * Jacob Raymer
- * Kyle Zelnio
+ * Alexander Vande Loo
 
 # Folder Structure:
 
