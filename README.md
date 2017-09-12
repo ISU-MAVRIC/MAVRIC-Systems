@@ -69,7 +69,7 @@ allow us to integrate new components easier.
 
 Notes: 
 ### Tasks
- * Refine communicatiosn protocol
+ * Refine communications protocol
    * Extensible packet structure with different commands
  * Refine Firmware Systems
    * Modularize the components
