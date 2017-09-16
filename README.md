@@ -30,7 +30,7 @@ Members:
 |                     | Milestone 1  | Milestone 2 | Milestone 3 |
 |:--------------------|:------------:|:-----------:|:-----------:|
 | Name                | Drive System | Refinement  | Arm Control |
-| Due Date            | Oct. 1       |      ?      |      ?      |
+| Due Date            |      ?       |      ?      |      ?      |
 
 ## Milestone 1:  [Drive System](https://github.com/m2i/MAVRIC-Electrical/milestone/2)
 Description: Control of the drive system. Includes basic forward, backward, and turn maneuvers as well as heading and position feedback to the controller.
