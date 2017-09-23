@@ -5,10 +5,10 @@ The repository for the E-Team. Includes designs and documentation.
 Team Lead: James Talbert (@Talonj123)
 
 Members:
- * Morgan Foley
- * Jefferson O'Brien
- * Jacob Raymer
- * Alexander Vande Loo
+ * Morgan Foley (Circuit Design/E-CAD)
+ * Jefferson O'Brien (Control Systems)
+ * Jacob Raymer (Motors And Power)
+ * Alexander Vande Loo (Programming)
 
 # Folder Structure:
 
