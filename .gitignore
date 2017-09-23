@@ -21,3 +21,4 @@ _autosave-*
 *.csv
 
 **/gerber/**
+Electrical/~$PowerBudget.xlsx
