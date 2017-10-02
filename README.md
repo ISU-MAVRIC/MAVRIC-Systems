@@ -83,7 +83,7 @@ Notes:
    * A summary of the changes made to the electrical system
    * Includes any changes evaluated, but not made
 
-## Milestone 3: [Arm Control](https://github.com/m2i/MAVRIC-Electrical/milestone/3)
+## Milestone 3: [Arm Control](https://github.com/m2i/MAVRIC-Electrical/milestone/4)
 Description: Add the ability to control a robotic arm, as specified by the Mechanical team.
 The arm has:
  * 2-axis Shoulder Joint (DC Motors)
