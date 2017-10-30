@@ -46,18 +46,12 @@ Notes: Phoenix will need to have at least serial comms, but we should finalize a
    * Closed Loop: (`Velocity`, `Turn Radius`)
    * Closed Loop Direct: (`Left Velocity`, `Right Velocity`)
  * Implement Control Nodes
- * Implement sensing
-   * GPS
-   * Compass
 
 ### Deliverables
- * Video of Phoenix Driving in the Howe atrium
+ * Video of the electrical system taking in commands over a network and actuating motors
  * Description of control systems and sensors in place, including safety systems
    * Communication setup
    * Control Parameters chosen
-   * Hartbeat signal
-   * Positioning?
-   * Heading?
 
 ## Milestone 2: [System Refinement](https://github.com/m2i/MAVRIC-Electrical/milestone/3)
 Description: After we have a drivable rover, we will refine the internals
@@ -88,8 +82,8 @@ Description: Add the ability to control a robotic arm, as specified by the Mecha
 The arm has:
  * 2-axis Shoulder Joint (DC Motors)
  * Elbow Joint (DC Motors)
- * 3-axis Wrist (Servos?)
- * Claw (?)
+ * 2-axis Wrist (Stepper motors)
+ * Claw (Linear Actuator)
 
 Notes: 
 ### Tasks
@@ -103,4 +97,4 @@ Notes:
    * ROS architecture
    * Electrical architecture
  * Packet structure writeup
- * Video of an operator manipulating each joint
+ * Video of each type of affector being manipulated by the Arm control board
