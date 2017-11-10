@@ -30,7 +30,7 @@ Members:
 |                     | Milestone 1  | Milestone 2 | Milestone 3 |
 |:--------------------|:------------:|:-----------:|:-----------:|
 | Name                | Drive System | Refinement  | Arm Control |
-| Due Date            |      ?       |      ?      |      ?      |
+| Due Date            |    Nov. 12   |   Nov. 27   |   Dec. 03   |
 
 ## Milestone 1:  [Drive System](https://github.com/m2i/MAVRIC-Electrical/milestone/2)
 Description: Control of the drive system. Includes basic forward, backward, and turn maneuvers as well as heading and position feedback to the controller.
@@ -38,7 +38,7 @@ Description: Control of the drive system. Includes basic forward, backward, and 
 Notes: Phoenix will need to have at least serial comms, but we should finalize a communications stack before we get too far on this. We can simulate a Rocket system by hooking everything up on a local network. If we go with a network-bridge solution like the Rocket, we will most likely use sockets. Sockets will give us the flexibility to open up multiple 'channels' to and from Phoenix.
 ### Tasks
  * Establish basic connectivity with the rover
-   * Most likely either Sockets or Serial.
+   * Sockets over a Rocket antenna bridge.
    * Requires a master Control Board and Drive Control Board
  * Define control parameters
    * Open Loop: (`Output Power`, `Left/Right Output Ratio`)
@@ -46,9 +46,6 @@ Notes: Phoenix will need to have at least serial comms, but we should finalize a
    * Closed Loop: (`Velocity`, `Turn Radius`)
    * Closed Loop Direct: (`Left Velocity`, `Right Velocity`)
  * Implement Control Nodes
-   * `/mavric/master-control/control-interface`
-   * `/mavric/drive-control/control-interface`
-   * `/mavric/drive-control/*` [any PID or other subsystems]
  * Implement sensing
    * GPS
    * Compass
@@ -62,7 +59,7 @@ Notes: Phoenix will need to have at least serial comms, but we should finalize a
    * Positioning?
    * Heading?
 
-## Milestone 2: System Refinement
+## Milestone 2: [System Refinement](https://github.com/m2i/MAVRIC-Electrical/milestone/3)
 Description: After we have a drivable rover, we will refine the internals
 to enhance the extensibility and maintainability of the system. This will
 allow us to integrate new components easier.
@@ -86,7 +83,7 @@ Notes:
    * A summary of the changes made to the electrical system
    * Includes any changes evaluated, but not made
 
-## Milestone 3: Arm Control
+## Milestone 3: [Arm Control](https://github.com/m2i/MAVRIC-Electrical/milestone/4)
 Description: Add the ability to control a robotic arm, as specified by the Mechanical team.
 The arm has:
  * 2-axis Shoulder Joint (DC Motors)
@@ -97,7 +94,7 @@ The arm has:
 Notes: 
 ### Tasks
  * Develop logic-level hardware drivers
- * Develop power systems (power supply and H-bridges)
+ * Develop power systems (power supply and Motor Drivers)
  * Develop control systems
  * Define Communication protocol for the base station
 
