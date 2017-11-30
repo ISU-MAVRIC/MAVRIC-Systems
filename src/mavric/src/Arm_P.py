@@ -8,17 +8,17 @@ from threading import *
 data = 'stop'
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-host = ""
-port = 9001
+host = "127.0.0.1"
+port = 9004
 print (host)
-print (port)", line 228, in meth
-    return getattr(self._sock,name)(*args)
+print (port)#", line 228, in meth
+#    return getattr(self._sock,name)(*args)
+#<class '__main__.client'>", line 228, in meth
+#    return getattr(self._sock,name)(*args)
 
-
-#<class '__main__.client'>
 def talker():
-	pub = rospy.Publisher("/chatter", String, queue_size=10)
-	rospy.init_node('talker0', anonymous=True)
+	pub = rospy.Publisher("/Arm", String, queue_size=10)
+	rospy.init_node('AP', anonymous=True)
 	rate = rospy.Rate(10)
 	serversocket.bind((host, port))
 	serversocket.listen(1)
