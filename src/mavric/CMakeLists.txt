@@ -8,7 +8,6 @@ project(mavric)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
   rospy
   std_msgs
 )
@@ -105,7 +104,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES mavric
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  CATKIN_DEPENDS rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -197,13 +196,3 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-#include_directories(include ${catkin_LIBRARIES})
-include_directories(src)
-#add_executable(mstr_cntl_brd-debug src/gpio.cpp src/listener.cpp)
-#add_executable(mstr_cntl_brd-debug src/listener.cpp)
-#add_library(gpio src/gpio.cpp)
-#target_link_libraries(mstr_cntl_brd-debug gpio ${catkin_LIBRARIES})
-#target_link_libraries(mstr_cntl_brd-debug ${catkin_LIBRARIES})
-
-#add_executable(external-debug src/talker.cpp)
-#target_link_libraries(external-debug ${catkin_LIBRARIES})
