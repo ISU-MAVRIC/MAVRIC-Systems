@@ -8,7 +8,7 @@ from threading import *
 data = 'stop'
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-host = "127.0.0.1"
+host = ''
 port = 9004
 print (host)
 print (port)#", line 228, in meth
