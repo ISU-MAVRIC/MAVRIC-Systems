@@ -8,7 +8,7 @@ from threading import *
 data = 'stop'
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-host = "127.0.0.1"
+host = "10.26.196.148"
 port = 9003
 print (host)
 print (port)#", line 228, in meth
@@ -23,10 +23,11 @@ def talker():
 	serversocket.bind((host, port))
 	serversocket.listen(1)
 	rospy.loginfo('server started')
-	while not rospy.is_shutdown():
-		connection, address = serversocket.accept()
+	connection, address = serversocket.accept()
+	while True: # rospy.is_shutdown():
+#		connection, address = serversocket.accept()
 		data = connection.recv(1024).decode()
-		connection.close()
+#		connection.close()
 		pub.publish(data)
 		rate.sleep()
 	serversocket.close()	
@@ -35,6 +36,7 @@ def talker():
 if __name__ == '__main__':
 	try:
 		talker()
+		print(talker)
 	except rospy.ROSInterruptException:
 		pass
 

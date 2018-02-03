@@ -14,6 +14,21 @@ def callback(data):
 def listener():
 	rospy.init_node('AS', anonymous=True)
 	rospy.Subscriber("/Arm", String, callback)
+	
+	if data.data[0] == 'E':
+	
+	elif data.data[0] == 'F':
+
+	elif data.data[0] == 'G':
+
+	elif data.data[0] == 'H':
+
+	elif data.data[0] == 'I':
+
+	elif data.data[0] == 'J':
+
+	else:
+
 
 	rospy.spin()
 	GPIO.cleanup()
