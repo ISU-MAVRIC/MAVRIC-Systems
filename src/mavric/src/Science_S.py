@@ -14,6 +14,7 @@ def callback(data):
 def listener():
 	rospy.init_node('SS', anonymous=True)
 	rospy.Subscriber("/Science", String, callback)
+
 	if data.data[0] == 'M':
 
 	elif data.data[0] == 'N':

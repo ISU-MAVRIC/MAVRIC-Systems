@@ -23,11 +23,10 @@ def talker():
 	serversocket.bind((host, port))
 	serversocket.listen(1)
 	rospy.loginfo('server started')
-	connection, address = serversocket.accept()
-	while True: # rospy.is_shutdown():
-#		connection, address = serversocket.accept()
+	while not rospy.is_shutdown():
+		connection, address = serversocket.accept()
 		data = connection.recv(1024).decode()
-#		connection.close()
+		connection.close()
 		pub.publish(data)
 		rate.sleep()
 	serversocket.close()	
@@ -36,7 +35,6 @@ def talker():
 if __name__ == '__main__':
 	try:
 		talker()
-		print(talker)
 	except rospy.ROSInterruptException:
 		pass
 

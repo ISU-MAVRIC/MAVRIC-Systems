@@ -17,6 +17,7 @@ l.start(STOP)
 GPIO.setup(33, GPIO.OUT)
 r = GPIO.PWM(33, 333)
 r.start(STOP)
+
 #scale factor
 s=.05
 
@@ -24,6 +25,7 @@ def callback(data):
 	rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
 	print(data.data)
         #PWM
+
 	if data.data == "B":
 		l.ChangeDutyCycle(STOP+(50-s*data[1:2]));
 		r.ChangeDutyCycle(STOP+(50-s*data[1:2]));
