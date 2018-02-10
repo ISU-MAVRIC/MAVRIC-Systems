@@ -8,7 +8,7 @@ from threading import *
 data = 'stop'
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-host = "127.0.0.1"
+host = "10.26.196.148"
 port = 9004
 print (host)
 print (port) #", line 228, in meth
@@ -35,7 +35,10 @@ def arm1():
 		data = connection.recv(1024).decode()
 		pub.publish(data)
 		print(data)
-while __name__ == '__main__':
+
+	connection.close()
+
+if __name__ == '__main__':
 	try:
 		arm1()
 	except rospy.ROSInterruptException:
