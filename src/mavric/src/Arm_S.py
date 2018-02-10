@@ -11,15 +11,15 @@ def callback(data):
 	rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
 	print(data.data)
 
-def listener():
-	rospy.init_node('AS', anonymous=True)
-	rospy.Subscriber("/Arm", String, callback)
+def arm1():
+	rospy.init_node('AS1', anonymous=True)
+	rospy.Subscriber("/arm1", String, callback)
 
 	rospy.spin()
-	GPIO.cleanup()
+#	GPIO.cleanup()
 
-if __name__ == '__main__':
-	listener()
+while __name__ == '__main__':
+	arm1()
 
 
 

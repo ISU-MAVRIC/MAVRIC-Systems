@@ -11,14 +11,21 @@ serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 host = "127.0.0.1"
 port = 9004
 print (host)
-print (port)#", line 228, in meth
+print (port) #", line 228, in meth
 #    return getattr(self._sock,name)(*args)
 #<class '__main__.client'>", line 228, in meth
 #    return getattr(self._sock,name)(*args)
 
-def talker():
-	pub = rospy.Publisher("/Arm", String, queue_size=10)
-	rospy.init_node('AP', anonymous=True)
+#def soc(data):
+#	print('ok')
+#	serversocket.bind((host,port))
+#	serversocket.listen(1)
+#	connection, address = serversocket.accept()
+#	data = connection.recv(1024).decode()
+
+def arm1():
+	pub = rospy.Publisher("/arm1", String, queue_size=10)
+	rospy.init_node('AP1', anonymous=True)
 	rate = rospy.Rate(10)
 	serversocket.bind((host, port))
 	serversocket.listen(1)
@@ -26,15 +33,18 @@ def talker():
 	while not rospy.is_shutdown():
 		connection, address = serversocket.accept()
 		data = connection.recv(1024).decode()
-		connection.close()
 		pub.publish(data)
-		rate.sleep()
-	serversocket.close()	
-	
-
-if __name__ == '__main__':
+		print(data)
+while __name__ == '__main__':
 	try:
-		talker()
+		arm1()
 	except rospy.ROSInterruptException:
 		pass
 
+#		soc(data)
+#		if data == '1':
+#			arm1()
+#		else:
+#			pass
+#	except rospy.ROSInterruptException:
+#		pass
