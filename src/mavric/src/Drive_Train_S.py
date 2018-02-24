@@ -18,7 +18,7 @@ GPIO.setup(33, GPIO.OUT)
 r = GPIO.PWM(33, 333)
 r.start(STOP)
 
-#scale factor
+#scale factor 
 s=-.5
 
 def callback(data):
