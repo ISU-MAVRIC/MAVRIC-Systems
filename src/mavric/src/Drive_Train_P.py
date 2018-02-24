@@ -9,7 +9,7 @@ data = 'stop'
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-host = "10.26.196.148"
+host = ""
 port = 9002
 print (host)
 print (port)#", line 228, in meth
