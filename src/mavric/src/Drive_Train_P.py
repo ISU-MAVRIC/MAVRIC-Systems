@@ -27,7 +27,6 @@ def talker():
 	while not rospy.is_shutdown():
 		connection, address = serversocket.accept()
 		data = connection.recv(1024).decode()
-
 		print(data)
 		connection.close()
 		pub.publish(data)
