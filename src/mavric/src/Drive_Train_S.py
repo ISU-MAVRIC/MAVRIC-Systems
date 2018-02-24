@@ -5,7 +5,7 @@ from std_msgs.msg import String
 import RPi.GPIO as GPIO
 
 #STOP = 50
-STOP = 46.9
+STOP = 47.5
 FORWARD = STOP+20
 BACKWARD = STOP-20
 
@@ -19,24 +19,29 @@ r = GPIO.PWM(33, 333)
 r.start(STOP)
 
 #scale factor
-s=.05
+s=-.5
 
 def callback(data):
 	rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
 	print(data.data)
         #PWM
 
-	if data.data == "B":
-		l.ChangeDutyCycle(STOP+(50-s*data[1:2]));
-		r.ChangeDutyCycle(STOP+(50-s*data[1:2]));
-	elif data.data == "R":
-		r.ChangeDutyCycle(STOP+s*data[1:2]);
-	elif data.data == "L":
-		l.ChangeDutyCycle(STOP+s*data[1:2]);
-	elif data.data == "D":
-		l.ChangeDutyCycle(STOP+(50-s*data[1:2]));
-		r.ChangeDutyCycle(STOP+(50-s*data[3:4]));
+	if data.data[1] == 'B':
+		rospy.loginfo(rospy.get_caller_id() + "Left %s, Right %s", STOP+(s*(int(data.data[2:4])-50)), STOP+(s*(int(data.data[2:4])-50)));
+		l.ChangeDutyCycle(STOP+(s*(int(data.data[2:4])-50)));
+		r.ChangeDutyCycle(STOP+(s*(int(data.data[2:4])-50)));
+	elif data.data[1] == 'R':
+		rospy.loginfo(rospy.get_caller_id() + "Right %s", STOP+s*(int(data.data[2:4])-50));
+		r.ChangeDutyCycle(STOP+s*(int(data.data[2:4])-50));
+	elif data.data[1] == 'L':
+		rospy.loginfo(rospy.get_caller_id() + "Left %s", STOP+s*(int(data.data[2:4])-50));
+		l.ChangeDutyCycle(STOP+s*(int(data.data[2:4])-50));
+	elif data.data[1] == 'D':
+		rospy.loginfo(rospy.get_caller_id() + "Left %s, Right %s", STOP+(s*(int(data.data[2:4])-50)), STOP+(s*(int(data.data[3:4])-50)));
+		l.ChangeDutyCycle(STOP+(s*data.data[2:4])-50);
+		r.ChangeDutyCycle(STOP+(s*data.data[4:6])-50);
 	else:
+		rospy.loginfo(rospy.get_caller_id() + "STOPPING");
 		l.ChangeDutyCycle(STOP);
 		r.ChangeDutyCycle(STOP);
 
