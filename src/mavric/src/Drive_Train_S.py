@@ -2,60 +2,60 @@
 
 import rospy
 from std_msgs.msg import String
-import RPi.GPIO as GPIO
+import Adafruit_PCA9685
 
 #STOP = 50
 STOP = 47.5
-FORWARD = STOP+20
-BACKWARD = STOP-20
+FORWARD = STOP + 20
+BACKWARD = STOP - 20
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(32, GPIO.OUT)
-l = GPIO.PWM(32, 333)
-l.start(STOP)
-
-GPIO.setup(33, GPIO.OUT)
-r = GPIO.PWM(33, 333)
-r.start(STOP)
+#PWM hat channels
+L_CHANNEL = 0
+R_CHANNEL = 1
 
 #scale factor 
-s=-.5
+SF = -0.5
+
+pwm = Adafruit_PCA9685.PCA9685()
+pwm.set_pwm_freq(333)
+
+
+#convert from % duty cycle to PWM "ticks" for hat
+def to_tick(percent):
+	return int(4095 * (percent / 100))
+
 
 def callback(data):
 	rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
 	print(data.data)
-        #PWM
+	#PWM
+	
+	#if the data string is invalid, kill motors
+	if(len(data.data) != 5):
+		rospy.loginfo(rospy.get_caller_id() + " STOPPING")
+		pwm.set_pwm(L_CHANNEL, 0, to_tick(STOP))
+		pwm.set_pwm(R_CHANNEL, 0, to_tick(STOP))
+		return
+	
+	#get left and right side drive powers
+	n1 = STOP + (SF * (int(data.data[1:3]) - 50))
+	n2 = STOP + (SF * (int(data.data[3:5]) - 50))
+	
+	#log values and write to PWM channels
+	rospy.loginfo(rospy.get_caller_id() + " Left %s, Right %s", n1, n2)
+	pwm.set_pwm(L_CHANNEL, 0, to_tick(n1))
+	pwm.set_pwm(R_CHANNEL, 0, to_tick(n2))
 
-	if data.data[1] == 'B':
-		rospy.loginfo(rospy.get_caller_id() + "Left %s, Right %s", STOP+(s*(int(data.data[2:4])-50)), STOP+(s*(int(data.data[2:4])-50)));
-		l.ChangeDutyCycle(STOP+(s*(int(data.data[2:4])-50)));
-		r.ChangeDutyCycle(STOP+(s*(int(data.data[2:4])-50)));
-	elif data.data[1] == 'R':
-		rospy.loginfo(rospy.get_caller_id() + "Right %s", STOP+s*(int(data.data[2:4])-50));
-		r.ChangeDutyCycle(STOP+s*(int(data.data[2:4])-50));
-	elif data.data[1] == 'L':
-		rospy.loginfo(rospy.get_caller_id() + "Left %s", STOP+s*(int(data.data[2:4])-50));
-		l.ChangeDutyCycle(STOP+s*(int(data.data[2:4])-50));
-	elif data.data[1] == 'D':
-		rospy.loginfo(rospy.get_caller_id() + "Left %s, Right %s", STOP+(s*(int(data.data[2:4])-50)), STOP+(s*(int(data.data[3:4])-50)));
-		l.ChangeDutyCycle(STOP+(s*data.data[2:4])-50);
-		r.ChangeDutyCycle(STOP+(s*data.data[4:6])-50);
-	else:
-		rospy.loginfo(rospy.get_caller_id() + "STOPPING");
-		l.ChangeDutyCycle(STOP);
-		r.ChangeDutyCycle(STOP);
 
 def listener():
 	rospy.init_node('DTS', anonymous=True)
 	rospy.Subscriber("/Drive_Train", String, callback)
 
 	rospy.spin()
-	GPIO.cleanup()
+
 
 if __name__ == '__main__':
 	listener()
-
-
 
 
 
