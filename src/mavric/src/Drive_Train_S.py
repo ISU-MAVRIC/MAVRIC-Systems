@@ -18,13 +18,14 @@ R_CHANNEL = 1
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(1/Period)
 
-
 #convert from % duty cycle to PWM "ticks" for hat
 def to_tick(percent):
         rospy.loginfo(rospy.get_caller_id() + ": %f%%", percent);
         # the 0.92 is a fudge factor that is needed for unokown reasons
 	return int(4095 * percent / 0.92)
 
+pwm.set_pwm(L_CHANNEL, 0, to_tick(STOP/Period))
+pwm.set_pwm(R_CHANNEL, 0, to_tick(STOP/Period))
 
 def callback(data):
 	rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
