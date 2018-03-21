@@ -12,20 +12,45 @@ Period  = 0.004
 STOP    = MinTime + Range/2
 
 #PWM hat channels
-L_CHANNEL = 0
-R_CHANNEL = 1
+LF_Chan = -1
+LM_Chan = -1
+LB_Chan = -1
+
+RF_Chan = -1
+RM_Chan = -1
+RB_Chan = -1
+Scale = 0.1
 
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(1/Period)
 
 #convert from % duty cycle to PWM "ticks" for hat
 def to_tick(percent):
-        rospy.loginfo(rospy.get_caller_id() + ": %f%%", percent);
+        rospy.loginfo(rospy.get_caller_id() + ": %f%%", percent*100);
+        time = Range*percent + MinTime
+        percent = time/Period
         # the 0.92 is a fudge factor that is needed for unokown reasons
 	return int(4095 * percent / 0.92)
 
-pwm.set_pwm(L_CHANNEL, 0, to_tick(STOP/Period))
-pwm.set_pwm(R_CHANNEL, 0, to_tick(STOP/Period))
+# Takes in throttles as percents in the range [-1.0, +1.0]
+#     LF, LM, LB, RF, RM, RB
+def set_outputs(LF, LM, LB, RF, RM, RB):
+        rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
+        
+        if (LF_Chan >= 0):
+                pwm.set_pwm(LF_Chan, 0, to_tick(LF*Scale+0.5))
+        if (LM_Chan >= 0):
+                pwm.set_pwm(LM_Chan, 0, to_tick(LM*Scale+0.5))
+        if (LB_Chan >= 0):
+                pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale+0.5))
+
+        if (RF_Chan >= 0):
+                pwm.set_pwm(RF_Chan, 0, to_tick(RF*Scale+0.5))
+        if (RM_Chan >= 0):
+                pwm.set_pwm(RM_Chan, 0, to_tick(RM*Scale+0.5))
+        if (RB_Chan >= 0):
+                pwm.set_pwm(RB_Chan, 0, to_tick(RB*Scale+0.5))
+        return
 
 def callback(data):
 	rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
@@ -36,27 +61,45 @@ def callback(data):
         data.data = data.data.strip()
 	if(len(data.data) != 5):
 		rospy.loginfo(rospy.get_caller_id() + " STOPPING")
-		pwm.set_pwm(L_CHANNEL, 0, to_tick(STOP/Period))
-		pwm.set_pwm(R_CHANNEL, 0, to_tick(STOP/Period))
+                set_outputs(0, 0, 0, 0, 0, 0)
 		return
 	
 	#get left and right side drive powers
-	n1 = Range * (int(data.data[1:3]))/100.0 + MinTime
-	n2 = Range * (int(data.data[3:5]))/100.0 + MinTime
+	left  = (int(data.data[1:3])-50)/50.0
+	right = (int(data.data[3:5])-50)/50.0
 	
 	#log values and write to PWM channels
-	rospy.loginfo(rospy.get_caller_id() + " Left %s, Right %s", n1, n2)
-        f1 = to_tick(n1/Period)
-        f2 = to_tick(n2/Period)
-        rospy.loginfo(rospy.get_caller_id() + ": Left %f, Right %f", f1, f2)
-	pwm.set_pwm(L_CHANNEL, 0, to_tick(n1/Period))
-	pwm.set_pwm(R_CHANNEL, 0, to_tick(n2/Period))
+	rospy.loginfo(rospy.get_caller_id() + " Left %s%%, Right %s%%", left*100, right*100)
+        set_outputs(left, left, left, right, right, right)
 
+        
 
 def listener():
 	rospy.init_node('DTS', anonymous=True)
 	rospy.Subscriber("/Drive_Train", String, callback)
 
+        global LF_Chan
+        global LM_Chan
+        global LB_Chan
+        
+        global RF_Chan
+        global RM_Chan
+        global RB_Chan
+
+        LF_Chan = rospy.get_param("/Drive/Left_Front_Channel")
+        LM_Chan = rospy.get_param("/Drive/Left_Middle_Channel")
+        LB_Chan = rospy.get_param("/Drive/Left_Back_Channel")
+        
+        RF_Chan = rospy.get_param("/Drive/Right_Front_Channel")
+        RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel")
+        RB_Chan = rospy.get_param("/Drive/Right_Back_Channel")
+
+        rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
+        
+        Scale = 0.1
+
+        set_outputs(0, 0, 0, 0, 0, 0)
+        
 	rospy.spin()
 
 
