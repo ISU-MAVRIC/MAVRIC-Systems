@@ -11,16 +11,6 @@ Range   = MaxTime-MinTime
 Period  = 0.004
 STOP    = MinTime + Range/2
 
-#PWM hat channels
-LF_Chan = -1
-LM_Chan = -1
-LB_Chan = -1
-
-RF_Chan = -1
-RM_Chan = -1
-RB_Chan = -1
-Scale = 0.1
-
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(1/Period)
 
@@ -35,7 +25,13 @@ def to_tick(percent):
 # Takes in throttles as percents in the range [-1.0, +1.0]
 #     LF, LM, LB, RF, RM, RB
 def set_outputs(LF, LM, LB, RF, RM, RB):
-        rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
+        LF_Chan = rospy.get_param("/Drive/Left_Front_Channel", -1)
+        LM_Chan = rospy.get_param("/Drive/Left_Middle_Channel", -1)
+        LB_Chan = rospy.get_param("/Drive/Left_Back_Channel", -1)
+        RF_Chan = rospy.get_param("/Drive/Right_Front_Channel", -1)
+        RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel", -1)
+        RB_Chan = rospy.get_param("/Drive/Right_Back_Channel", -1)
+        Scale = rospy.get_param("/Drive/Range", 0.1)
         
         if (LF_Chan >= 0):
                 pwm.set_pwm(LF_Chan, 0, to_tick(LF*Scale+0.5))
@@ -43,7 +39,6 @@ def set_outputs(LF, LM, LB, RF, RM, RB):
                 pwm.set_pwm(LM_Chan, 0, to_tick(LM*Scale+0.5))
         if (LB_Chan >= 0):
                 pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale+0.5))
-
         if (RF_Chan >= 0):
                 pwm.set_pwm(RF_Chan, 0, to_tick(RF*Scale+0.5))
         if (RM_Chan >= 0):
@@ -77,26 +72,6 @@ def callback(data):
 def listener():
 	rospy.init_node('DTS', anonymous=True)
 	rospy.Subscriber("/Drive_Train", String, callback)
-
-        global LF_Chan
-        global LM_Chan
-        global LB_Chan
-        
-        global RF_Chan
-        global RM_Chan
-        global RB_Chan
-
-        LF_Chan = rospy.get_param("/Drive/Left_Front_Channel", -1)
-        LM_Chan = rospy.get_param("/Drive/Left_Middle_Channel", -1)
-        LB_Chan = rospy.get_param("/Drive/Left_Back_Channel", -1)
-        
-        RF_Chan = rospy.get_param("/Drive/Right_Front_Channel", -1)
-        RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel", -1)
-        RB_Chan = rospy.get_param("/Drive/Right_Back_Channel", -1)
-
-        rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
-        
-        Scale = rospy.get_param("/Drive/Range", 0.1)
 
         set_outputs(0, 0, 0, 0, 0, 0)
         
