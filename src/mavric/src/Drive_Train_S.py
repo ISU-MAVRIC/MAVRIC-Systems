@@ -86,17 +86,17 @@ def listener():
         global RM_Chan
         global RB_Chan
 
-        LF_Chan = rospy.get_param("/Drive/Left_Front_Channel")
-        LM_Chan = rospy.get_param("/Drive/Left_Middle_Channel")
-        LB_Chan = rospy.get_param("/Drive/Left_Back_Channel")
+        LF_Chan = rospy.get_param("/Drive/Left_Front_Channel", -1)
+        LM_Chan = rospy.get_param("/Drive/Left_Middle_Channel", -1)
+        LB_Chan = rospy.get_param("/Drive/Left_Back_Channel", -1)
         
-        RF_Chan = rospy.get_param("/Drive/Right_Front_Channel")
-        RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel")
-        RB_Chan = rospy.get_param("/Drive/Right_Back_Channel")
+        RF_Chan = rospy.get_param("/Drive/Right_Front_Channel", -1)
+        RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel", -1)
+        RB_Chan = rospy.get_param("/Drive/Right_Back_Channel", -1)
 
         rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
         
-        Scale = 0.1
+        Scale = rospy.get_param("/Drive/Range", 0.1)
 
         set_outputs(0, 0, 0, 0, 0, 0)
         
