@@ -6,7 +6,8 @@ Spectrometer:
     -Issue where camera glitches and power must be cycled
     
 Drill Motor:
-
+    -https://www.andymark.com/NeveRest-60-Gearmotor-p/am-3103.htm
+    
 Large Linear Actuator:
     -12V
 
