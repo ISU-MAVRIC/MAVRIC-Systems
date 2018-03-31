@@ -22,3 +22,4 @@ Temperature Sensor:
     
 Enviro-Pi Hat:
     -https://www.adafruit.com/product/3194
+    -Library: https://github.com/pimoroni/enviro-phat
