@@ -11,6 +11,7 @@ Drill Motor:
 
 Large Linear Actuator:
     -12V
+    -VictorSP (Old) Motor Controller to drive
 
 Small Linear Actuator:
     -5V
