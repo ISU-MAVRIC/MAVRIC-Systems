@@ -17,8 +17,8 @@ Small Linear Actuator:
 
 Temperature Sensor:
     -DS18B20
-    -Digital with 1 wire comms output
-    -https://www.modmypi.com/blog/ds18b20-one-wire-digital-temperature-sensor-and-the-raspberry-pi
+    -Digital with Dallas 1-wire comms output
+    -Tutorial: https://www.modmypi.com/blog/ds18b20-one-wire-digital-temperature-sensor-and-the-raspberry-pi
     
 Enviro-Pi Hat:
     -https://www.adafruit.com/product/3194
