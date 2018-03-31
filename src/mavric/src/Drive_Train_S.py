@@ -11,19 +11,6 @@ Range   = MaxTime-MinTime
 Period  = 0.004
 STOP    = MinTime + Range/2
 
-<<<<<<< HEAD
-#PWM hat channels
-LF_Chan = -1
-LM_Chan = -1
-LB_Chan = -1
-
-RF_Chan = -1
-RM_Chan = -1
-RB_Chan = -1
-Scale = 1
-
-=======
->>>>>>> cf48bd29ea3eb7494bd489bb2786c1cdb20005be
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(1/Period)
 
@@ -44,19 +31,14 @@ def set_outputs(LF, LM, LB, RF, RM, RB):
         RF_Chan = rospy.get_param("/Drive/Right_Front_Channel", -1)
         RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel", -1)
         RB_Chan = rospy.get_param("/Drive/Right_Back_Channel", -1)
-        Scale = rospy.get_param("/Drive/Range", 0.1)
+        Scale = rospy.get_param("/Drive/Range", -0.2)
         
         if (LF_Chan >= 0):
                 pwm.set_pwm(LF_Chan, 0, to_tick(LF*Scale/2+0.5))
         if (LM_Chan >= 0):
                 pwm.set_pwm(LM_Chan, 0, to_tick(LM*Scale/2+0.5))
         if (LB_Chan >= 0):
-<<<<<<< HEAD
                 pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale/2+0.5))
-
-=======
-                pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale+0.5))
->>>>>>> cf48bd29ea3eb7494bd489bb2786c1cdb20005be
         if (RF_Chan >= 0):
                 pwm.set_pwm(RF_Chan, 0, to_tick(RF*Scale/2+0.5))
         if (RM_Chan >= 0):
@@ -90,30 +72,7 @@ def callback(data):
 def listener():
 	rospy.init_node('DTS', anonymous=True)
 	rospy.Subscriber("/Drive_Train", String, callback)
-
-<<<<<<< HEAD
-        global LF_Chan
-        global LM_Chan
-        global LB_Chan
         
-        global RF_Chan
-        global RM_Chan
-        global RB_Chan
-
-        LF_Chan = rospy.get_param("/Drive/Left_Front_Channel")
-        LM_Chan = rospy.get_param("/Drive/Left_Middle_Channel")
-        LB_Chan = rospy.get_param("/Drive/Left_Back_Channel")
-        
-        RF_Chan = rospy.get_param("/Drive/Right_Front_Channel")
-        RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel")
-        RB_Chan = rospy.get_param("/Drive/Right_Back_Channel")
-
-        rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
-        
-        #Scale = 0.1
-
-=======
->>>>>>> cf48bd29ea3eb7494bd489bb2786c1cdb20005be
         set_outputs(0, 0, 0, 0, 0, 0)
         
 	rospy.spin()
