@@ -1,1 +1,14 @@
 Science Team Electrical Components and Details list:
+
+Spectrometer:
+    -Saving file output as .csv
+    -Program needs to be started remotely
+    -Issue where camera glitches and power must be cycled
+    
+Drill Motor:
+
+Large Linear Actuator:
+
+Small Linear Actuator:
+
+Temperature Sensor:
