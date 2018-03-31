@@ -19,7 +19,7 @@ LB_Chan = -1
 RF_Chan = -1
 RM_Chan = -1
 RB_Chan = -1
-Scale = 0.1
+Scale = 1
 
 pwm = Adafruit_PCA9685.PCA9685()
 pwm.set_pwm_freq(1/Period)
@@ -38,18 +38,18 @@ def set_outputs(LF, LM, LB, RF, RM, RB):
         rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
         
         if (LF_Chan >= 0):
-                pwm.set_pwm(LF_Chan, 0, to_tick(LF*Scale+0.5))
+                pwm.set_pwm(LF_Chan, 0, to_tick(LF*Scale/2+0.5))
         if (LM_Chan >= 0):
-                pwm.set_pwm(LM_Chan, 0, to_tick(LM*Scale+0.5))
+                pwm.set_pwm(LM_Chan, 0, to_tick(LM*Scale/2+0.5))
         if (LB_Chan >= 0):
-                pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale+0.5))
+                pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale/2+0.5))
 
         if (RF_Chan >= 0):
-                pwm.set_pwm(RF_Chan, 0, to_tick(RF*Scale+0.5))
+                pwm.set_pwm(RF_Chan, 0, to_tick(RF*Scale/2+0.5))
         if (RM_Chan >= 0):
-                pwm.set_pwm(RM_Chan, 0, to_tick(RM*Scale+0.5))
+                pwm.set_pwm(RM_Chan, 0, to_tick(RM*Scale/2+0.5))
         if (RB_Chan >= 0):
-                pwm.set_pwm(RB_Chan, 0, to_tick(RB*Scale+0.5))
+                pwm.set_pwm(RB_Chan, 0, to_tick(RB*Scale/2+0.5))
         return
 
 def callback(data):
@@ -96,7 +96,7 @@ def listener():
 
         rospy.loginfo("%d, %d, %d, %d, %d, %d", LF_Chan, LM_Chan, LB_Chan, RF_Chan, RM_Chan, RB_Chan)
         
-        Scale = 0.1
+        #Scale = 0.1
 
         set_outputs(0, 0, 0, 0, 0, 0)
         
