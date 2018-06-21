@@ -12,10 +12,9 @@ from pid_controller.pid import PID
 from gps import GPS
 
 #declare constants
-#   these are all arbitrary, for testing
-LIN_ERROR_THRESHOLD = 5		#meters
-ANG_ERROR_THRESHOLD = 10        #degrees
-UPDATE_INTERVAL = 1             #seconds
+LIN_ERROR_THRESHOLD = 5		#arbitrary, meters
+ANG_ERROR_THRESHOLD = 10
+UPDATE_INTERVAL = 1
 FIX_TIMEOUT_THRESHOLD = UPDATE_INTERVAL * 5
 
 #PID constants
@@ -42,7 +41,6 @@ fix_timeout = False
 linearPID = PID(L_P, L_I, L_D)
 angularPID = PID(A_P, A_I, A_D)
 
-#Windows port, will be '/dev/ttyS0' on pi
 gps = GPS('COM5', 9600, 1)
 
 """ -MAIN LOOP- """
@@ -51,50 +49,44 @@ def talker():
     global prev_fix_time, prev_linear_error, prev_angular_error
 
     #create ROS publisher
-    #   for the purposes of testing, this node pretends to be Drive_Train_P
     pub = rospy.Publisher("/Drive_Train", String, queue_size=10)
     rospy.init_node("DTP", anonymous=True)
     
     #open serial port and turn on GPS power
-    gps.begin()
+    #gps.begin()
 
     while not rospy.is_shutdown():
         #update gps data
-        gps.update()
+        #gps.update()
 
-        #if time.sleep forces other processes to hang, may need to do something
-        #   like this instead:
-        
         #if(hms_to_s(gps.time) - prev_fix_time < UPDATE_INTERVAL):
         #    continue
-
+        
         time.sleep(UPDATE_INTERVAL)
         
         #get new gps target from base station, if necessary, and split it by comma
-        #   may or may not be an NMEA sentence, assuming lat-lon pair for testing
+        #   !NOTE may or may not be an NMEA sentence, assuming lat-lon pair
         if need_tgt:
             tgt_sentence = raw_input("target lat, lon: ").split(",")
             need_tgt = False
         
         #only perform GPS calculations if GPS data is valid
-        #   may want to check if number of satellites > 4 instead?
-        if gps.good_fix:
+        #   !NOTE may want to check number of satellites > 4 instead?
+        if True: #gps.good_fix
             #update fix timer
-            #   may want to depend on an internal clock instead of satellite time?
-            prev_fix_time = hms_to_s(gps.time)
+            #   !NOTE may want to depend on an internal clock instead of satellite time?
+            #prev_fix_time = hms_to_s(gps.time)
             fix_timeout = False
 
             #input position data
-            pos = [gps.latitude, gps.longitude]
-            head = gps.heading
+            pos = [42.0308, -93.6319]
+            head = 0.0
+            #pos = [gps.latitude, gps.longitude]
+            #head = gps.heading
             tgt = [0, 0]
-            
+
             tgt[0] = float(tgt_sentence[0])
             tgt[1] = float(tgt_sentence[1])
-
-            #   or ignore gps and use hardcoded values for testing
-            #pos = [42.0308, -93.6319]
-            #head = 0.0
 
             #solve the geodesic problem corresponding to these lat-lon values
             #   assumes WGS-84 ellipsoid model
@@ -110,19 +102,16 @@ def talker():
             pos = [radians(pos[0]), radians(pos[1])]
             tgt = [radians(tgt[0]), radians(tgt[1])]
 
-            #calculate heading to target
-            #   subtract angles from 360 to convert to counterclockwise
+            #calculate heading to target, then angular error
             kY = cos(tgt[0]) * sin(tgt[1] - pos[1])
             kX = (cos(pos[0]) * sin(tgt[0])) - (sin(pos[0]) * cos(tgt[0]) * cos(tgt[1] - pos[1]))
 
             tgt_head = degrees(atan2(kY, kX))
-
-            #convert angles from clockwise to counterclockwise, then calculate
-            #   angular error
-            head = 360 - head
-            tgt_head = 360 - tgt_head
-            
             angular_error = tgt_head - head
+
+            #convert clockwise angle to counterclockwise
+            #NOTE should do this to an abs angle, not the error!
+            #angular_error = 360 - angular_error
             
         else:
             #if GPS data is not valid, use previously calculated values
@@ -138,7 +127,7 @@ def talker():
             need_tgt = True
 
         #pass linear and angular error to separate PID controllers
-        #   may need to use modulus to fix angular rollover?
+        #   !NOTE may need to use modulus to fix angular rollover
         linear_power = linearPID(feedback=linear_error)
         angular_power = angularPID(feedback=angular_error)
 
@@ -147,7 +136,7 @@ def talker():
         left_power = linear_power + angular_power;
         right_power = linear_power - angular_power;
 
-        #this if-else block is debug, apply power based on heading instead of PID
+        #debug, apply power based on heading
         print(angular_error)
         
         if(angular_error < 0):
@@ -171,7 +160,7 @@ def talker():
             left_power = 0.0
             right_power = 0.0
 
-        #convert from fractional motor power to command string, then publish
+        #convert from fractional motor power to command string
         pub.publish("D" + frac_to_cs(left_power) + frac_to_cs(right_power))
 
         #remember linear and angular error for the next cycle

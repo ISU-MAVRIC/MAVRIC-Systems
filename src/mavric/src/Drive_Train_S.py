@@ -2,6 +2,7 @@
 
 import rospy
 from std_msgs.msg import String
+from mavric.msg import Drivetrain
 import Adafruit_PCA9685
 
 #STOP = 50
@@ -48,20 +49,22 @@ def set_outputs(LF, LM, LB, RF, RM, RB):
         return
 
 def callback(data):
-	rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.data)
-	print(data.data)
+	print("Left: " + str(data.left) + ", Right: " + str(data.right))
 	#PWM
-	
-	#if the data string is invalid, kill motors
-        data.data = data.data.strip()
-	if(len(data.data) != 5):
-		rospy.loginfo(rospy.get_caller_id() + " STOPPING")
-                set_outputs(0, 0, 0, 0, 0, 0)
-		return
+
+	if (data.left > 100):
+		data.left = 100	
+	if (data.left < -100):
+		data.left = -100
+		
+	if (data.right > 100):
+		data.right = 100
+	if (data.right < -100):
+		data.right = -100
 	
 	#get left and right side drive powers
-	left  = (int(data.data[1:3])-50)/50.0
-	right = (int(data.data[3:5])-50)/50.0
+	left  = data.left/100
+	right = data.right/100
 	
 	#log values and write to PWM channels
 	rospy.loginfo(rospy.get_caller_id() + " Left %s%%, Right %s%%", left*100, right*100)
@@ -71,7 +74,7 @@ def callback(data):
 
 def listener():
 	rospy.init_node('DTS', anonymous=True)
-	rospy.Subscriber("/Drive_Train", String, callback)
+	rospy.Subscriber("/Drive_Train", Drivetrain, callback)
         
         set_outputs(0, 0, 0, 0, 0, 0)
         

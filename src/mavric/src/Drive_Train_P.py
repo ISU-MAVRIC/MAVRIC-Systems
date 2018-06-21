@@ -2,6 +2,7 @@
 
 import rospy
 from std_msgs.msg import String
+from mavric.msg import Drivetrain
 
 import socket
 from threading import *
@@ -18,9 +19,8 @@ print (port)#", line 228, in meth
 #    return getattr(self._sock,name)(*args)
 
 def talker():
-	pub = rospy.Publisher("/Drive_Train", String, queue_size=10)
+	pub = rospy.Publisher("/Drive_Train", Drivetrain, queue_size=10)
 	rospy.init_node('DTP', anonymous=True)
-	rate = rospy.Rate(10)
 	serversocket.bind((host, port))
 	serversocket.listen(1)
 	rospy.loginfo('server started')
@@ -28,9 +28,14 @@ def talker():
 		connection, address = serversocket.accept()
 		data = connection.recv(1024).decode()
 		print(data)
+		if (data[0] == 'D'):
+			# Drive Command
+			parameters = data[1:].strip().split(',')
+			print(parameters)
+			left = float(parameters[0])
+			right = float(parameters[1])
+			pub.publish(left, right)
 		connection.close()
-		pub.publish(data)
-		rate.sleep()
 	serversocket.close()	
 	
 
