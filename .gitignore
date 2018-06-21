@@ -4,4 +4,7 @@ build/*
 devel/*
 */install/*
 install/*
+*.cmake
+*/catkin_generated/*
+*/CMakeFiles/*
 *~
