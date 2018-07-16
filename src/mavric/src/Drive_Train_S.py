@@ -4,6 +4,7 @@ import rospy
 from std_msgs.msg import String
 from mavric.msg import Drivetrain
 import Adafruit_PCA9685
+import time
 
 #STOP = 50
 MinTime = 0.001
@@ -21,69 +22,76 @@ def to_tick(percent):
         time = Range*percent + MinTime
         percent = time/Period
         # the 0.92 is a fudge factor that is needed for unokown reasons
-	return int(4095 * percent / 0.92)
+        return int(4095 * percent / 0.92)
 
 # Takes in throttles as percents in the range [-1.0, +1.0]
 #     LF, LM, LB, RF, RM, RB
 def set_outputs(LF, LM, LB, RF, RM, RB):
-        LF_Chan = rospy.get_param("/Drive/Left_Front_Channel", -1)
-        LM_Chan = rospy.get_param("/Drive/Left_Middle_Channel", -1)
-        LB_Chan = rospy.get_param("/Drive/Left_Back_Channel", -1)
-        RF_Chan = rospy.get_param("/Drive/Right_Front_Channel", -1)
-        RM_Chan = rospy.get_param("/Drive/Right_Middle_Channel", -1)
-        RB_Chan = rospy.get_param("/Drive/Right_Back_Channel", -1)
-        Scale = rospy.get_param("/Drive/Range", -0.2)
-        
+        LF_Chan = rospy.get_param("/Drive/Left_Front/Channel", -1)
+        LM_Chan = rospy.get_param("/Drive/Left_Middle/Channel", -1)
+        LB_Chan = rospy.get_param("/Drive/Left_Back/Channel", -1)
+        RF_Chan = rospy.get_param("/Drive/Right_Front/Channel", -1)
+        RM_Chan = rospy.get_param("/Drive/Right_Middle/Channel", -1)
+        RB_Chan = rospy.get_param("/Drive/Right_Back/Channel", -1)
+        Scale = rospy.get_param("/Drive/Range", 0.4)
+        LF_Dir = rospy.get_param("/Drive/Left_Front/Dir", 1)
+        LM_Dir = rospy.get_param("/Drive/Left_Middle/Dir", 1)
+        LB_Dir = rospy.get_param("/Drive/Left_Back/Dir", 1)
+        RF_Dir = rospy.get_param("/Drive/Right_Front/Dir", 1) * -1
+        RM_Dir = rospy.get_param("/Drive/Right_Middle/Dir", 1) * -1
+        RB_Dir = rospy.get_param("/Drive/Right_Back/Dir", 1) * -1
+
+
         if (LF_Chan >= 0):
-                pwm.set_pwm(LF_Chan, 0, to_tick(LF*Scale/2+0.5))
+                pwm.set_pwm(LF_Chan, 0, to_tick(LF*Scale*LF_Dir/2+0.5))
         if (LM_Chan >= 0):
-                pwm.set_pwm(LM_Chan, 0, to_tick(LM*Scale/2+0.5))
+                pwm.set_pwm(LM_Chan, 0, to_tick(LM*Scale*LM_Dir/2+0.5))
         if (LB_Chan >= 0):
-                pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale/2+0.5))
+                pwm.set_pwm(LB_Chan, 0, to_tick(LB*Scale*LB_Dir/2+0.5))
         if (RF_Chan >= 0):
-                pwm.set_pwm(RF_Chan, 0, to_tick(RF*Scale/2+0.5))
+                pwm.set_pwm(RF_Chan, 0, to_tick(RF*Scale*RF_Dir/2+0.5))
         if (RM_Chan >= 0):
-                pwm.set_pwm(RM_Chan, 0, to_tick(RM*Scale/2+0.5))
+                pwm.set_pwm(RM_Chan, 0, to_tick(RM*Scale*RM_Dir/2+0.5))
         if (RB_Chan >= 0):
-                pwm.set_pwm(RB_Chan, 0, to_tick(RB*Scale/2+0.5))
+                pwm.set_pwm(RB_Chan, 0, to_tick(RB*Scale*RB_Dir/2+0.5))
         return
 
-def callback(data):
-	print("Left: " + str(data.left) + ", Right: " + str(data.right))
-	#PWM
 
-	if (data.left > 100):
-		data.left = 100	
-	if (data.left < -100):
-		data.left = -100
-		
-	if (data.right > 100):
-		data.right = 100
-	if (data.right < -100):
-		data.right = -100
-	
-	#get left and right side drive powers
-	left  = data.left/100
-	right = data.right/100
-	
-	#log values and write to PWM channels
-	rospy.loginfo(rospy.get_caller_id() + " Left %s%%, Right %s%%", left*100, right*100)
+def callback(data):
+        print("Left: " + str(data.left) + ", Right: " + str(data.right))
+        #PWM
+
+        if (data.left > 100):
+                data.left = 100
+        if (data.left < -100):
+                data.left = -100
+
+        if (data.right > 100):
+                data.right = 100
+        if (data.right < -100):
+                data.right = -100
+
+        #get left and right side drive powers
+        left  = data.left/100
+        right = data.right/100
+
+        #log values and write to PWM channels
+        rospy.loginfo(rospy.get_caller_id() + " Left %s%%, Right %s%%", left*100, right*100)
         set_outputs(left, left, left, right, right, right)
 
-        
+
 
 def listener():
-	rospy.init_node('DTS', anonymous=True)
-	rospy.Subscriber("/Drive_Train", Drivetrain, callback)
-        
+        rospy.init_node('DTS')
+        rospy.Subscriber("/Drive_Train", Drivetrain, callback)
+        time.sleep(10)
         set_outputs(0, 0, 0, 0, 0, 0)
-        
-	rospy.spin()
+
+        rospy.spin()
 
 
 if __name__ == '__main__':
-	listener()
-
+        listener()
 
 
 
