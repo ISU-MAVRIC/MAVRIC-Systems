@@ -4,6 +4,8 @@ import rospy
 from std_msgs.msg import String
 from mavric.msg import Drivetrain
 
+import time
+
 import socket
 from threading import *
 data = 'stop'
@@ -20,18 +22,18 @@ print (port)#", line 228, in meth
 
 def talker():
 	pub = rospy.Publisher("/Drive_Train", Drivetrain, queue_size=10)
-	rospy.init_node('DTP', anonymous=True)
+	rospy.init_node('DTP')
 	serversocket.bind((host, port))
 	serversocket.listen(1)
 	rospy.loginfo('server started')
 	while not rospy.is_shutdown():
 		connection, address = serversocket.accept()
 		data = connection.recv(1024).decode()
-		print(data)
+		rospy.loginfo(data)
 		if (data[0] == 'D'):
 			# Drive Command
 			parameters = data[1:].strip().split(',')
-			print(parameters)
+			rospy.loginfo(parameters)
 			left = float(parameters[0])
 			right = float(parameters[1])
 			pub.publish(left, right)
