@@ -49,8 +49,8 @@ def talker():
     global prev_fix_time, prev_linear_error, prev_angular_error
 
     #create ROS publisher
-    pub = rospy.Publisher("/Drive_Train", String, queue_size=10)
-    rospy.init_node("DTP", anonymous=True)
+    pub = rospy.Publisher("/Drive_Train", String)
+    rospy.init_node("Autonomous_Waypoint_Navigation")
     
     #open serial port and turn on GPS power
     #gps.begin()
