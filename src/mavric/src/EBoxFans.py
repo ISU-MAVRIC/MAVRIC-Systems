@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 import Adafruit_PCA9685
 import time
 
@@ -14,9 +14,8 @@ def callback(data):
         pwm.set_pwm(1, 0, int(data.data*4095+0.5))
 
 def listener():
-
         rospy.init_node('EBoxFans')
-        rospy.Subscriber("/Fan_Setpoint", Float32, callback, queue_size=10)
+        rospy.Subscriber("Fan_Setpoint", Float64, callback, queue_size=10)
         rospy.spin()
 
 
