@@ -1,4 +1,5 @@
 <launch>
   <include file="$(find mavric)/src/SystemCooling.launch" />
   <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" />
+  <node name="Drivetrain_Hartbeat" pkg="mavric" type="DrivetrainHartbeat.py" />
 </launch>
