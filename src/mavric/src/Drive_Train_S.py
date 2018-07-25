@@ -94,7 +94,7 @@ def listener():
         global RB_Dir
 
         rospy.init_node('DTS')
-        rospy.Subscriber("/Drive_Train", Drivetrain, callback, queue_size=10)
+        rospy.Subscriber("Drive_Train", Drivetrain, callback, queue_size=10)
         #time.sleep(10)
         LF_Chan = rospy.get_param("/Drive/Left_Front/Channel", -1)
         LM_Chan = rospy.get_param("/Drive/Left_Middle/Channel", -1)
