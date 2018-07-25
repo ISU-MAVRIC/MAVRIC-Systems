@@ -7,6 +7,6 @@ then
 elif [ "$MAVRIC_BOARD" == "Drive" ]
 then
     # give the master board a little time to turn on
-    sleep 5
+    sleep 15
     roslaunch mavric DriveBoard.launch
 fi
