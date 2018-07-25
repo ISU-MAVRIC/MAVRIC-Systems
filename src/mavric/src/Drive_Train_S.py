@@ -96,19 +96,19 @@ def listener():
         rospy.init_node('DTS')
         rospy.Subscriber("Drive_Train", Drivetrain, callback, queue_size=10)
         #time.sleep(10)
-        LF_Chan = rospy.get_param("/Drive/Left_Front/Channel", -1)
-        LM_Chan = rospy.get_param("/Drive/Left_Middle/Channel", -1)
-        LB_Chan = rospy.get_param("/Drive/Left_Back/Channel", -1)
-        RF_Chan = rospy.get_param("/Drive/Right_Front/Channel", -1)
-        RM_Chan = rospy.get_param("/Drive/Right_Middle/Channel", -1)
-        RB_Chan = rospy.get_param("/Drive/Right_Back/Channel", -1)
-        Scale = rospy.get_param("/Drive/Range", 0.4)
-        LF_Dir = rospy.get_param("/Drive/Left_Front/Dir", 1)
-        LM_Dir = rospy.get_param("/Drive/Left_Middle/Dir", 1)
-        LB_Dir = rospy.get_param("/Drive/Left_Back/Dir", 1)
-        RF_Dir = rospy.get_param("/Drive/Right_Front/Dir", 1) * -1
-        RM_Dir = rospy.get_param("/Drive/Right_Middle/Dir", 1) * -1
-        RB_Dir = rospy.get_param("/Drive/Right_Back/Dir", 1) * -1
+        LF_Chan = rospy.get_param("~Left_Front/Channel", -1)
+        LM_Chan = rospy.get_param("~Left_Middle/Channel", -1)
+        LB_Chan = rospy.get_param("~Left_Back/Channel", -1)
+        RF_Chan = rospy.get_param("~Right_Front/Channel", -1)
+        RM_Chan = rospy.get_param("~Right_Middle/Channel", -1)
+        RB_Chan = rospy.get_param("~Right_Back/Channel", -1)
+        Scale = rospy.get_param("~Range", 0.4)
+        LF_Dir = rospy.get_param("~Left_Front/Scale", 1)
+        LM_Dir = rospy.get_param("~Left_Middle/Scale", 1)
+        LB_Dir = rospy.get_param("~Left_Back/Scale", 1)
+        RF_Dir = rospy.get_param("~Right_Front/Scale", 1) * -1
+        RM_Dir = rospy.get_param("~Right_Middle/Scale", 1) * -1
+        RB_Dir = rospy.get_param("~Right_Back/Scale", 1) * -1
         set_outputs(0, 0, 0, 0, 0, 0)
 
         rospy.spin()

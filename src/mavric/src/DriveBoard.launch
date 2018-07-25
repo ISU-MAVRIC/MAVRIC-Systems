@@ -1,0 +1,19 @@
+<launch>
+  <node name="Drivetrain_Output" pkg="mavric" type="Drive_Train_S.py" >
+    <param name="Range" value="0.4" />
+    
+    <param name="Left_Front/Channel" value="0" />
+    <param name="Left_Middle/Channel" value="1" />
+    <param name="Left_Back/Channel" value="2" />
+
+
+    <param name="Right_Front/Channel" value="4" />
+    <param name="Right_Middle/Channel" value="5" />
+    <param name="Right_Back/Channel" value="6" />
+
+
+    <param name="Left_Front/Scale" value="-1" />
+    <param name="Left_Back/Scale" value="-1" />
+    <param name="Right_Back/Scale" value="-1" />
+  </node>
+</launch>
