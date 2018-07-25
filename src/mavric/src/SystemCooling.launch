@@ -14,12 +14,8 @@
       <remap from="control_effort" to="Fan_Setpoint" />
       <remap from="state" to="Temperature" />
     </node>
-    <node name="SetpointInitializer" pkg="mavric" type="PublishValue.py" respawn="false" >
-      <param name="topic" value="DesiredTemperature" />
-      <param name="value" value="50.0" />
-      <param name="delay" value="0" />
-      <param name="rate" value="10" />
-      <param name="num" value="20" />
+
+    <node name="SetpointInitializer" pkg="rostopic" type="rostopic" respawn="false" args="pub /SystemCooling/DesiredTemperature std_msgs/Float64 50 -1">
     </node>
   </group>
 </launch>
