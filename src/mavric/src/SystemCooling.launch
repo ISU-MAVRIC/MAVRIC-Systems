@@ -9,9 +9,17 @@
       <param name="upper_limit" value="1"/>
       <param name="lower_limit" value="0"/>
       <param name="windup_limit" value="1"/>
+      <param name="min_loop_frequency" value="5"/>
       <remap from="setpoint" to="DesiredTemperature" />
       <remap from="control_effort" to="Fan_Setpoint" />
       <remap from="state" to="Temperature" />
+    </node>
+    <node name="SetpointInitializer" pkg="mavric" type="PublishValue.py" respawn="false" >
+      <param name="topic" value="DesiredTemperature" />
+      <param name="value" value="50.0" />
+      <param name="delay" value="0" />
+      <param name="rate" value="10" />
+      <param name="num" value="20" />
     </node>
   </group>
 </launch>
