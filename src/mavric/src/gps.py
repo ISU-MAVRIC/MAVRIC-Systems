@@ -28,7 +28,7 @@ class GPS:
 
         while self._port.in_waiting > 0:
             in_str = self._port.readline()
-            
+            print(in_str)
             if '+CGNSINF:' in in_str:
                 self._data = in_str.replace('+CGNSINF: ', '').split(',')
                 return
@@ -76,16 +76,28 @@ class GPS:
 
     @property
     def altitude(self):
+        if (self._data[5] == ""):
+            return 0
+        
         return float(self._data[5])     #returns altitude in meters
 
     @property
     def speed(self):
+        if (self._data[6] == ""):
+            return 0
+        
         return float(self._data[6])     #returns ground speed in km / h
 
     @property
     def heading(self):
+        if (self._data[7] == ""):
+            return 0
+        
         return float(self._data[7])     #returns heading in degrees clockwise from true north
 
     @property
     def satellites(self):
+        if (self._data[15] == ""):
+            return 0
+        
         return int(self._data[14])      #returns number of visible satellites
