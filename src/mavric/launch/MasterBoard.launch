@@ -1,5 +1,5 @@
 <launch>
-  <include file="$(find mavric)/src/SystemCooling.launch" />
+  <include file="$(find mavric)/launch/SystemCooling.launch" />
   <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" />
   <node name="Drivetrain_Hartbeat" pkg="mavric" type="DrivetrainHartbeat.py" respawn="true" />
   <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" />
