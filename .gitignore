@@ -4,4 +4,10 @@ build/*
 devel/*
 */install/*
 install/*
+src/CMakeFiles
+src/CTestTestfile.cmake
+src/catkin*
+src/cmake_install.cmake
+src/gtest
+rospy
 *~
