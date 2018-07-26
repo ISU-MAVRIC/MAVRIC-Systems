@@ -1,5 +1,5 @@
 <launch>
-  <node name="Drivetrain_Output" pkg="mavric" type="Drive_Train_S.py" >
+  <node name="Drivetrain_Output" pkg="mavric" type="Drive_Train_S.py" respawn="true" >
     <param name="Range" value="0.4" />
     
     <param name="Left_Front/Channel" value="0" />
