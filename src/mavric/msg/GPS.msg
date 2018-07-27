@@ -12,4 +12,4 @@ float64 speed
 float64 heading
 
 #count
-int16 num_satelites
+int16 num_satellites
