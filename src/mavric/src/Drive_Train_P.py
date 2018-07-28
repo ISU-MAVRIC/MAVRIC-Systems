@@ -28,22 +28,22 @@ def talker():
         serversocket.listen(1)
         rospy.loginfo('server started')
         while not rospy.is_shutdown():
-        connection, address = serversocket.accept()
-data = connection.recv(1024).decode()
-rospy.loginfo(data)
-if (data[0] == 'D'):
-        # Drive Command
-        parameters = data[1:].strip().split(',')
-        rospy.loginfo(parameters)
-        left = float(parameters[0])
-        right = float(parameters[1])
-        pub.publish(left, right)
-connection.close()
-serversocket.close()
+                connection, address = serversocket.accept()
+                data = connection.recv(1024).decode()
+                rospy.loginfo(data)
+                if (data[0] == 'D'):
+                        # Drive Command
+                        parameters = data[1:].strip().split(',')
+                        rospy.loginfo(parameters)
+                        left = float(parameters[0])
+                        right = float(parameters[1])
+                        pub.publish(left, right)
+                connection.close()
+        serversocket.close()
 
 
 if __name__ == '__main__':
         try:
-        talker()
+                talker()
         except rospy.ROSInterruptException:
                 pass
