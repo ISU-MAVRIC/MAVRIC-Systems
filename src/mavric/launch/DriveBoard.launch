@@ -1,16 +1,18 @@
 <launch>
+  <group ns="Drive_Board_HW" />
+    <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true"/>
+  </group>
+  
   <node name="Drivetrain_Output" pkg="mavric" type="Drive_Train_S.py" respawn="true" >
+    <remap from="LeftFront" to="Drive_Board_HW/PWM_Channels/CH0" />
+    <remap from="LeftMiddle" to="Drive_Board_HW/PWM_Channels/CH1" />
+    <remap from="LeftBack" to="Drive_Board_HW/PWM_Channels/CH2" />
+
+    <remap from="RightFront" to="Drive_Board_HW/PWM_Channels/CH4" />
+    <remap from="RightMiddle" to="Drive_Board_HW/PWM_Channels/CH5" />
+    <remap from="RightBack" to="Drive_Board_HW/PWM_Channels/CH6" />
+
     <param name="Range" value="0.4" />
-    
-    <param name="Left_Front/Channel" value="0" />
-    <param name="Left_Middle/Channel" value="1" />
-    <param name="Left_Back/Channel" value="2" />
-
-
-    <param name="Right_Front/Channel" value="4" />
-    <param name="Right_Middle/Channel" value="5" />
-    <param name="Right_Back/Channel" value="6" />
-
 
     <param name="Left_Front/Scale" value="-1" />
     <param name="Left_Back/Scale" value="-1" />

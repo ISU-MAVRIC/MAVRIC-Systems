@@ -10,4 +10,5 @@ src/catkin*
 src/cmake_install.cmake
 src/gtest
 rospy
+*.pyc
 *~
