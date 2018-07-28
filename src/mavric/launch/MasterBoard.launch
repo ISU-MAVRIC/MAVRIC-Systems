@@ -9,7 +9,7 @@
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" >
-    <arg name="Fan_Output" value="/Master_board_HW/PWM_Channels/CH0" />
+    <arg name="Fan_Output" value="/Master_Board_HW/PWM_Channels/CH0" />
   </include>
   
   <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" />
