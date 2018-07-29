@@ -1,5 +1,6 @@
 <launch>
-  <group ns="Master_Board_HW">
+  <arg name="simulated" default="false" />
+  <group ns="Master_Board_HW" unless="$(arg simulated)">
     <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="frequency" value="25000" />
     </node>
@@ -10,6 +11,7 @@
   
   <include file="$(find mavric)/launch/SystemCooling.launch" >
     <arg name="Fan_Output" value="/Master_Board_HW/PWM_Channels/CH0" />
+    <arg name="simulated" value="$(arg simulated)" />
   </include>
   
   <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" />

@@ -3,7 +3,6 @@
 import rospy
 from std_msgs.msg import Float64
 from mavric.msg import Drivetrain
-import Adafruit_PCA9685
 import time
 
 #STOP = 50
@@ -12,9 +11,6 @@ MaxTime = 0.002
 Range   = MaxTime-MinTime
 Period  = 0.003609
 STOP    = MinTime + Range/2
-
-pwm = Adafruit_PCA9685.PCA9685()
-pwm.set_pwm_freq(1/0.004)
 
 output_topics = []
 

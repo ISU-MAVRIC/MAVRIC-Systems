@@ -1,5 +1,6 @@
 <launch>
-  <group ns="Drive_Board_HW" >
+  <arg name="simulated" default="false" />
+  <group ns="Drive_Board_HW" unless="$(arg simulated)">
     <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="frequency" value="250" />
     </node>

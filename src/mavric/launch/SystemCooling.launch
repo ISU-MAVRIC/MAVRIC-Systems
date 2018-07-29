@@ -1,7 +1,8 @@
 <launch>
   <arg name="Fan_Output" />
+  <arg name="simulated" default="false" />
   <group ns="SystemCooling" >
-    <node name="TempMonitor" pkg="mavric" type="TempMonitor.py" respawn="true" />
+    <node name="TempMonitor" pkg="mavric" type="TempMonitor.py" respawn="true" unless="$(arg simulated)" />
     <node name="FanPIDController" pkg="pid" type="controller" respawn="true" >
       <param name="Kp" value="-0.05"/>
       <param name="Ki" value="-0.02"/>
