@@ -1,3 +1,6 @@
+# bool
+bool good_fix
+
 #degrees
 float64 latitude
 float64 longititude
