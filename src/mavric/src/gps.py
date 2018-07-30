@@ -42,6 +42,8 @@ class GPS:
 
     @property
     def good_fix(self):
+        if (self._data[1] == ""):
+            return False
         return bool(int(self._data[1])) #returns 1 if gps position is valid
 
     @property
