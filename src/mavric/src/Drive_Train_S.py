@@ -3,38 +3,30 @@
 import rospy
 from std_msgs.msg import Float64
 from mavric.msg import Drivetrain
-import Adafruit_PCA9685
 import time
 
 #STOP = 50
 MinTime = 0.001
 MaxTime = 0.002
 Range   = MaxTime-MinTime
-Period  = 0.003609
-STOP    = MinTime + Range/2
-
-pwm = Adafruit_PCA9685.PCA9685()
-pwm.set_pwm_freq(1/0.004)
 
 output_topics = []
 
 #convert from % duty cycle to PWM "ticks" for hat
-def to_duty_cycle(percent):
-        rospy.loginfo(rospy.get_caller_id() + ": %f%%", percent*100);
+def to_pulse_width(percent):
+        rospy.loginfo(rospy.get_caller_id() + ": %f ms", percent);
         time = Range*percent + MinTime
-        percent = time/Period
-        # the 0.92 is a fudge factor that is needed for unokown reasons
-        return percent
+        return time
 
 # Takes in throttles as percents in the range [-1.0, +1.0]
 #     LF, LM, LB, RF, RM, RB
 def set_outputs(LF, LM, LB, RF, RM, RB):
-        output_topics[0].publish(to_duty_cycle(LF*Scale*LF_Dir/2+0.5))
-        output_topics[1].publish(to_duty_cycle(LM*Scale*LM_Dir/2+0.5))
-        output_topics[2].publish(to_duty_cycle(LB*Scale*LB_Dir/2+0.5))
-        output_topics[3].publish(to_duty_cycle(RF*Scale*RF_Dir/2+0.5))
-        output_topics[4].publish(to_duty_cycle(RM*Scale*RM_Dir/2+0.5))
-        output_topics[5].publish(to_duty_cycle(RB*Scale*RB_Dir/2+0.5))
+        output_topics[0].publish(to_pulse_width(LF*Scale*LF_Dir/2+0.5))
+        output_topics[1].publish(to_pulse_width(LM*Scale*LM_Dir/2+0.5))
+        output_topics[2].publish(to_pulse_width(LB*Scale*LB_Dir/2+0.5))
+        output_topics[3].publish(to_pulse_width(RF*Scale*RF_Dir/2+0.5))
+        output_topics[4].publish(to_pulse_width(RM*Scale*RM_Dir/2+0.5))
+        output_topics[5].publish(to_pulse_width(RB*Scale*RB_Dir/2+0.5))
 
 def callback(data):
         print("Left: " + str(data.left) + ", Right: " + str(data.right))

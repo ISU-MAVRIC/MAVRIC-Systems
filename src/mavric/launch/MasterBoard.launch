@@ -1,7 +1,8 @@
 <launch>
   <group ns="Master_Board_HW">
     <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
-      <param name="frequency" value="25000" />
+      <param name="frequency" value="500" />
+      <param name="clk_error" value="1.0893246187363834422657952069717" />
     </node>
     <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
       <remap from="GPS_Data" to="/GPS_Data" />
@@ -10,6 +11,7 @@
   
   <include file="$(find mavric)/launch/SystemCooling.launch" >
     <arg name="Fan_Output" value="/Master_Board_HW/PWM_Channels/CH0" />
+    <arg name="Fan_Scale" value="0.001" />
   </include>
   
   <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" />
@@ -17,5 +19,7 @@
     <param name="timeout" value="1" />
   </node>
   <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
-
+  <node name="Temperature_Interface" pkg="mavric" type="Temp_Interface.py" respawn="true">
+    <remap from="Temperature" to="/SystemCooling/Temperature" />
+  </node>
 </launch>

@@ -1,10 +1,13 @@
 <launch>
   <arg name="Fan_Output" />
+  <!-- the value to output to get fans to 100% -->
+  <arg name="Fan_Scale" />
+  <arg name="setpoint" default="50" />
   <group ns="SystemCooling" >
     <node name="TempMonitor" pkg="mavric" type="TempMonitor.py" respawn="true" />
     <node name="FanPIDController" pkg="pid" type="controller" respawn="true" >
-      <param name="Kp" value="-0.05"/>
-      <param name="Ki" value="-0.01"/>
+      <param name="Kp" value="$(eval arg('Fan_Scale')*-0.05)"/>
+      <param name="Ki" value="$(eval arg('Fan_Scale')*-0.01)"/>
       <param name="Kd" value="0.0"/>
       <param name="upper_limit" value="1"/>
       <param name="lower_limit" value="0"/>
@@ -15,7 +18,7 @@
       <remap from="state" to="Temperature" />
     </node>
 
-    <node name="SetpointInitializer" pkg="rostopic" type="rostopic" respawn="false" args="pub /SystemCooling/DesiredTemperature std_msgs/Float64 50 -1">
+    <node name="SetpointInitializer" pkg="rostopic" type="rostopic" respawn="false" args="pub /SystemCooling/DesiredTemperature std_msgs/Float64 $(arg setpoint) -1">
     </node>
   </group>
 </launch>
