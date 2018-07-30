@@ -24,6 +24,7 @@
     <param name="Left_Back/Scale" value="-1" />
     <param name="Right_Back/Scale" value="-1" />
 
-    <param name="ramp_rate" value="2.0" />
+    <param name="ramp_rate_up" value="2.0" />
+    <param name="ramp_rate_down" value="4.0" />
   </node>
 </launch>

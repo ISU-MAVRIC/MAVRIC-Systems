@@ -2,8 +2,12 @@
 # Drivetrain control, listens to messages on the Drive_Train topic and splits them into commands for each wheel.
 # May eventually add features like smarter turning.
 # Ramping:
-#   The ramping is set to allow a wheel to return to 0 immediately, but then ramp from there.
-#   This means that if a wheel is set to forwards, then moved backwards, it will try to stop immediately, but take some time to accelerate backwards.
+#   The ramping is set to use a different ramping rate for accellerating and decellerating. This allows the rover to have increased safety by stopping faster, while still protecting it a little from malicious/careless operators.
+# Paremeters:
+#   ~<Left|Right>_<Front|Middle|Back>/Scale - The scale of the given wheel, -1 to reverse the direction.
+#   ~Range - The range of speed for the system. Defaults to 0.4, use to change how fast the rover will go at +- 100% on the Drive_Train topic input.
+#   ~ramp_rate_up - the rate the control signal accelerates
+#   ~ramp_rate_down - the rate the control signal deccelerates
 
 import rospy
 from std_msgs.msg import Float64
@@ -56,22 +60,25 @@ def callback(data):
 #        rospy.loginfo(rospy.get_caller_id() + " Left %s%%, Right %s%%", left*100, right*100)
 #        set_outputs(left, left, left, right, right, right)
 
-def rampVal(current, target, ramp_amount):
+def rampVal(current, target, ramp_amount_up, ramp_amount_down):
+        if (current == target):
+                return current;
         if current >= 0 and target > 0:
                 if current < target:
-                        current = current + min(ramp_amount, target-current)
+                        current = current + min(ramp_amount_up, target-current)
                 else:
-                        current = target
-        elif current > 0 and target < 0:
-                current = 0
+                        current = current - min(ramp_amount_down, current-target)
+        elif current > 0 and target <= 0:
+                current = current - min(ramp_amount_down, current-target)
         elif current <= 0 and target < 0:
                 if current > target:
-                        current = current - min(ramp_amount, current-target)
+                        current = current - min(ramp_amount_up, current-target)
                 else:
-                        current = target
-        elif current < 0 and target > 0:
-                current = 0
+                        current = current + min(ramp_amount_down, target-current)
+        elif current < 0 and target >= 0:
+                current = current + min(ramp_amount_down, target-current)
         else:
+                print("case missed" + str(current) + "->" + str(target))
                 current = target;
         return current
         
@@ -102,7 +109,8 @@ def listener():
         RF_Dir = rospy.get_param("~Right_Front/Scale", 1) * -1
         RM_Dir = rospy.get_param("~Right_Middle/Scale", 1) * -1
         RB_Dir = rospy.get_param("~Right_Back/Scale", 1) * -1
-        ramp_rate = rospy.get_param("~ramp_rate", 0.5)/20
+        ramp_rate_up = rospy.get_param("~ramp_rate_up", 0.5)/20
+        ramp_rate_down = rospy.get_param("~ramp_rate_down", 0.5)/20
         set_outputs(0, 0, 0, 0, 0, 0)
         r = rospy.Rate(20)
         left = 0
@@ -110,8 +118,8 @@ def listener():
         
         while not rospy.is_shutdown():
                 if (left != left_target or right != right_target):
-                        left = rampVal(left, left_target, ramp_rate)
-                        right = rampVal(right, right_target, ramp_rate)
+                        left = rampVal(left, left_target, ramp_rate_up, ramp_rate_down)
+                        right = rampVal(right, right_target, ramp_rate_up, ramp_rate_down)
                         set_outputs(left, left, left, right, right, right)
                         
                 r.sleep()
