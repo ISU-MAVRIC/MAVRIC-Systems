@@ -8,7 +8,7 @@
     </node>
   </group>
   
-  <node name="Drivetrain_Output" pkg="mavric" type="Drive_Train_S.py" respawn="true" >
+  <node name="Drivetrain_Control" pkg="mavric" type="Drive_Train_S.py" respawn="true" output="screen">
     <remap from="LeftFront" to="Drive_Board_HW/PWM_Channels/CH0" />
     <remap from="LeftMiddle" to="Drive_Board_HW/PWM_Channels/CH1" />
     <remap from="LeftBack" to="Drive_Board_HW/PWM_Channels/CH2" />
@@ -22,5 +22,7 @@
     <param name="Left_Front/Scale" value="-1" />
     <param name="Left_Back/Scale" value="-1" />
     <param name="Right_Back/Scale" value="-1" />
+
+    <param name="ramp_rate" value="2.0" />
   </node>
 </launch>
