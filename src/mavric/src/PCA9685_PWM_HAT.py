@@ -15,10 +15,13 @@ import Adafruit_PCA9685
 pwm = Adafruit_PCA9685.PCA9685()
 period = 0
 
-def callback(data, channel):
-        rospy.loginfo(rospy.get_caller_id() + " Setting channel " + str(channel) +"  to %6.2f%%", data.data*100)
+def time_callback(data, channel):
         time = data.data
         percent = time/period;
+        pwm.set_pwm(channel, 0, int(percent*4095+0.5))
+
+def percent_callback(data, channel):
+        percent = data.data
         pwm.set_pwm(channel, 0, int(percent*4095+0.5))
 
 def listener():
@@ -30,7 +33,8 @@ def listener():
         print(freq, period, freq/clk_error)
         pwm.set_pwm_freq(freq/clk_error)
         for i in range(16):
-                rospy.Subscriber("PWM_Channels/CH"+str(i), Float64, callback, i, queue_size=10)
+                rospy.Subscriber("PWM_Channels/PulseTimeControl/CH"+str(i), Float64, time_callback, i, queue_size=10)
+                rospy.Subscriber("PWM_Channels/DutyCycleControl/CH"+str(i), Float64, percent_callback, i, queue_size=10)
 
         rospy.spin()
 

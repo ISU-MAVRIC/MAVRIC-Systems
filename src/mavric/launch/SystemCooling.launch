@@ -10,7 +10,7 @@
       <param name="Kp" value="$(eval arg('Fan_Scale')*-0.05)"/>
       <param name="Ki" value="$(eval arg('Fan_Scale')*-0.01)"/>
       <param name="Kd" value="0.0"/>
-      <param name="upper_limit" value="1"/>
+      <param name="upper_limit" value="$(arg Fan_Scale)"/>
       <param name="lower_limit" value="0"/>
       <param name="windup_limit" value="1"/>
       <param name="min_loop_frequency" value="5"/>
