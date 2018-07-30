@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# Reads from the GPS pHAT and publishes the data to the GPS_Data topic.
 import rospy
 import mavric.msg
 from gps import GPS
@@ -14,7 +14,7 @@ def talker():
         while not rospy.is_shutdown():
                 print(gps._data)
                 gps.update()
-                pub.publish(gps.latitude, gps.longitude, gps.altitude, gps.speed, gps.heading, gps.satellites)
+                pub.publish(gps.good_fix, gps.latitude, gps.longitude, gps.altitude, gps.speed, gps.heading, gps.satellites)
                 r.sleep()
         
 

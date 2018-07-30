@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Reads the CPU temperature. Does not work on WSL for Windows 10.
 
 import rospy
 from std_msgs.msg import Float64

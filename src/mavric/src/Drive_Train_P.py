@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # Input node. Recieves commands from the base station and publishes them as ros messages to the Drive_Train topic.
+# command format: D<left>,<right> left and right are floating-point numbers.
 
 import rospy
 from std_msgs.msg import String
