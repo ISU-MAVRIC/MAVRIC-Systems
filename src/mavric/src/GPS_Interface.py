@@ -17,7 +17,7 @@ print (port)
 clients = [];
 
 def callback(data):
-        message = '%.10f,%.10f,%.3f,%.2f,%1f,%d\r\n' % (data.latitude, data.longititude, data.altitude, data.speed, data.heading, data.num_satellites)
+        message = '%s,%.10f,%.10f,%.3f,%.2f,%1f,%d\r\n' % (str(data.good_fix), data.latitude, data.longititude, data.altitude, data.speed, data.heading, data.num_satellites)
         for client in clients:
                 try:
                         client.sendall(message.encode())
