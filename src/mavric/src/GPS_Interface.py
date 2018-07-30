@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# Reads the GPS_Data topic and streams that data to any connected client. See the message=... line in the callback for the format.
+# To recieve data, simply conenct to the port.
 
 import rospy
 from mavric.msg import GPS
