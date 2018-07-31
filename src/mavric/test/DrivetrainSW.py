@@ -110,7 +110,7 @@ def test():
     for subscription in subscriptions:
         subscription.unregister()
 
-    rospy.spin()
+    
     return
 
 if __name__ == '__main__':
