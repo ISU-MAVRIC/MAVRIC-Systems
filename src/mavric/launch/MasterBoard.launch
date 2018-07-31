@@ -1,5 +1,6 @@
 <launch>
   <arg name="simulated" default="false" />
+  <arg name="notest" default="false" />
   <group ns="Master_Board_HW" unless="$(arg simulated)">
     <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="frequency" value="25000" />
@@ -25,4 +26,8 @@
   <node name="Temperature_Interface" pkg="mavric" type="Temperature_Interface.py" respawn="true">
     <remap from="Temperature" to="/SystemCooling/Temperature" />
   </node>
+
+  <group ns="Test" unless="$(arg notest)" >
+    <node name="DrivetrainSW" pkg="mavric" type="DrivetrainSW.py" respawn="true" />
+  </group>
 </launch>
