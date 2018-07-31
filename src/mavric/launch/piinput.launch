@@ -1,0 +1,13 @@
+<launch>
+  <node name="piinput" pkg="mavric" type="PiGPIO_Input.py" output="screen">
+    <param name="pin" value="4" />
+    <remap from="State" to="LimitSwitch" />
+  </node>
+  <node name="LimitCH0" pkg="mavric" type="LimitSwitch.py" output="screen">
+    <remap from="signal_in" to="/Drive_Board_HW/PWM_Channels/PulseTimeControl/CH0" />
+    <remap from="switch_low" to="LimitSwitch" />
+    <param name="use_switch_low" value="True" />
+    <param name="low_limit" value="0.0015" />
+    <param name="high_limit" value="0.0015" />
+  </node>
+</launch>
