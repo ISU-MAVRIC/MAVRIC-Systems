@@ -1,5 +1,5 @@
 <launch>
-  <arg name="pwm_path" value="Arm_Board_HW/PWM_Channels/PulseTimeControl/" />
+  <arg name="pwm_path" value="Arm_Board_HW/PWM_Channels/PulseTimeControl" />
   <arg name="simulated" default="false" />
   <group ns="Arm_Board_HW" unless="$(arg simulated)">
     <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
@@ -7,18 +7,16 @@
       <!-- Determine as SetPeriod/RealPeriod -->
       <param name="clk_error" value="1.08" />
     </node>
-
-    <node name="Switch1" pkg="mavric" type="PiGPIO_Input.py">
-      <remap from="State" to="LimitSwitch1" />
-      <param name="pin" value="4" />
-    </node>
   </group>
+  <include file="$(find mavric)/launch/LinearActuator.launch" >
+    <arg name="simulated" default="false" />
 
-  <node name="Linac_Limits" pkg="mavric" type="LimitSwitch.py">
-    <remap from="signal_in" to="linac" />
-    <remap from="signal_out" to="$(arg pwm_path)CH15" />
-    <remap from="switch_low" to="Arm_Board_HW/LimitSwitch1" />
-    <param name="use_switch_low" value="True" />
-    <param name="low_limit" value="0.0015" />
-  </node>
+    <arg name="control_output" value="$(arg pwm_path)/CH15" />
+    <arg name="control_input" value="/linac1" />
+
+    <arg name="has_low_limit" default="true"/>
+    <arg name="low_limit_pin" default="4"/>
+
+    <arg name="num" value="1" />
+  </include>
 </launch>
