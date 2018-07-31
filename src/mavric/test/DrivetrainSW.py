@@ -6,6 +6,7 @@ import time
 
 channel_vals = [0,0,0,0,0,0]
 subscriptions = []
+speed = 15
 
 def callback(data, channel):
     global channel_vals    
@@ -19,14 +20,14 @@ def test():
     for i in range(3):
         topic = '/Drive_Board_HW/PWM_Channels/PulseTimeControl/CH'+str(i)
         print(topic)
-        subscriptions.append(rospy.Subscriber(topic, Float64, callback, i, queue_size=10))
+        subscriptions.append(rospy.Subscriber(topic, Float64, callback, i, queue_size=speed))
 
     for i in range(4,7):
         topic = '/Drive_Board_HW/PWM_Channels/PulseTimeControl/CH'+str(i)
         print(topic)
-        subscriptions.append(rospy.Subscriber(topic, Float64, callback, i-1, queue_size=10))
+        subscriptions.append(rospy.Subscriber(topic, Float64, callback, i-1, queue_size=speed))
 
-    rover.setWheels(10,10)
+    rover.setWheels(speed,speed)
     time.sleep(0.5)
     
     rover.setWheels(0,0)
@@ -34,7 +35,7 @@ def test():
     for channel in range(6):
         assert channel_vals[channel]==0.0015, channel_vals[channel]
 
-    rover.setWheels(+10, +10)
+    rover.setWheels(+speed, +speed)
     channel_directions = [0,0,0,0,0,0]
     time.sleep(0.5)
     for channel in range(6):
@@ -44,7 +45,7 @@ def test():
         else:
             channel_directions[channel] = 1
     
-    rover.setWheels(-10, -10)
+    rover.setWheels(-speed, -speed)
     time.sleep(0.5)
     for channel in range(6):
         assert channel_vals[channel] != 0.0015
@@ -54,7 +55,7 @@ def test():
             assert channel_directions[channel] == -1
     
     
-    rover.setWheels(+10, 0)
+    rover.setWheels(+speed, 0)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] != 0.0015
@@ -67,7 +68,7 @@ def test():
         assert channel_vals[channel] == 0.0015
 
 
-    rover.setWheels(-10, 0)
+    rover.setWheels(-speed, 0)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] != 0.0015
@@ -80,7 +81,7 @@ def test():
         assert channel_vals[channel] == 0.0015
 
         
-    rover.setWheels(0, +10)
+    rover.setWheels(0, +speed)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] == 0.0015
@@ -93,7 +94,7 @@ def test():
             assert channel_directions[channel] == 1
 
             
-    rover.setWheels(0, -10)
+    rover.setWheels(0, -speed)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] == 0.0015
@@ -105,6 +106,41 @@ def test():
         else:
             assert channel_directions[channel] == -1
 
+            
+    rover.setWheels(speed, -speed)
+    time.sleep(0.5)
+    for channel in range(3):
+        assert channel_vals[channel] != 0.0015
+        if (channel_vals[channel] < 0.0015):
+            assert channel_directions[channel] == -1
+        else:
+            assert channel_directions[channel] == 1
+    
+    for channel in range(3,6):
+        assert channel_vals[channel] != 0.0015
+        if (channel_vals[channel] < 0.0015):
+            assert channel_directions[channel] == 1
+        else:
+            assert channel_directions[channel] == -1
+
+    
+    rover.setWheels(-speed, speed)
+    time.sleep(0.5)
+    for channel in range(3):
+        assert channel_vals[channel] != 0.0015
+        if (channel_vals[channel] < 0.0015):
+            assert channel_directions[channel] == 1
+        else:
+            assert channel_directions[channel] == -1
+    
+    for channel in range(3,6):
+        assert channel_vals[channel] != 0.0015
+        if (channel_vals[channel] < 0.0015):
+            assert channel_directions[channel] == -1
+        else:
+            assert channel_directions[channel] == 1
+
+            
     rover.setWheels(0,0)
     
     for subscription in subscriptions:
