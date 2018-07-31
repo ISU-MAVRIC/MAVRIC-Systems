@@ -99,13 +99,13 @@ def listener():
         rospy.init_node('DTS')
         rospy.Subscriber("Drive_Train", Drivetrain, callback, queue_size=10)
 
-        output_topics.append(rospy.Publisher("LeftFront", Float64, queue_size=10))
-        output_topics.append(rospy.Publisher("LeftMiddle", Float64, queue_size=10))
-        output_topics.append(rospy.Publisher("LeftBack", Float64, queue_size=10))
+        output_topics.append(rospy.Publisher("LeftFront", Float64, queue_size=10, latch=True))
+        output_topics.append(rospy.Publisher("LeftMiddle", Float64, queue_size=10, latch=True))
+        output_topics.append(rospy.Publisher("LeftBack", Float64, queue_size=10, latch=True))
 
-        output_topics.append(rospy.Publisher("RightFront", Float64, queue_size=10))
-        output_topics.append(rospy.Publisher("RightMiddle", Float64, queue_size=10))
-        output_topics.append(rospy.Publisher("RightBack", Float64, queue_size=10))
+        output_topics.append(rospy.Publisher("RightFront", Float64, queue_size=10, latch=True))
+        output_topics.append(rospy.Publisher("RightMiddle", Float64, queue_size=10, latch=True))
+        output_topics.append(rospy.Publisher("RightBack", Float64, queue_size=10, latch=True))
 
         Scale = rospy.get_param("~Range", 0.4)
         LF_Dir = rospy.get_param("~Left_Front/Scale", 1)
