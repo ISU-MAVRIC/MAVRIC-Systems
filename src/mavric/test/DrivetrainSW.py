@@ -26,7 +26,7 @@ def test():
         print(topic)
         subscriptions.append(rospy.Subscriber(topic, Float64, callback, i-1, queue_size=10))
 
-    rover.setWheels(50,50)
+    rover.setWheels(10,10)
     time.sleep(0.5)
     
     rover.setWheels(0,0)
@@ -34,7 +34,7 @@ def test():
     for channel in range(6):
         assert channel_vals[channel]==0.0015, channel_vals[channel]
 
-    rover.setWheels(+50, +50)
+    rover.setWheels(+10, +10)
     channel_directions = [0,0,0,0,0,0]
     time.sleep(0.5)
     for channel in range(6):
@@ -44,7 +44,7 @@ def test():
         else:
             channel_directions[channel] = 1
     
-    rover.setWheels(-50, -50)
+    rover.setWheels(-10, -10)
     time.sleep(0.5)
     for channel in range(6):
         assert channel_vals[channel] != 0.0015
@@ -54,7 +54,7 @@ def test():
             assert channel_directions[channel] == -1
     
     
-    rover.setWheels(+50, 0)
+    rover.setWheels(+10, 0)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] != 0.0015
@@ -67,7 +67,7 @@ def test():
         assert channel_vals[channel] == 0.0015
 
 
-    rover.setWheels(-50, 0)
+    rover.setWheels(-10, 0)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] != 0.0015
@@ -80,7 +80,7 @@ def test():
         assert channel_vals[channel] == 0.0015
 
         
-    rover.setWheels(0, +50)
+    rover.setWheels(0, +10)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] == 0.0015
@@ -93,7 +93,7 @@ def test():
             assert channel_directions[channel] == 1
 
             
-    rover.setWheels(0, -50)
+    rover.setWheels(0, -10)
     time.sleep(0.5)
     for channel in range(3):
         assert channel_vals[channel] == 0.0015
