@@ -5,7 +5,7 @@
   <arg name="setpoint" default="50" />
   <arg name="simulated" default="false" />
   <group ns="SystemCooling" >
-    <node name="TempMonitor" pkg="mavric" type="TempMonitor.py" respawn="true" unless="$(arg simulated)" />
+    <node name="TemperatureMonitor" pkg="mavric" type="TemperatureMonitor.py" respawn="true" unless="$(arg simulated)" />
     <node name="FanPIDController" pkg="pid" type="controller" respawn="true" >
       <param name="Kp" value="$(eval arg('Fan_Scale')*-0.05)"/>
       <param name="Ki" value="$(eval arg('Fan_Scale')*-0.01)"/>

@@ -2,6 +2,9 @@
 # Input node. Recieves commands from the base station and publishes them as ros messages to the Drive_Train topic.
 # command format: D<left>,<right> left and right are floating-point numbers.
 
+# Topics:
+#   Drive_Train - Publication: publishes any user commands to ROS.
+
 import rospy
 from std_msgs.msg import String
 from mavric.msg import Drivetrain

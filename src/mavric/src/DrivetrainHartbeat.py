@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 # Monitors the Drive_Train topic and publishes a 0,0 message if there are no updates for too long
+
 # Parameters
 #  ~timeout: Defines the length of time (in seconds) before the stop message is sent.
 #              Longer times make it easier to test things in the lab.
 #              Shorter times make the rover safer.
+
+# Topics:
+#   Drive_Train - Subscription: Monitors for activity on the topic
+#   Drive_Train - Publication: Publishes a stop message when there is no activity
 
 import rospy
 from mavric.msg import Drivetrain

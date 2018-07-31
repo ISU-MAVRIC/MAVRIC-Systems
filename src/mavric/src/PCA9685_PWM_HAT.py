@@ -4,9 +4,13 @@
 # Each topic is a std_msgs/Float64 topic named CH# where # is the channel number (0-15)
 
 # Parameters:
-#  ~frequency - the frequency in Hz of the desired PWM
+#  ~frequency - the frequency in Hz of the desired PWM, not all frequencies are possible, the library should be using the closest possible frequency (accounting for the clock error)
 #  ~clk_error - A calibration parameter for the PWM's clock rate error
 #                 A number greater than 1 means that the clock runs faster than it should
+
+# Topics:
+#   PWM_Channels/PulseTimeControl/CH# - Subscription: Publish to this topic to set the pulse width of the output. Only as accurate as the period
+#   PWM_Channels/DutyCycleControl/CH# - Subscription: Publish to this topic to set the duty cycle of the output. Operates in 4096 steps.
 
 import rospy
 from std_msgs.msg import Float64

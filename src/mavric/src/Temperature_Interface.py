@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # Reads the Temperature topic and streams it to any connected clients as text.
-# Somply connect to the port to recieve data
+# Simply connect to the port to recieve data
+
+# Topics:
+#   Temperature - Subscription: Listend for temperature updates and publishes them to all connected clients.
 
 import rospy
 from std_msgs.msg import Float64

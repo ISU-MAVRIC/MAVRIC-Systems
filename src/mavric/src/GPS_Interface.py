@@ -2,6 +2,9 @@
 # Reads the GPS_Data topic and streams that data to any connected client. See the message=... line in the callback for the format.
 # To recieve data, simply conenct to the port.
 
+# Topics:
+#   GPS_Data - Subscription: Listens for GPS updates and sends them to all connected clients. Messages may be lost if there are too many clients connected.
+
 import rospy
 from mavric.msg import GPS
 import socket

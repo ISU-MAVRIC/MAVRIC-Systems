@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 # Drivetrain control, listens to messages on the Drive_Train topic and splits them into commands for each wheel.
 # May eventually add features like smarter turning.
+
 # Ramping:
 #   The ramping is set to use a different ramping rate for accellerating and decellerating. This allows the rover to have increased safety by stopping faster, while still protecting it a little from malicious/careless operators.
+
 # Paremeters:
 #   ~<Left|Right>_<Front|Middle|Back>/Scale - The scale of the given wheel, -1 to reverse the direction.
 #   ~Range - The range of speed for the system. Defaults to 0.4, use to change how fast the rover will go at +- 100% on the Drive_Train topic input.
 #   ~ramp_rate_up - the rate the control signal accelerates
 #   ~ramp_rate_down - the rate the control signal deccelerates
+
+# Topics:
+#   Drive_Train - Subscription: Listens for input from the user to set the wheels. This may not be directly passed to to wheels due to ramping or smart turning.
 
 import rospy
 from std_msgs.msg import Float64

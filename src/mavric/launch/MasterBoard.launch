@@ -22,7 +22,7 @@
     <param name="timeout" value="1" />
   </node>
   <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
-  <node name="Temperature_Interface" pkg="mavric" type="Temp_Interface.py" respawn="true">
+  <node name="Temperature_Interface" pkg="mavric" type="Temperature_Interface.py" respawn="true">
     <remap from="Temperature" to="/SystemCooling/Temperature" />
   </node>
 </launch>

@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # Reads the CPU temperature. Does not work on WSL for Windows 10.
 
+# Topics:
+#   Temperature - Publication: Publishes the CPU temperature at a rate of about 10 Hz.
+
 import rospy
 from std_msgs.msg import Float64
 
