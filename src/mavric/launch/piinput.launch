@@ -1,0 +1,5 @@
+<launch>
+  <node name="piinput" pkg="mavric" type="PiGPIO_Input.py" output="screen">
+    <param name="pin" value="4" />
+  </node>
+</launch>
