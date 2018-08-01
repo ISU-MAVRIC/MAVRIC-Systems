@@ -28,4 +28,5 @@
   <node name="Actuator_Interface" pkg="mavric" type="Actuator_Interface.py" >
     <remap from="output" to="linac1" />
   </node>
+  <node name="Actuator_Status_Interface" pkg="mavric" type="Actuator_Status_Interface.py" respawn="true" />
 </launch>
