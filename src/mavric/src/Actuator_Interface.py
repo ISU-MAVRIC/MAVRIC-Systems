@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+# Input node. Recieves commands from the base station and publishes them as ros messages to the output topic.
+# command format: <F|S|R> for Forward, Stop, Reverse.
+
+# Parameters:
+#   outForward - The value to output for forward motion, defaults to 0.002
+#   outStop - The value to output for no motion, defaults to 0.0015
+#   outReverse - The value to output for backwards motion, defaults to 0.001
+
+# Topics:
+#   output - Publication: publishes any user commands to ROS.
 
 import rospy
 from std_msgs.msg import Float64
