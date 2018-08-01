@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+# Reads a GPIO pin and publishes its state to the ROS as a boolean.
+
+# Parameters
+#   pin - The pin to be read (BCM numbering, see pinout.xyz or something)
+#   rate - How often to read the pin and publish, defaults to 10 Hz.
+
+# Topics:
+#   State - Publication: The state of the pin (True = high voltage, False = low voltage)
 
 import rospy
 from std_msgs.msg import Bool
