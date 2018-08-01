@@ -27,7 +27,6 @@
   <node name="Linac$(arg num)_Limits" pkg="mavric" type="LimitSwitch.py">
     <remap from="signal_in" to="$(arg control_input)" />
     <remap from="signal_out" to="$(arg control_output)" />
-
     <remap from="switch_low" to="Arm_Board_HW/LimitSwitch$(arg num)_Low" />
     <param name="use_switch_low" value="$(arg has_low_limit)" />
 
@@ -39,5 +38,12 @@
     
     <param name="high_limit" value="0.0015" if="$(arg control_is_pulseTime)" />
     <param name="high_limit" value="0"      unless="$(arg control_is_pulseTime)" />
+  </node>
+
+  <node name="linac$(arg num)_status" pkg="mavric" type="Actuator_Status.py" >
+    <remap from="actuator_command" to="$(arg control_output)" />
+    <remap from="switch_low" to="Arm_Board_HW/LimitSwitch$(arg num)_Low" />
+    <remap from="switch_high" to="Arm_Board_HW/LimitSwitch$(arg num)_High" />
+    <param name="movement_speed" value="0.04144" />
   </node>
 </launch>

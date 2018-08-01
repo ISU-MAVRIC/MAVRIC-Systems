@@ -14,9 +14,12 @@
     <arg name="control_output" value="$(arg pwm_path)/CH15" />
     <arg name="control_input" value="/linac1" />
 
-    <arg name="has_low_limit" default="true"/>
-    <arg name="low_limit_pin" default="4"/>
+    <arg name="has_low_limit" value="true"/>
+    <arg name="low_limit_pin" value="4"/>
 
+    <arg name="has_high_limit" value="true"/>
+    <arg name="high_limit_pin" value="17"/>
+    
     <arg name="num" value="1" />
   </include>
 </launch>
