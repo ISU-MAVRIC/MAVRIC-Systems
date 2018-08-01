@@ -3,7 +3,7 @@
 # Simply connect to the port to recieve data
 
 # Topics:
-#   Temperature - Subscription: Listend for temperature updates and publishes them to all connected clients.
+#   actuator_status - Subscription: Listend for actuator position updates and publishes them to all connected clients.
 
 import rospy
 from std_msgs.msg import Float64
