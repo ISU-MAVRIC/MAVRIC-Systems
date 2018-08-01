@@ -1,4 +1,17 @@
 #!/usr/bin/env python
+# Estimates the position of the linear actuator using the limit switches and the assumed rate of travel. Currently only work with % of allowable travel, parameters can be added to make it be in arbitrary units.
+
+# Parameters:
+#   movement_speed - the assumed rate of travel of the actuator
+#   forward_thresh - the minimum control value that is considered to be moving forward
+#   backward thresh - the maximum control value that is considered to be moving backward
+
+# Topics:
+#   actuator_command - Subscription: the command currently being sent to the actuator,
+#     this should be as far down the chain as possible. The input to the PWM driver is good.
+#   switch_low - Subscription: the state of the low-side limit switch, when active, the actuator position is set to 0
+#   switch_high - Subscription: the state of the high-side limit switch, when active, the actuator position is set to 1
+#   actuator_state - Publication: the estimated state of the actuator.
 
 import rospy
 from std_msgs.msg import Float64
