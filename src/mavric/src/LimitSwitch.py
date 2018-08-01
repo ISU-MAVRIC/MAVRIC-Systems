@@ -1,4 +1,16 @@
 #!/usr/bin/env python
+# Applies limit switches to a value. If the switches are active, then the value is not passed outside of the set limits. 
+#   E.g. If the low limit switch is active and the low limit is set to 0.0015, then the output will be the max(input, 0.0015)
+
+# Parameters:
+#   <low|high>_limit - the min/max value of the output when the low/high limit switches are active. i.e.
+#   switch_<low|high>_active_low - T/F: True indicates that a falue of True from the switch means that it is innactive, false (default) trasts a value of True as active.
+#   use_switch_<low|high> - False to ignore the switch, treating it as always inactive.
+
+# Topics:
+#   signal_input - Subscription: the control input from the user/controller
+#   signal_output - Publication: Output from the limit switch application. If no switches are active, then the output follows the input.
+#   switch_<low|high> - Subscription: The data from the switch, must be a boolean value, see PiGPIO_Input.py
 
 import rospy
 from std_msgs.msg import Float64
