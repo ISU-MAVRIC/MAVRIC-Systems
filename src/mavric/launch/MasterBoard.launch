@@ -25,4 +25,7 @@
   <node name="Temperature_Interface" pkg="mavric" type="Temperature_Interface.py" respawn="true">
     <remap from="Temperature" to="/SystemCooling/Temperature" />
   </node>
+  <node name="Actuator_Interface" pkg="mavric" type="Actuator_Interface.py" >
+    <remap from="output" to="linac1" />
+  </node>
 </launch>
