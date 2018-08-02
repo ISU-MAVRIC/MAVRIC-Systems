@@ -1,5 +1,5 @@
 <launch>
-  <arg name="pwm_path" value="Drive_Board_HW/PWM_Channels/PulseTimeControl/" />
+  <arg name="pwm_path" value="/Drive_Board_HW/PWM_Channels/PulseTimeControl/" />
   <arg name="simulated" default="false" />
   <group ns="Drive_Board_HW" unless="$(arg simulated)">
     <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
@@ -8,23 +8,34 @@
       <param name="clk_error" value="1.09" />
     </node>
   </group>
+
+  <group ns="Drive">  
+    <node name="Drivetrain_Control" pkg="mavric" type="Drive_Train_S.py" respawn="true" output="screen">
+      <remap from="Drive_Train" to="Command" />
+
+<!--
+      <remap from="LeftFront" to="$(eval arg('pwm_path') + 'CH0')" />
+      <remap from="LeftMiddle" to="$(eval arg('pwm_path') + 'CH1')" />
+      <remap from="LeftBack" to="$(eval arg('pwm_path') + 'CH2')" />
   
-  <node name="Drivetrain_Control" pkg="mavric" type="Drive_Train_S.py" respawn="true" output="screen">
-    <remap from="LeftFront" to="$(eval arg('pwm_path') + 'CH0')" />
-    <remap from="LeftMiddle" to="$(eval arg('pwm_path') + 'CH1')" />
-    <remap from="LeftBack" to="$(eval arg('pwm_path') + 'CH2')" />
+      <remap from="RightFront" to="$(eval arg('pwm_path') + 'CH4')" />
+      <remap from="RightMiddle" to="$(eval arg('pwm_path') + 'CH5')" />
+      <remap from="RightBack" to="$(eval arg('pwm_path') + 'CH6')" />
+-->  
+      <param name="Range" value="0.4" />
 
-    <remap from="RightFront" to="$(eval arg('pwm_path') + 'CH4')" />
-    <remap from="RightMiddle" to="$(eval arg('pwm_path') + 'CH5')" />
-    <remap from="RightBack" to="$(eval arg('pwm_path') + 'CH6')" />
+      <param name="Left_Front/Scale" value="-1" />
+      <param name="Left_Back/Scale" value="-1" />
+      <param name="Right_Back/Scale" value="-1" />
 
-    <param name="Range" value="0.4" />
-
-    <param name="Left_Front/Scale" value="-1" />
-    <param name="Left_Back/Scale" value="-1" />
-    <param name="Right_Back/Scale" value="-1" />
-
-    <param name="ramp_rate_up" value="2.0" />
-    <param name="ramp_rate_down" value="4.0" />
-  </node>
+      <param name="ramp_rate_up" value="2.0" />
+      <param name="ramp_rate_down" value="4.0" />
+    </node>
+    <node name="Drive_Control_Scaling" pkg="mavric" type="LinearMapping.py" output="screen">
+      <param name="inputs" value="LeftFront,LeftMiddle,LeftBack,RightFront,RightMiddle,RightBack"/>
+      <param name="outputs" value="$(eval 'pwm_path/CH0,pwm_path/CH1,pwm_path/CH2,pwm_path/CH4,pwm_path/CH5,pwm_path/CH6'.replace('pwm_path/', arg('pwm_path')))"/>
+      <param name="slopes" value="0.0005,0.0005,0.0005,0.0005,0.0005,0.0005" />
+      <param name="intercepts" value="0.0015,0.0015,0.0015,0.0015,0.0015,0.0015" />
+    </node>		
+  </group>
 </launch>
