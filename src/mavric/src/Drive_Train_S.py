@@ -19,29 +19,19 @@ from std_msgs.msg import Float64
 from mavric.msg import Drivetrain
 import time
 
-#STOP = 50
-MinTime = 0.001
-MaxTime = 0.002
-Range   = MaxTime-MinTime
-
 output_topics = []
 left_target = 0
 right_target = 0
 
-#convert from % duty cycle to PWM "ticks" for hat
-def to_pulse_width(percent):
-        time = Range*percent + MinTime
-        return time
-
 # Takes in throttles as percents in the range [-1.0, +1.0]
 #     LF, LM, LB, RF, RM, RB
 def set_outputs(LF, LM, LB, RF, RM, RB):
-        output_topics[0].publish(to_pulse_width(LF*Scale*LF_Dir/2+0.5))
-        output_topics[1].publish(to_pulse_width(LM*Scale*LM_Dir/2+0.5))
-        output_topics[2].publish(to_pulse_width(LB*Scale*LB_Dir/2+0.5))
-        output_topics[3].publish(to_pulse_width(RF*Scale*RF_Dir/2+0.5))
-        output_topics[4].publish(to_pulse_width(RM*Scale*RM_Dir/2+0.5))
-        output_topics[5].publish(to_pulse_width(RB*Scale*RB_Dir/2+0.5))
+        output_topics[0].publish(LF*Scale*LF_Dir)
+        output_topics[1].publish(LM*Scale*LM_Dir)
+        output_topics[2].publish(LB*Scale*LB_Dir)
+        output_topics[3].publish(RF*Scale*RF_Dir)
+        output_topics[4].publish(RM*Scale*RM_Dir)
+        output_topics[5].publish(RB*Scale*RB_Dir)
 
 def callback(data):
         global left_target
