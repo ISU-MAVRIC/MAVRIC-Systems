@@ -7,8 +7,8 @@ then
 elif [ "$MAVRIC_BOARD" == "Drive" ]
 then
     # make sure the master is active before launching
-    roslaunch mavric DriveBoard.launch --wait
+    roslaunch mavric DriveBoard.launch --wait --no-core
 elif [ "$MAVRIC_BOARD" == "Arm" ]
 then
-    roslaunch mavric ArmBoard.launch --wait
+    roslaunch mavric ArmBoard.launch --wait --no-core
 fi
