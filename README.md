@@ -1,5 +1,5 @@
 # MAVRIC-Systems
-The repository for the Systems-Team. Includes designs and documentation.
+The repository for the Systems Team. Includes designs and documentation.
 
 # Team Structure
 Team Lead: Jensen Mayes
