@@ -33,7 +33,7 @@
     </node>
     <node name="Drive_Control_Scaling" pkg="mavric" type="LinearMapping.py" output="screen">
       <param name="inputs" value="LeftFront,LeftMiddle,LeftBack,RightFront,RightMiddle,RightBack"/>
-      <param name="outputs" value="$(eval 'pwm_path/CH0,pwm_path/CH1,pwm_path/CH2,pwm_path/CH4,pwm_path/CH5,pwm_path/CH6'.replace('pwm_path/', arg('pwm_path')))"/>
+      <param name="outputs" value="$(eval 'pwm_path/CH0,pwm_path/CH1,pwm_path/CH2,pwm_path/CH5,pwm_path/CH6,pwm_path/CH4'.replace('pwm_path/', arg('pwm_path')))"/>
       <param name="slopes" value="0.0005,0.0005,0.0005,0.0005,0.0005,0.0005" />
       <param name="intercepts" value="0.0015,0.0015,0.0015,0.0015,0.0015,0.0015" />
     </node>		
