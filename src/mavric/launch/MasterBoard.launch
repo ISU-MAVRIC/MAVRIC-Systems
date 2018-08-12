@@ -6,14 +6,14 @@
       <!-- we want to run as fast as possible here -->
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
     </node>
-    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
+<!--    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
       <remap from="GPS_Data" to="/GPS_Data" />
-    </node>
+    </node> -->
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" >
-    <arg name="Fan_Output" value="/Master_Board_HW/PWM_Channels/DutyCycleControl/CH0" />
-    <arg name="Fan_Scale" value="1" />
+    <arg name="Fan_Output_Out" value="/Master_Board_HW/PWM_Channels/DutyCycleControl/CH0" />
+    <arg name="Fan_Output_In" value="/Master_Board_HW/PWM_Channels/DutyCycleControl/CH1" />
     <arg name="simulated" value="$(arg simulated)" />
   </include>
 
