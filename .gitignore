@@ -22,3 +22,18 @@ _autosave-*
 
 **/gerber/**
 Electrical/~$PowerBudget.xlsx
+
+*/build/*
+build/*
+*/devel/*
+devel/*
+*/install/*
+install/*
+src/CMakeFiles
+src/CTestTestfile.cmake
+src/catkin*
+src/cmake_install.cmake
+src/gtest
+rospy
+*.pyc
+*~

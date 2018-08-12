@@ -1,0 +1,5 @@
+<launch>
+  <group ns="Tests">
+    <node name="DrivetrainSW" pkg="mavric" type="DrivetrainSW.py" respawn="false" />
+  </group>
+</launch>

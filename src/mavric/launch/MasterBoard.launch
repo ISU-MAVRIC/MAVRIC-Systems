@@ -1,0 +1,42 @@
+<launch>
+  <arg name="simulated" default="false" />
+  <group ns="Master_Board_HW" unless="$(arg simulated)">
+    <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
+      <param name="frequency" value="25000" />
+      <!-- we want to run as fast as possible here -->
+      <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+    </node>
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
+      <remap from="GPS_Data" to="/GPS_Data" />
+    </node>
+  </group>
+  
+  <include file="$(find mavric)/launch/SystemCooling.launch" >
+    <arg name="Fan_Output" value="/Master_Board_HW/PWM_Channels/DutyCycleControl/CH0" />
+    <arg name="Fan_Scale" value="1" />
+    <arg name="simulated" value="$(arg simulated)" />
+  </include>
+
+  <group ns="Drive">
+    <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" >
+      <remap from="Drive_Train" to="Command" />
+    </node>
+    <node name="Drivetrain_Hartbeat" pkg="mavric" type="DrivetrainHartbeat.py" respawn="true" >
+      <param name="timeout" value="1" />
+      <remap from="Drive_Train" to="Command" />
+    </node>
+  </group>
+
+  <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
+  <node name="Temperature_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true">
+    <remap from="value" to="/SystemCooling/Temperature" />
+    <param name="port" value="8002" />
+  </node>
+  <node name="Actuator_Interface" pkg="mavric" type="Actuator_Interface.py" >
+    <remap from="output" to="linac1" />
+  </node>
+  <node name="Actuator_Status_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true" >
+    <remap from="value" to="actuator_status" />
+    <param name="port" value="10002" />
+  </node>
+</launch>
