@@ -22,7 +22,7 @@
       <remap from="RightMiddle" to="$(eval arg('pwm_path') + 'CH5')" />
       <remap from="RightBack" to="$(eval arg('pwm_path') + 'CH6')" />
 -->  
-      <param name="Range" value="0.4" />
+      <param name="Range" value="0.3" />
 
       <param name="Left_Front/Scale" value="-1" />
       <param name="Left_Back/Scale" value="-1" />
