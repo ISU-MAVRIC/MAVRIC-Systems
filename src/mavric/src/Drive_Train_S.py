@@ -16,12 +16,15 @@
 
 import rospy
 from std_msgs.msg import Float64
+from std_srvs.srv import SetBool
 from mavric.msg import Drivetrain
 import time
 
 output_topics = []
 left_target = 0
 right_target = 0
+
+suspension_protection = True
 
 # Takes in throttles as percents in the range [-1.0, +1.0]
 #     LF, LM, LB, RF, RM, RB
@@ -32,6 +35,11 @@ def set_outputs(LF, LM, LB, RF, RM, RB):
         output_topics[3].publish(RF*Scale*RF_Dir)
         output_topics[4].publish(RM*Scale*RM_Dir)
         output_topics[5].publish(RB*Scale*RB_Dir)
+
+def change_protection(req):
+        global suspension_protection
+        suspension_protection = req.data
+        return (True, 'Success')
 
 def callback(data):
         global left_target
@@ -47,13 +55,14 @@ def callback(data):
         if (data.right < -100):
                 data.right = -100
 
+        if suspension_protection and (data.left*data.right < 0):
+                data.left = 0
+                data.right = 0
+
         #get left and right side drive powers
         left_target  = data.left/100.
         right_target = data.right/100.
 
-        #log values and write to PWM channels
-#        rospy.loginfo(rospy.get_caller_id() + " Left %s%%, Right %s%%", left*100, right*100)
-#        set_outputs(left, left, left, right, right, right)
 
 def rampVal(current, target, ramp_amount_up, ramp_amount_down):
         if (current == target):
@@ -96,6 +105,8 @@ def listener():
         output_topics.append(rospy.Publisher("RightFront", Float64, queue_size=10, latch=True))
         output_topics.append(rospy.Publisher("RightMiddle", Float64, queue_size=10, latch=True))
         output_topics.append(rospy.Publisher("RightBack", Float64, queue_size=10, latch=True))
+
+        rospy.Service('SetProtection', SetBool, change_protection)
 
         Scale = rospy.get_param("~Range", 0.4)
         LF_Dir = rospy.get_param("~Left_Front/Scale", 1)
