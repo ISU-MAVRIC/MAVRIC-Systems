@@ -4,7 +4,7 @@ import serial
 import time
 import rospy
 
-from mavric.msg import GPS
+from mavric.msg import Drivetrain, GPS
 
 from std_msgs.msg import String
 from math import sin, cos, atan2, radians, degrees
@@ -14,7 +14,7 @@ from pid_controller.pid import PID
 #declare constants (all arbitrary for now)
 LIN_ERROR_THRESHOLD = 5		                #meters
 ANG_ERROR_THRESHOLD = 10                        #degrees
-UPDATE_INTERVAL = 1                             #seconds
+UPDATE_INTERVAL = 0.5                           #seconds
 FIX_TIMEOUT_THRESHOLD = UPDATE_INTERVAL * 5     #seconds
 UPDATE_TIMEOUT_THRESHOLD = UPDATE_INTERVAL * 2  #seconds
 
@@ -60,6 +60,7 @@ def gps_callback(data):
     if not data.good_fix:
         #if data has been bad for a while, alert motors to stop
         if fix_time - prev_fix_time > FIX_TIMEOUT_THRESHOLD:
+	    print("Satellite fix is bad, halting motors")
             fix_timeout = True
         
         return
@@ -68,15 +69,15 @@ def gps_callback(data):
     prev_fix_time = fix_time
     fix_timeout = False
 
-    pos = [latitude, longitude]
-    head = heading
+    pos = [data.latitude, data.longitude]
+    head = data.heading
 
     #get new gps target from base station, if necessary, and split it by comma
     #   !NOTE may or may not be an NMEA sentence, assuming lat-lon pair
     if need_tgt:
-        tgt_sentence = raw_input("target lat, lon: ").split(",")
-        tgt_pos[0] = float(tgt_sentence[0])
-        tgt_pos[1] = float(tgt_sentence[1])
+        #tgt_sentence = raw_input("target lat, lon: ").split(",")
+        tgt_pos[0] = 43#float(tgt_sentence[0])
+        tgt_pos[1] = -93.6319#float(tgt_sentence[1])
         
         need_tgt = False
 
@@ -122,7 +123,7 @@ def talker():
     rospy.Subscriber('GPS_Data', GPS, gps_callback, queue_size=10)
 
     #create ROS publisher
-    pub = rospy.Publisher("/Drive_Train", String)
+    pub = rospy.Publisher("/Drive/Command", Drivetrain, queue_size=10)
     rospy.init_node("Autonomous_Waypoint_Navigation")
     r = rospy.Rate(1 / UPDATE_INTERVAL)
 
@@ -133,8 +134,9 @@ def talker():
         #if the GPS node has not responded for a while, alert motors to stop
         update_time = int(time.time())
         
-        if not gps_new_data_available:
-            if update_time - prev_update_time > UPDATE_TIMEOUT_INTERVAL:
+        if not new_gps_data_available:
+            if update_time - prev_update_time > UPDATE_TIMEOUT_THRESHOLD:
+		print("Failed to receive GPS data over ROS, halting motors")
                 update_timeout = True
 
         else:
@@ -186,7 +188,7 @@ def talker():
             right_power = 0.0
 
         #convert from fractional motor power to command string
-        pub.publish("D" + frac_to_cs(left_power) + frac_to_cs(right_power))
+        pub.publish(frac_to_cs(left_power), frac_to_cs(right_power))
 
         #remember linear and angular error for the next cycle
         #prev_linear_error = linear_error
@@ -201,16 +203,9 @@ def hms_to_s(time):
     
     return (h * 60 * 60) + (m * 60) + s;
 
-#convert from fractional motor power (-1.0 - 1.0) to command string (00 - 99)
+#convert from fractional motor power (-1.0 - 1.0) to command string (-100 -> 100)
 def frac_to_cs(f):
-    k = ((f * 100) / 2) + 50
-    
-    #clip value from 100 to 99, scale instead?
-    if k > 99:
-        k = 99
-
-    #return k as a string for concatenation
-    return str(int(k))
+    return int(f * 100);
 
 """ -MAIN FUNCTION- """
 if __name__ == '__main__':
