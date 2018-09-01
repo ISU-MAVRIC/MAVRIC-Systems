@@ -3,7 +3,7 @@ bool good_fix
 
 #degrees
 float64 latitude
-float64 longititude
+float64 longitude
 
 #meters
 float64 altitude
