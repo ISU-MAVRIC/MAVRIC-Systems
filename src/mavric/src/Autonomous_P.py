@@ -4,7 +4,7 @@ import serial
 import time
 import rospy
 
-from mavric.message import GPS
+from mavric.msg import GPS
 
 from std_msgs.msg import String
 from math import sin, cos, atan2, radians, degrees
