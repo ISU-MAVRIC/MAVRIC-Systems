@@ -19,15 +19,15 @@
   
   <group ns="Arm">
 	<node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
-		<remap from="Arm_ShoulderRot" to "Command_ShoulderRot" />
-		<remap from="Arm_ShoulderPitch" to "Command_ShoulderPitch" />
+		<remap from="Arm_ShoulderRot" to="Command_ShoulderRot" />
+		<remap from="Arm_ShoulderPitch" to="Command_ShoulderPitch" />
 		
-		<remap from="Arm_ElbowPitch" to "Command_ElbowPitch" />
+		<remap from="Arm_ElbowPitch" to="Command_ElbowPitch" />
 		
-		<remap from="Arm_WristRot" to "Command_WristRot" />
-		<remap from="Arm_WristPitch" to "Command_WristPitch" />
+		<remap from="Arm_WristRot" to="Command_WristRot" />
+		<remap from="Arm_WristPitch" to="Command_WristPitch" />
 		
-		<remap from="Arm_ClawActuation" to "Command_ClawActuation" />
+		<remap from="Arm_ClawActuation" to="Command_ClawActuation" />
 	</node>
   </group>
 
@@ -45,12 +45,5 @@
   <node name="Temperature_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true">
     <remap from="value" to="/SystemCooling/Temperature" />
     <param name="port" value="8002" />
-  </node>
-  <node name="Actuator_Interface" pkg="mavric" type="Actuator_Interface.py" >
-    <remap from="output" to="linac1" />
-  </node>
-  <node name="Actuator_Status_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true" >
-    <remap from="value" to="actuator_status" />
-    <param name="port" value="10002" />
   </node>
 </launch>

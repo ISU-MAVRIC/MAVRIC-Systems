@@ -16,7 +16,7 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 host = ""
-port = 9002
+port = 10001
 
 print(host)
 print(port)
@@ -45,37 +45,38 @@ def talker():
         data = connection.recv(1024).decode()
 
         rospy.loginfo(data)
-        cmd = float(parameters[0])
 
         if(data[0] == 'A'):
             # Arm Command
             parameters = data[2:].strip().split(',')
             rospy.loginfo(parameters)
-
+            cmd = float(parameters[0])
+            
             if data[1] == 'R':
                 pub_shoulder_r.publish(cmd,0,0,0,0,0)
-
+            
             elif data[1] == 'L':
                 pub_shoulder_p.publish(0,cmd,0,0,0,0)
-
+            
             elif data[1] == 'E':
                 pub_elbow_p.publish(0,0,cmd,0,0,0)
-
-
+            
+            
         elif(data[0] == 'C'):
             # Claw Command
             parameters = data[2:].strip().split(',')
             rospy.loginfo(parameters)
-
-            elif data[1] == 'R':
+            cmd = float(parameters[0])
+            
+            if data[1] == 'R':
                 pub_wrist_r.publish(0,0,0,cmd,0,0)
-
-            if data[1] == 'P':
+            
+            elif data[1] == 'P':
                 pub_wrist_p.publish(0,0,0,0,cmd,0)
-
+            
             elif data[1] == 'C':
                 pub_claw_a.publish(0,0,0,0,0,cmd)
-
+            
         connection.close()
     serversocket.close()
 
