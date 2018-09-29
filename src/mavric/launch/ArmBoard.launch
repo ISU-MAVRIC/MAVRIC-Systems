@@ -8,6 +8,41 @@
       <param name="clk_error" value="1.08" />
     </node>
   </group>
+  
+  <group ns="Arm">
+	<node name="Arm_Control" pkg="mavric" type="Arm_S.py" respawn="true" output="screen">
+		<remap from="Arm_ShoulderRot" to "Command_ShoulderRot" />
+		<remap from="Arm_ShoulderPitch" to "Command_ShoulderPitch" />
+		
+		<remap from="Arm_ElbowPitch" to "Command_ElbowPitch" />
+		
+		<remap from="Arm_WristRot" to "Command_WristRot" />
+		<remap from="Arm_WristPitch" to "Command_WristPitch" />
+		
+		<remap from="Arm_ClawActuation" to "Command_ClawActuation" />
+		
+<!--
+		<remap from="ShoulderRot" to="$(eval arg('pwm_path') + 'CH0')" />
+		<remap from="ShoulderPitch" to="$(eval arg('pwm_path') + 'CH1')" />
+		
+		<remap from="ElbowPitch" to="$(eval arg('pwm_path') + 'CH2')" />
+		
+		<remap from="WristRot" to="$(eval arg('pwm_path') + 'CH3')" />
+		<remap from="WristPitch" to="$(eval arg('pwm_path') + 'CH4')" />
+		
+		<remap from="ClawActuation" to="$(eval arg('pwm_path') + 'CH5')" />
+-->
+		<param name="Range" value="0.3" />
+		
+		<param name="ShoulderRot/Scale" value="1" />
+		<param name="ShoulderPitch/Scale" value="1" />
+		<param name="ElbowPitch/Scale" value="1" />
+		<param name="WristRot/Scale" value="1" />
+		<param name="WristPitch/Scale" value="1" />
+		<param name="ClawActuation/Scale", value="1" />
+	</node>
+  </group>
+  
   <include file="$(find mavric)/launch/LinearActuator.launch" >
     <arg name="simulated" default="false" />
 

@@ -16,6 +16,20 @@
     <arg name="Fan_Output_In" value="/Master_Board_HW/PWM_Channels/DutyCycleControl/CH1" />
     <arg name="simulated" value="$(arg simulated)" />
   </include>
+  
+  <group ns="Arm">
+	<node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
+		<remap from="Arm_ShoulderRot" to "Command_ShoulderRot" />
+		<remap from="Arm_ShoulderPitch" to "Command_ShoulderPitch" />
+		
+		<remap from="Arm_ElbowPitch" to "Command_ElbowPitch" />
+		
+		<remap from="Arm_WristRot" to "Command_WristRot" />
+		<remap from="Arm_WristPitch" to "Command_WristPitch" />
+		
+		<remap from="Arm_ClawActuation" to "Command_ClawActuation" />
+	</node>
+  </group>
 
   <group ns="Drive">
     <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" >
