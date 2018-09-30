@@ -48,6 +48,36 @@ class Phoenix:
         except socket.error as e:
             print(e)
 
+    def setArm(self, motor_str, rate):
+        try:
+            rate_str = str(int(rate))
+            
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((self._ip, 10001))
+            s.sendall((motor_str + rate_str).encode())
+            s.close()
+        except socket.error as e:
+            print(e)
+
+    def setArmBaseRot(self, rate):
+        self.setArm('AR', rate)
+
+    def setArmBasePitch(self, rate):
+        self.setArm('AL', rate)
+
+    def setArmElbowPitch(self, rate):
+        self.setArm('AE', rate)
+
+    def setArmClawRot(self, rate):
+        self.setArm('CR', rate)
+
+    def setArmClawPitch(self, rate):
+        self.setArm('CP', rate)
+
+    def setArmClawActuation(self, rate):
+        self.setArm('CC', rate)
+
     @property
     def temperature(self):
         return self._temperature_getter.value
