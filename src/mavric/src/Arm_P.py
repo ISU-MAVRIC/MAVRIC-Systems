@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 # Input node. Receives commands from the base station and publishes them in the
 # arm ROS command format
+#
+# Topics:
+#   Arm_ShoulderRot - The desired motion of the shoulder rotation motor
+#   Arm_ShoulderPitch - The desired motion of the shoulder pitch motor
+#   Arm_ElbowPitch - The desired motion of the elbow pitch motor
+#   Arm_WristRot - The desired motion of the shoulder rotation motor
+#   Arm_WristRot - The desired motion of the wrist rotation motor
+#   Arm_WristPitch - The desired motion of the wrist pitch motor
+# The ranges for the signals is -100,100 coresponding to the motor controllers' extremum.
 
 import rospy
 from std_msgs.msg import String
