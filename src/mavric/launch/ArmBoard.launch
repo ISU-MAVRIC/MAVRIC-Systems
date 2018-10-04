@@ -10,7 +10,13 @@
   </group>
 
   <group ns="Arm">
-	<node name="Arm_Control" pkg="mavric" type="Arm_S.py" respawn="true" output="screen">
+    <node name="Arm_Scaling" pkg="mavric" type="LinearMapping.py" >
+      <param name="inputs" value="ShoulderRot,ShoulderPitch,ElbowPitch,WristRot,WristPitch,ClawActuation" />
+      <param name="outputs" value="$(eval 'pwm_path/CH15,pwm_path/CH14,pwm_path/CH13,pwm_path/CH12,pwm_path/CH11,pwm_path/CH10'.replace('pwm_path/', arg('pwm_path')))" />
+      <param name="slopes" value="$(eval str(list(map(lambda x: x*0.0005/100,[0.2,0.3,1,0.3,0.3,1])))[1:-1])" />
+      <param name="intercepts" value="0.0015,0.0015,0.0015,0.0015,0.0015,0.0015" />
+    </node>
+<!--	<node name="Arm_Control" pkg="mavric" type="Arm_S.py" respawn="true" output="screen">
 		<remap from="Arm_ShoulderRot" to="Command_ShoulderRot" />
 		<remap from="Arm_ShoulderPitch" to="Command_ShoulderPitch" />
 		
@@ -32,12 +38,13 @@
 		<remap from="ClawActuation" to="$(eval arg('pwm_path') + 'CH10')" />
 		<param name="Range" value="0.3" />
 		
-		<param name="ShoulderRot/Scale" value="1" />
+		<param name="ShoulderRot/Scale" value="-1" />
 		<param name="ShoulderPitch/Scale" value="1" />
 		<param name="ElbowPitch/Scale" value="3.333" />
-		<param name="WristRot/Scale" value="1" />
+		<param name="WristRot/Scale" value="-1" />
 		<param name="WristPitch/Scale" value="1" />
 		<param name="ClawActuation/Scale" value="3.333" />
 	</node>
+-->
   </group>
 </launch>
