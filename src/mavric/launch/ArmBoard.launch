@@ -16,23 +16,23 @@
       <param name="slopes" value="$(eval str(list(map(lambda x: x*0.0005/100,[0.2,0.3,1,0.3,0.3,1])))[1:-1])" />
       <param name="intercepts" value="0.0015,0.0015,0.0015,0.0015,0.0015,0.0015" />
     </node>
-    <node name="ShoulderRotHeartbeat" pkg="mavric" type="Float64Heartbeat" >
+    <node name="ShoulderRotHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
       <param name="timeout" value="1" />     
       <remap from="topic" to="ShoulderRot" />
     </node>
-    <node name="ShoulderPitchHeartbeat" pkg="mavric" type="Float64Heartbeat" >
+    <node name="ShoulderPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
       <param name="timeout" value="1" />     
       <remap from="topic" to="ShoulderPitch" />
     </node>
-    <node name="ElbowPitchHeartbeat" pkg="mavric" type="Float64Heartbeat" >
+    <node name="ElbowPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
       <param name="timeout" value="1" />     
       <remap from="topic" to="ElbowPitch" />
     </node>
-    <node name="WristPitchHeartbeat" pkg="mavric" type="Float64Heartbeat" >
+    <node name="WristPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
       <param name="timeout" value="1" />     
       <remap from="topic" to="WristPitch" />
     </node>
-    <node name="WristRotHeartbeat" pkg="mavric" type="Float64Heartbeat" >
+    <node name="WristRotHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
       <param name="timeout" value="1" />     
       <remap from="topic" to="WristRot" />
     </node>

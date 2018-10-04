@@ -36,4 +36,4 @@ def talker():
                         frame = 0
 
 if __name__ == '__main__':
-talker()
+    talker()
