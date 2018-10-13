@@ -3,16 +3,16 @@
 # arm ROS command format
 #
 # Topics:
-#   Arm_ShoulderRot - The desired motion of the shoulder rotation motor
-#   Arm_ShoulderPitch - The desired motion of the shoulder pitch motor
-#   Arm_ElbowPitch - The desired motion of the elbow pitch motor
-#   Arm_WristRot - The desired motion of the shoulder rotation motor
-#   Arm_WristRot - The desired motion of the wrist rotation motor
-#   Arm_WristPitch - The desired motion of the wrist pitch motor
+#   ShoulderRot - The desired motion of the shoulder rotation motor
+#   ShoulderPitch - The desired motion of the shoulder pitch motor
+#   ElbowPitch - The desired motion of the elbow pitch motor
+#   WristRot - The desired motion of the shoulder rotation motor
+#   WristRot - The desired motion of the wrist rotation motor
+#   WristPitch - The desired motion of the wrist pitch motor
 # The ranges for the signals is -100,100 coresponding to the motor controllers' extremum.
 
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import Float64
 from mavric.msg import Arm
 
 import time
@@ -32,15 +32,15 @@ print(port)
 
 def talker():
     #Arm commands update one joint at a time, so we need one topic per joint
-    pub_shoulder_r = rospy.Publisher("Arm_ShoulderRot", Arm, queue_size=10)
-    pub_shoulder_p = rospy.Publisher("Arm_ShoulderPitch", Arm, queue_size=10)
+    pub_shoulder_r = rospy.Publisher("ShoulderRot", Float64, queue_size=10)
+    pub_shoulder_p = rospy.Publisher("ShoulderPitch", Float64, queue_size=10)
     
-    pub_elbow_p = rospy.Publisher("Arm_ElbowPitch", Arm, queue_size=10)
+    pub_elbow_p = rospy.Publisher("ElbowPitch", Float64, queue_size=10)
     
-    pub_wrist_r = rospy.Publisher("Arm_WristRot", Arm, queue_size=10)
-    pub_wrist_p = rospy.Publisher("Arm_WristPitch", Arm, queue_size=10)
+    pub_wrist_r = rospy.Publisher("WristRot", Float64, queue_size=10)
+    pub_wrist_p = rospy.Publisher("WristPitch", Float64, queue_size=10)
     
-    pub_claw_a = rospy.Publisher("Arm_ClawActuation", Arm, queue_size=10)
+    pub_claw_a = rospy.Publisher("ClawActuation", Float64, queue_size=10)
     
     rospy.init_node('ARP')
 
@@ -62,13 +62,13 @@ def talker():
             cmd = float(parameters[0])
             
             if data[1] == 'R':
-                pub_shoulder_r.publish(cmd,0,0,0,0,0)
+                pub_shoulder_r.publish(cmd)
             
             elif data[1] == 'L':
-                pub_shoulder_p.publish(0,cmd,0,0,0,0)
+                pub_shoulder_p.publish(cmd)
             
             elif data[1] == 'E':
-                pub_elbow_p.publish(0,0,cmd,0,0,0)
+                pub_elbow_p.publish(cmd)
             
             
         elif(data[0] == 'C'):
@@ -78,13 +78,13 @@ def talker():
             cmd = float(parameters[0])
             
             if data[1] == 'R':
-                pub_wrist_r.publish(0,0,0,cmd,0,0)
+                pub_wrist_r.publish(cmd)
             
             elif data[1] == 'P':
-                pub_wrist_p.publish(0,0,0,0,cmd,0)
+                pub_wrist_p.publish(cmd)
             
             elif data[1] == 'C':
-                pub_claw_a.publish(0,0,0,0,0,cmd)
+                pub_claw_a.publish(cmd)
             
         connection.close()
     serversocket.close()
