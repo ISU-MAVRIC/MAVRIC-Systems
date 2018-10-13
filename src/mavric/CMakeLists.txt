@@ -51,6 +51,7 @@ add_message_files(
   FILES
   Drivetrain.msg
   GPS.msg
+  Arm.msg
 )
 
 ## Generate services in the 'srv' folder
