@@ -9,7 +9,7 @@ from mavric.msg import Autonomous, Waypoint, Drivetrain, GPS
 
 from math import sin, cos, atan2, radians, degrees
 from geographiclib.geodesic import Geodesic
-from pid_controller.pid import PID
+from simple_pid import PID
 
 #declare constants
 LIN_ERROR_THRESHOLD = 5		#arbitrary, meters
@@ -45,8 +45,8 @@ enabled = False
 good_fix = False
 fix_timeout = False
 
-linearPID = PID(L_P, L_I, L_D)
-angularPID = PID(A_P, A_I, A_D)
+linearPID = PID(L_P, L_I, L_D, setpoint=0)  #minimize error
+angularPID = PID(A_P, A_I, A_D, setpoint=0) #minimize error
 
 def cmd_cb(data):
     #parse command, use to enable/disable autonomous driving
@@ -152,8 +152,8 @@ def talker():
 
         #pass linear and angular error to separate PID controllers
         #   !NOTE may need to use modulus to fix angular rollover
-        linear_power = linearPID(feedback=linear_error)
-        angular_power = angularPID(feedback=angular_error)
+        linear_power = linearPID(linear_error)
+        angular_power = angularPID(angular_error)
 
         #fuse PID controller outputs to obtain fractional motor power (-1.0 - 1.0)
         #something along these lines, may have to swap which is + and which is -
