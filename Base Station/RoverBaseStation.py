@@ -17,6 +17,7 @@ elbow_pitch_draw_pos = (50, 350)
 claw_actuation_draw_pos = (450, 350)
 
 temp_label_draw_pos = (25, 425)
+e_stop_label_draw_pos = (100, 15)
 
 master_ip = '192.168.1.11'
 master_port = 9002
@@ -26,9 +27,12 @@ drive_stick_name = "Mad Catz V.1 Stick" #hardcoded for now
 
 arm_stick = None
 arm_stick_name = "Logitech Dual Action" #hardcoded for now
+#arm_stick_name = "Controller (XBOX 360 For Windows)" #hardcoded for now
 
 #declare variables
 joysticks = []
+
+emergency_stop = False
 
 drive_x_axis = 0
 drive_y_axis = 0
@@ -81,6 +85,7 @@ screen = pygame.display.set_mode((500, 500))
 pygame.display.set_caption("MAVRIC Base Station")
 
 info_font = pygame.font.SysFont("Arial", 15)
+warn_font = pygame.font.SysFont("Arial", 20)
 
 #find controllers
 for i in range(0, pygame.joystick.get_count()):
@@ -99,9 +104,13 @@ for i in range(0, pygame.joystick.get_count()):
         print("Detected arm controller '%s'" % joysticks[-1].get_name())
         arm_stick = joysticks[-1]
 
+    else:
+        print("Detected unbound controller '%s'" % joysticks[-1].get_name())
+
 #start main loop
 rover = phoenix.Phoenix(master_ip)
 rover.open()
+rover.killAll()
 
 run = True
 try:
@@ -111,6 +120,17 @@ try:
             #if red 'X' is clicked, quit program
             if event.type == pygame.QUIT:
                 run = False
+
+            #handle keyboard events
+            if event.type == pygame.KEYDOWN:
+                #software emergency stop
+                if event.key == pygame.K_SPACE:
+                    rover.killAll()
+                    emergency_stop = True
+
+                #software emergency stop reset
+                elif event.key == pygame.K_RETURN:
+                    emergency_stop = False
 
             #get shoulder and wrist commands from joysticks
             elif event.type == pygame.JOYAXISMOTION:
@@ -130,7 +150,8 @@ try:
 
                 #handle drive control axes
                 if is_drive_stick(get_stick(event.joy)):
-                    if event.axis == 0:
+                    #if event.axis == 0:    #tilt
+                    if event.axis == 3:     #twist
                         drive_x_axis = int(event.value * 100)
 
                     elif event.axis == 1:
@@ -174,25 +195,34 @@ try:
 
         #convert from joystick arcade drive to rover tank drive
         #   add condition to make backing up behave the way you'd expect (like a car)
-        if drive_y_axis >= 0:
+        drive_l = drive_y_axis + (drive_x_axis/2)
+        drive_r = drive_y_axis - (drive_x_axis/2)
+
+        """if drive_y_axis >= 0:
             drive_l = drive_y_axis + (drive_x_axis/2)
             drive_r = drive_y_axis - (drive_x_axis/2)
 
         else:
             drive_l = drive_y_axis - (drive_x_axis/2)
-            drive_r = drive_y_axis + (drive_x_axis/2)
+            drive_r = drive_y_axis + (drive_x_axis/2)"""
 
-        #send commands to rover
-        rover.setWheels(drive_l, drive_r)
-        
-        rover.setArmBaseRot(shoulder_r_axis)
-        rover.setArmBasePitch(shoulder_p_axis)
-        rover.setArmElbowPitch(elbow_p_val)
-        rover.setArmClawRot(wrist_r_axis)
-        rover.setArmClawPitch(wrist_p_axis)
-        rover.setArmClawActuation(claw_a_val)
+        #send commands to rover if safe to do so
+        if not emergency_stop:
+            rover.setWheels(drive_l, drive_r)
+            
+            rover.setArmBaseRot(shoulder_r_axis)
+            rover.setArmBasePitch(shoulder_p_axis)
+            rover.setArmElbowPitch(elbow_p_val)
+            rover.setArmClawRot(wrist_r_axis)
+            rover.setArmClawPitch(wrist_p_axis)
+            rover.setArmClawActuation(claw_a_val)
 
         #draw UI
+        if emergency_stop:
+            e_stop_message = "Base station has been emergency stopped!"
+            label = warn_font.render(e_stop_message, 1, (200, 0, 0))
+            screen.blit(label, e_stop_label_draw_pos)
+        
         pygame.draw.rect(screen, (0,100,100), (drive_stick_draw_pos[0] - 100, drive_stick_draw_pos[1] - 100, 200, 200), 3)
         pygame.draw.rect(screen, (0,100,0), (shoulder_stick_draw_pos[0] - 50, shoulder_stick_draw_pos[1] - 50, 100, 100), 3)
         pygame.draw.rect(screen, (100,0,0), (wrist_stick_draw_pos[0] - 50, wrist_stick_draw_pos[1] - 50, 100, 100), 3)
@@ -218,5 +248,5 @@ except Exception as e:
 
 finally:
     pygame.quit()
+    rover.killAll()
     rover.close()
-    pass
