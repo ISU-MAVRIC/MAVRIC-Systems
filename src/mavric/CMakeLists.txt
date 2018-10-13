@@ -52,6 +52,8 @@ add_message_files(
   Drivetrain.msg
   GPS.msg
   Arm.msg
+  Autonomous.msg
+  Waypoint.msg
 )
 
 ## Generate services in the 'srv' folder
