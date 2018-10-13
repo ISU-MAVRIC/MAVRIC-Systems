@@ -27,6 +27,15 @@ class Phoenix:
             self._temperature_getter.close()
         if self._actuator_getter != None:
             self._actuator_getter.close()
+
+    def killAll(self):
+        self.setWheels(0, 0)
+        self.setArmBaseRot(0)
+        self.setArmBasePitch(0)
+        self.setArmElbowPitch(0)
+        self.setArmClawRot(0)
+        self.setArmClawPitch(0)
+        self.setArmClawActuation(0)
         
     def setWheels(self, left, right):
         try:
