@@ -21,7 +21,6 @@ import time
 def callback(data):
         global target
         target  = data.data
-        print("target: %f" % target);
 
 
 def rampVal(current, target, centerpoint, ramp_amount_up, ramp_amount_down):
@@ -50,7 +49,7 @@ def listener():
         global target
         rospy.init_node('Ramping')
         rospy.Subscriber("input", Float64, callback, queue_size=10)
-        pub = rospy.Publisher("output", Float64, callback, queue_size=10)
+        pub = rospy.Publisher("output", Float64, queue_size=10)
 
         rate = rospy.get_param("~update_rate", 10)
         ramp_rate_up = rospy.get_param("~ramp_rate_up", 0.5)/rate
@@ -62,7 +61,6 @@ def listener():
         target = 0
         while not rospy.is_shutdown():
                 if (value != target):
-                        print("target: %f, value: %f" % (target, value));
                         value = rampVal(value, target, centerpoint, ramp_rate_up, ramp_rate_down)
                         pub.publish(value);        
                 r.sleep()
