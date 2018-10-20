@@ -22,6 +22,8 @@ print(port)
 
 """ -MAIN LOOP- """
 def talker():
+    global enabled
+
     rospy.init_node("ANP")
     
     way_pub = rospy.Publisher("Next_Waypoint", Waypoint, queue_size=10)

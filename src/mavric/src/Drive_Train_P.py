@@ -29,6 +29,8 @@ print (port)#", line 228, in meth
 #    return getattr(self._sock,name)(*args)
 
 def talker():
+	global enabled
+
         pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
         rospy.init_node('DTP')
         serversocket.bind((host, port))

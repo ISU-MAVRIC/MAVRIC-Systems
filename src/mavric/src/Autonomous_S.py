@@ -41,7 +41,7 @@ prev_position = [0, 0]
 fix_time = 0
 prev_fix_time = 0
 
-enabled = False
+enabled = True
 good_fix = False
 fix_timeout = False
 
@@ -68,7 +68,7 @@ def gps_cb(data):
 
 """ -MAIN LOOP- """
 def talker():
-    global fix_timeout
+    global enabled, fix_timeout
     global position
     global prev_fix_time, prev_linear_error, prev_angular_error
 
@@ -77,7 +77,7 @@ def talker():
     
     pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
 
-    cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
+    #cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
 
