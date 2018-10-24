@@ -16,3 +16,7 @@ float64 heading
 
 #count
 int16 num_satellites
+
+int16 timeh
+int16 timem
+float32 times
