@@ -17,10 +17,12 @@ elbow_pitch_draw_pos = (50, 350)
 claw_actuation_draw_pos = (450, 350)
 
 temp_label_draw_pos = (25, 425)
+location_label_draw_pos = (25, 450)
+heading_label_draw_pos = (25, 475)
 e_stop_label_draw_pos = (100, 15)
+autonomous_label_draw_pos = (300, 450)
 
 master_ip = '192.168.1.11'
-master_port = 9002
 
 drive_stick = None
 drive_stick_name = "Mad Catz V.1 Stick" #hardcoded for now
@@ -33,6 +35,7 @@ arm_stick_name = "Logitech Dual Action" #hardcoded for now
 joysticks = []
 
 emergency_stop = False
+autonomous_enabled = False
 
 drive_x_axis = 0
 drive_y_axis = 0
@@ -127,10 +130,24 @@ try:
                 if event.key == pygame.K_SPACE:
                     rover.killAll()
                     emergency_stop = True
+                    autonomous_enabled = False
 
                 #software emergency stop reset
                 elif event.key == pygame.K_RETURN:
                     emergency_stop = False
+
+                elif event.key == pygame.K_w:
+                    pt_str = raw_input("Waypoint (lat, lon): ")
+                    pt = pt_str.strip("() ").split(',')
+                    rover.addWaypoint(float(pt[0]), float(pt[1]))
+
+                elif event.key == pygame.K_e:
+                    rover.enableAutonomous()
+                    autonomous_enabled = True
+
+                elif event.key == pygame.K_d:
+                    rover.disableAutonomous()
+                    autonomous_enabled = False
 
             #get shoulder and wrist commands from joysticks
             elif event.type == pygame.JOYAXISMOTION:
@@ -190,6 +207,14 @@ try:
             temp_message = "Temperature: %0.2f C" % (rover.temperature)
             label = info_font.render(temp_message, 1, (255,255,0))
             screen.blit(label, temp_label_draw_pos)
+
+            location_message = "Position: (%0.6f, %0.6f)" % (rover.gps.latitude, rover.gps.longitude)
+            label = info_font.render(location_message, 1, (255,255,0))
+            screen.blit(label, location_label_draw_pos)
+
+            heading_message = "Heading: %0.2f CW" % (rover.gps.heading)
+            label = info_font.render(heading_message, 1, (255,255,0))
+            screen.blit(label, heading_label_draw_pos)
         except:
             pass
 
@@ -222,6 +247,11 @@ try:
             e_stop_message = "Base station has been emergency stopped!"
             label = warn_font.render(e_stop_message, 1, (200, 0, 0))
             screen.blit(label, e_stop_label_draw_pos)
+
+        if autonomous_enabled:
+            autonomous_message = "Autonomous is active"
+            label = warn_font.render(autonomous_message, 1, (200, 0, 200))
+            screen.blit(label, autonomous_label_draw_pos)
         
         pygame.draw.rect(screen, (0,100,100), (drive_stick_draw_pos[0] - 100, drive_stick_draw_pos[1] - 100, 200, 200), 3)
         pygame.draw.rect(screen, (0,100,0), (shoulder_stick_draw_pos[0] - 50, shoulder_stick_draw_pos[1] - 50, 100, 100), 3)
