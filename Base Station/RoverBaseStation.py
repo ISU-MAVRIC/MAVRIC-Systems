@@ -28,8 +28,8 @@ drive_stick = None
 drive_stick_name = "Mad Catz V.1 Stick" #hardcoded for now
 
 arm_stick = None
-arm_stick_name = "Logitech Dual Action" #hardcoded for now
-#arm_stick_name = "Controller (XBOX 360 For Windows)" #hardcoded for now
+#arm_stick_name = "Logitech Dual Action" #hardcoded for now
+arm_stick_name = "Controller (XBOX 360 For Windows)" #hardcoded for now
 
 #declare variables
 joysticks = []
@@ -159,7 +159,7 @@ try:
                     elif event.axis == 1:
                         shoulder_p_axis = int(event.value * -100)
                         
-                    elif event.axis == 2:
+                    elif event.axis == 4:
                         wrist_r_axis = int(event.value * 100)
 
                     elif event.axis == 3:
@@ -185,7 +185,7 @@ try:
                     if event.button == 3:
                         claw_a_val = 100
 
-                    elif event.button == 1:
+                    elif event.button == 0:
                         claw_a_val = -100
 
             elif event.type == pygame.JOYBUTTONUP:
@@ -196,7 +196,7 @@ try:
                         else:
                             claw_a_val = 0
 
-                    elif event.button == 1:
+                    elif event.button == 0:
                         if get_stick(event.joy).get_button(3):
                             claw_a_val = 100
                         else:
