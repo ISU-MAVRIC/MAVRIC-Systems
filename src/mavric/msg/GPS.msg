@@ -17,6 +17,6 @@ float64 heading
 #count
 int16 num_satellites
 
-int16 timeh
-int16 timem
-float32 times
+int16 time_h
+int16 time_m
+float32 time_s

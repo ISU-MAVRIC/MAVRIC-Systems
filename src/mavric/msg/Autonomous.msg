@@ -1,1 +1,1 @@
-bool enable
+String command

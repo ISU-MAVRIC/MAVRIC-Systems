@@ -42,12 +42,16 @@ def talker():
             if data[1] == 'E':
                 #enable autonomous, disable regular drive publisher
                 enabled = True
-                cmd_pub.publish(enabled)
+                cmd_pub.publish('E')
 
             elif data[1] == 'D':
                 #disable autonomous, enable regular drive publisher
                 enabled = False
-                cmd_pub.publish(enabled)
+                cmd_pub.publish('D')
+
+            elif data[1] == 'F':
+                #forget all waypoints from the autonomous logic
+                cmd_pub.publish('F')
 
             elif data[1] == 'W':
                 #send waypoint to autonomous logic
