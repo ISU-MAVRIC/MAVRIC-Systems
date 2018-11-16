@@ -144,6 +144,8 @@ def talker():
 
             #calculate angle between pos and tgt
             #   assumes great-circle (spherical Earth) model
+
+            #TODO just use the 'azi1' parameter from the geodesic solution
             
             #convert lat-lon to radians
             pos = [radians(pos[0]), radians(pos[1])]
