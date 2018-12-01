@@ -48,9 +48,25 @@ fix_timeout = False
 linearPID = PID(L_P, L_I, L_D, setpoint=0)  #minimize error
 angularPID = PID(A_P, A_I, A_D, setpoint=0) #minimize error
 
+""" -HELPER FUNCTION DEFINITIONS- """
+#convert from hours-minutes-seconds to seconds
+def hms_to_s(h,m,s):
+    return (h * 60 * 60) + (m * 60) + s;
+
+def get_inner_power(outer_power, radius):
+    return (radius / (radius + Rover_Width)) * outer_power
+
+
 def cmd_cb(data):
-    #parse command, use to enable/disable autonomous driving
-    enabled = data.enable
+    #enable/disable autonomous, forget current waypoints
+    if data.command == 'E':
+        enabled = True
+
+    elif data.command == 'D':
+        enabled = False
+
+    elif data.command == 'F':
+        waypoints = []
 
 def waypoint_cb(data):
     #add new waypoint to list
@@ -58,30 +74,36 @@ def waypoint_cb(data):
 
 def gps_cb(data):
     #how often does the gps publish? do we have to compare values here?
-    global position, prev_position, fix_time, good_fix
+    global position, prev_position, fix_time, good_fix, heading
 
     prev_position = position
     position = [data.latitude, data.longitude]
-    
-    fix_time = hms_to_s(data.time)
+    fix_time = hms_to_s(data.timeh, data.timem, data.times)
     good_fix = data.good_fix
+    heading = data.heading
 
 """ -MAIN LOOP- """
 def talker():
-    global enabled, fix_timeout
-    global position
+    global enabled, fix_timeout, debug_pub, good_fix
+    global position, heading
     global prev_fix_time, prev_linear_error, prev_angular_error
+    global Scale, Rover_Width, Rover_MinTurnRadius
 
     #setup ROS node
     rospy.init_node("ANS")
     
     pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
+    debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
 
-    #cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
+    cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
-    gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
+    gps_sub = rospy.Subscriber("/GPS_Data", GPS, gps_cb, queue_size=10)
 
-    rate = rospy.Rate(1)    #1 Hz
+    Scale = rospy.get_param("~Range", 0.5)
+    Rover_Width = rospy.get_param("~Rover_Width", 1)
+    Rover_MinTurnRadius = rospy.get_param("~Rover_MinTurnRadius", 2)
+
+    rate = rospy.Rate(2)    #2 Hz
 
     while not rospy.is_shutdown():
         #wait for enable
@@ -96,8 +118,8 @@ def talker():
             continue
         
         #only perform GPS calculations if GPS data is valid
-        #   !NOTE may want to check number of satellites > 4 instead?
         if good_fix:
+
             #update fix timer
             #   !NOTE may want to depend on an internal clock instead of satellite time?
             #   !NOTE this is based on the GPS module, not the ROS node
@@ -118,9 +140,12 @@ def talker():
             
             #get linear error in meters
             linear_error = geod['s12']
+            debug_pub.publish(str(linear_error))
 
             #calculate angle between pos and tgt
             #   assumes great-circle (spherical Earth) model
+
+            #TODO just use the 'azi1' parameter from the geodesic solution
             
             #convert lat-lon to radians
             pos = [radians(pos[0]), radians(pos[1])]
@@ -129,10 +154,13 @@ def talker():
             #calculate heading to target, then angular error
             kY = cos(tgt[0]) * sin(tgt[1] - pos[1])
             kX = (cos(pos[0]) * sin(tgt[0])) - (sin(pos[0]) * cos(tgt[0]) * cos(tgt[1] - pos[1]))
-
+            
             tgt_head = degrees(atan2(kY, kX))
-            angular_error = tgt_head - head
+            tgt_head = (tgt_head + 360) % 360
+            angular_error = tgt_head - heading
 
+            debug_pub.publish(str(tgt_head))
+            debug_pub.publish(str(head))
             #convert clockwise angle to counterclockwise
             #NOTE should do this to an abs angle, not the error!
             #angular_error = 360 - angular_error
@@ -149,6 +177,7 @@ def talker():
         #check if the target position has been reached
         if abs(linear_error) < LIN_ERROR_THRESHOLD:
             waypoints.pop(0)
+            debug_pub.publish("Reached Waypoint")
 
         #pass linear and angular error to separate PID controllers
         #   !NOTE may need to use modulus to fix angular rollover
@@ -161,23 +190,25 @@ def talker():
         right_power = linear_power - angular_power;
 
         #debug, apply power based on heading
-        print(angular_error)
+	debug_pub.publish(str(good_fix))
+	debug_pub.publish(str(angular_error))
+        debug_pub.publish(str(linear_error))
         
         if(angular_error < 0):
             print("Turning left...")
-            left_power = -0.5
-            right_power = 0.5
+            left_power = get_inner_power(Scale, Rover_MinTurnRadius)
+            right_power = Scale
 
         if(angular_error > 0):
             print("Turning right...")
-            left_power = 0.5
-            right_power = -0.5
+            left_power = Scale
+            right_power = get_inner_power(Scale, Rover_MinTurnRadius)
 
         if(abs(angular_error) < ANG_ERROR_THRESHOLD and
            abs(linear_error) > LIN_ERROR_THRESHOLD):
             print("Driving forward...")
-            left_power = 0.5
-            right_power = 0.5
+            left_power = Scale
+            right_power = Scale
 
         #override motor power if GPS data has been bad for a while
         if fix_timeout:
@@ -193,15 +224,6 @@ def talker():
 
         #wait for next iteration
         rate.sleep()
-
-""" -HELPER FUNCTION DEFINITIONS- """
-#convert from hours-minutes-seconds to seconds
-def hms_to_s(time):
-    h = time[0]
-    m = time[1]
-    s = time[2]
-    
-    return (h * 60 * 60) + (m * 60) + s;
 
 """ -MAIN FUNCTION- """
 if __name__ == '__main__':

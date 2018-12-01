@@ -18,7 +18,8 @@ def talker():
         while not rospy.is_shutdown():
                 print(gps._data)
                 gps.update()
-                pub.publish(gps.good_fix, gps.latitude, gps.longitude, gps.altitude, gps.speed, gps.heading, gps.satellites)
+                h,m,s =  gps.time;
+                pub.publish(gps.good_fix, gps.latitude, gps.longitude, gps.altitude, gps.speed, gps.heading, gps.satellites, h, m, s)
                 r.sleep()
         
 
