@@ -10,41 +10,53 @@
   </group>
 
   <group ns="Arm">
+    <arg name="ShoulderRot_Scale" value="-0.4" />
+    <arg name="ShoulderPitch_Scale" value="0.9" />
+    <arg name="ElbowPitch_Scale" value="1.0" />
+    <arg name="WristRot_Scale" value="0.3" />
+    <arg name="WristPitch_Scale" value="0.3" />
+    <arg name="ClawActuation_Scale" value="1.0" />
+
+    <node name="ShoulderRot_Ramping" pkg="mavric" type="Ramping.py" >
+      <param name="ramp_rate_up" value="300"/>
+      <param name="ramp_rate_down" value="400"/>
+      <param name="centerpoint" value="0"/>
+      <remap from="input" to="ShoulderRot"/>
+      <remap from="output" to="ShoulderRotRamped" />
+    </node>
+    <node name="ShoulderPitch_Ramping" pkg="mavric" type="Ramping.py" >
+      <param name="ramp_rate_up" value="100"/>
+      <param name="ramp_rate_down" value="200"/>
+      <param name="centerpoint" value="0"/>
+      <remap from="input" to="ShoulderPitch"/>
+      <remap from="output" to="ShoulderPitchRamped" />
+    </node>
+
     <node name="Arm_Scaling" pkg="mavric" type="LinearMapping.py" >
-      <param name="inputs" value="ShoulderRot,ShoulderPitch,ElbowPitch,WristRot,WristPitch,ClawActuation" />
+      <param name="inputs" value="ShoulderRotRamped,ShoulderPitchRamped,ElbowPitch,WristRot,WristPitch,ClawActuation" />
       <param name="outputs" value="$(eval 'pwm_path/CH15,pwm_path/CH14,pwm_path/CH13,pwm_path/CH12,pwm_path/CH11,pwm_path/CH10'.replace('pwm_path/', arg('pwm_path')))" />
-      <param name="slopes" value="$(eval str(list(map(lambda x: x*0.0005/100,[0.2,0.3,1,0.3,0.3,1])))[1:-1])" />
+      <param name="slopes" value="$(eval str(list(map(lambda x: x*0.0005/100,[arg('ShoulderRot_Scale'),arg('ShoulderPitch_Scale'),arg('ElbowPitch_Scale'),arg('WristRot_Scale'),arg('WristPitch_Scale'),arg('ClawActuation_Scale')])))[1:-1])" />
       <param name="intercepts" value="0.0015,0.0015,0.0015,0.0015,0.0015,0.0015" />
     </node>
-<!--	<node name="Arm_Control" pkg="mavric" type="Arm_S.py" respawn="true" output="screen">
-		<remap from="Arm_ShoulderRot" to="Command_ShoulderRot" />
-		<remap from="Arm_ShoulderPitch" to="Command_ShoulderPitch" />
-		
-		<remap from="Arm_ElbowPitch" to="Command_ElbowPitch" />
-		
-		<remap from="Arm_WristRot" to="Command_WristRot" />
-		<remap from="Arm_WristPitch" to="Command_WristPitch" />
-		
-		<remap from="Arm_ClawActuation" to="Command_ClawActuation" />
-		
-		<remap from="ShoulderRot" to="$(eval arg('pwm_path') + 'CH15')" />
-		<remap from="ShoulderPitch" to="$(eval arg('pwm_path') + 'CH14')" />
-		
-		<remap from="ElbowPitch" to="$(eval arg('pwm_path') + 'CH13')" />
-		
-		<remap from="WristRot" to="$(eval arg('pwm_path') + 'CH12')" />
-		<remap from="WristPitch" to="$(eval arg('pwm_path') + 'CH11')" />
-		
-		<remap from="ClawActuation" to="$(eval arg('pwm_path') + 'CH10')" />
-		<param name="Range" value="0.3" />
-		
-		<param name="ShoulderRot/Scale" value="-1" />
-		<param name="ShoulderPitch/Scale" value="1" />
-		<param name="ElbowPitch/Scale" value="3.333" />
-		<param name="WristRot/Scale" value="-1" />
-		<param name="WristPitch/Scale" value="1" />
-		<param name="ClawActuation/Scale" value="3.333" />
-	</node>
--->
+    <node name="ShoulderRotHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />     
+      <remap from="topic" to="ShoulderRot" />
+    </node>
+    <node name="ShoulderPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />     
+      <remap from="topic" to="ShoulderPitch" />
+    </node>
+    <node name="ElbowPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />     
+      <remap from="topic" to="ElbowPitch" />
+    </node>
+    <node name="WristPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />     
+      <remap from="topic" to="WristPitch" />
+    </node>
+    <node name="WristRotHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />     
+      <remap from="topic" to="WristRot" />
+    </node>
   </group>
 </launch>
