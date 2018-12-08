@@ -7,6 +7,7 @@
       <!-- Determine as SetPeriod/RealPeriod -->
       <param name="clk_error" value="1.09" />
     </node>
+	<node name="BNO055_IMU" pkg="mavric" type="BNO055_IMU.py" respawn="true" />
   </group>
 
   <group ns="Drive">  
