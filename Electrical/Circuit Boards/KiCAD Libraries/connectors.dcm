@@ -1,3 +1,8 @@
 EESchema-DOCLIB  Version 2.0
 #
+$CMP CONN_03X06
+D Connector, double row, 03x06, pin header
+K connector
+$ENDCMP
+#
 #End Doc Library
