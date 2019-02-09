@@ -1,27 +1,51 @@
-#!/usr/bin/env python
 import serial
+import time
 
-# Necessarry Commands:
-#  Q - reset spectrometer.
-#  a - set ascii mode (data)
-#  b - set binary mode (data)
-#  K# - set baud rate (initially 9600) with the following mappings:
-#         7 = 600 baud
-#         6 = 1200 baud
-#         5 = 2400 baud
-#         4 = 4800 baud
-#         3 = 9600 baud
-#         2 = 19200 baud
-#         1 = 38400 baud
-#         0 = 115200 baud
-#
-#  S - perform scan:
+com_port_name = "COM7"
 
-#  Data format:
-#    The device echos the command, then gives an "ACK\r\n" response
-#    After that, for a scan, the bytes are data.
-#    In binary mode, the first pixel (of 2048) is transmitted as 3 bytes, starting with 0x80, and then the MSB, then the LSB.
-#    After that, if the byte is 0x80, then the next 2 bytes are the MSB, LSB of the next pixel.
-#                otherwise, the next 1 byte is the signed 8-bit representation of the difference between the previous pixel and this one.
-#                  e.g. If the previous pixel was 1000, and the next byte is 0xFF, then this pixel is 999.
-#                  e.g. If the previous pixel was 1000, and the next byte is 0x08, then this pixel is 1008.
+com_port = serial.Serial(
+    port=com_port_name,
+    baudrate = 9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS,
+    timeout=1)
+
+print(com_port.isOpen())
+com_port.write("Q\r\n".encode())
+time.sleep(2)
+print(com_port.read(8))
+com_port.write("S\r\n".encode())
+
+def convByte(b):
+    if b > 127:
+        return (256-b) * (-1)
+    else:
+        return b
+
+file = com_port #=open("acq3.data", 'rb')
+print(file.read(8)) # "S\r\nACK\r\n"
+values = [];
+
+while True:
+    byte = file.read(1)
+    if len(byte)==0:
+        break
+    else:
+        byte = byte[0]
+        
+    if byte == 0x80:
+        result = file.read(2)
+        values.append(int(result[0]) << 8 | result[1])
+    
+    else:
+        values.append(values[-1]+convByte(byte))
+        pass
+file.close()
+
+file=open("acq.csv", 'w')
+for value in values:
+    # write it to a file as text with a comma after it
+    file.write(str(value)+",")
+    
+file.close()
