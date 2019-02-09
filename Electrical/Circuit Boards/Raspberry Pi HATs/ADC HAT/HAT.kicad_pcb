@@ -5,7 +5,7 @@
     (no_connects 1)
     (area 90.114287 72.333 185.100001 136.350001)
     (thickness 1.6)
-    (drawings 61)
+    (drawings 63)
     (tracks 224)
     (zones 0)
     (modules 31)
@@ -238,12 +238,12 @@
     )
   )
 
-  (module Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm (layer F.Cu) (tedit 5C0C2C7F) (tstamp 5C0C29B0)
+  (module Pin_Headers:Pin_Header_Straight_1x02_Pitch2.54mm (layer F.Cu) (tedit 5C5E5278) (tstamp 5C0C29B0)
     (at 110.91 84 90)
     (descr "Through hole straight pin header, 1x02, 2.54mm pitch, single row")
     (tags "Through hole pin header THT 1x02 2.54mm single row")
     (path /5C0CD12A)
-    (fp_text reference J1 (at 0 -2.33 90) (layer F.SilkS)
+    (fp_text reference J1 (at 0 -2.33 90) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value CONN_01X02 (at 0 4.87 90) (layer F.Fab) hide
@@ -1492,6 +1492,12 @@
     )
   )
 
+  (gr_text SCL (at 117.348 84.074) (layer F.SilkS)
+    (effects (font (size 1.5 1.5) (thickness 0.3)))
+  )
+  (gr_text SDA (at 106.68 84.074) (layer F.SilkS)
+    (effects (font (size 1.5 1.5) (thickness 0.3)))
+  )
   (gr_text "Only attach when\nVREF is grounded" (at 152.4 109.728 270) (layer F.SilkS)
     (effects (font (size 1.5 1.5) (thickness 0.3)))
   )
