@@ -990,4 +990,5 @@ Wire Wire Line
 	6500 2400 6500 2600
 Text Notes 6450 2950 2    60   ~ 0
 REFCOMP must\nfloat when VREF\nis not grounded\notherwise, set\nREFCOMP to\nthe desired ref
+Connection ~ 5950 2150
 $EndSCHEMATC
