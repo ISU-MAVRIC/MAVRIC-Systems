@@ -1,51 +1,57 @@
 import serial
-import time
-
-com_port_name = "COM7"
-
-com_port = serial.Serial(
-    port=com_port_name,
-    baudrate = 9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS,
-    timeout=1)
-
-print(com_port.isOpen())
-com_port.write("Q\r\n".encode())
-time.sleep(2)
-print(com_port.read(8))
-com_port.write("S\r\n".encode())
 
 def convByte(b):
-    if b > 127:
-        return (256-b) * (-1)
-    else:
-        return b
-
-file = com_port #=open("acq3.data", 'rb')
-print(file.read(8)) # "S\r\nACK\r\n"
-values = [];
-
-while True:
-    byte = file.read(1)
-    if len(byte)==0:
-        break
-    else:
-        byte = byte[0]
+        if b > 127:
+            return (256-b) * (-1)
+        else:
+            return b
         
-    if byte == 0x80:
-        result = file.read(2)
-        values.append(int(result[0]) << 8 | result[1])
+class Spectrometerdriver:
     
-    else:
-        values.append(values[-1]+convByte(byte))
-        pass
-file.close()
+    _port = serial.Serial()
+    
+    def __init__(self, port):
+        self._port.port = port
+        self._port = serial.Serial(
+            port     = port,
+            baudrate = 9600,
+            parity   = serial.PARITY_NONE,
+            stopbits = serial.STOPBITS_ONE,
+            bytesize = serial.EIGHTBITS,
+            timeout  = 1)
+        
+    
+    def reset(self):
+        self._port.write("Q\r\n".encode())
+        response = self._port.read(8).decode()
+        if response != "Q\r\nACK\r\n":
+            return False;
+        return True;
+    
+    def scan(self):
+        self._port.write("S\r\n".encode())
+        response = self._port.read(8).decode()
+        if response != "S\r\nACK\r\n":
+            return False;
+        
+        values = [];
 
-file=open("acq.csv", 'w')
-for value in values:
-    # write it to a file as text with a comma after it
-    file.write(str(value)+",")
+        while True:
+            byte = self._port.read(1)
+            if len(byte)==0:
+                break
+            else:
+                byte = byte[0]
+                
+            if byte == 0x80:
+                result = self._port.read(2)
+                values.append(int(result[0]) << 8 | result[1])
+            
+            else:
+                values.append(values[-1]+convByte(byte))
+        return values;
     
-file.close()
+    def close(self):
+        self._port.close()
+        
+
