@@ -41,7 +41,7 @@ def read_adc(adc_address, adc_channel):
 
 
 def talker():
-    for i in range(0, 2):  #supports 16, 2 for testing
+    for i in range(0, 16):  #supports 16
         pub = rospy.Publisher("ADC_Channels/CH" + str(i), Float64, queue_size=10)
         publishers.append(pub)
 
@@ -52,7 +52,7 @@ def talker():
     rate = rospy.Rate(frequency)
 
     while not rospy.is_shutdown():
-        for i in range(0, 2):  #supports 16, 2 for testing
+        for i in range(0, 16):  #supports 16
             adc_val = channel_multipliers[i] * read_adc(adc_address, i)
             publishers[i].publish(adc_val)
 
