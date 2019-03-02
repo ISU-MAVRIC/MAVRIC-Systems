@@ -1,13 +1,17 @@
 <launch>
   <arg name="pwm_path" value="/Drive_Board_HW/PWM_Channels/PulseTimeControl/" />
   <arg name="simulated" default="false" />
+
   <group ns="Drive_Board_HW" unless="$(arg simulated)">
     <node name="PCA9685_PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="frequency" value="50" />
       <!-- Determine as SetPeriod/RealPeriod -->
       <param name="clk_error" value="1.09" />
     </node>
-	<node name="BNO055_IMU" pkg="mavric" type="BNO055_IMU.py" respawn="true" />
+    <node name="BNO055_IMU" pkg="mavric" type="BNO055_IMU.py" respawn="true" output="screen">
+      <param name="pwm_offset_ms" value="0.10" />
+      <remap from="IMU_Cal_Servo" to="$(eval arg('pwm_path') + 'CH15')" />
+    </node>
   </group>
 
   <group ns="Drive">  
