@@ -48,6 +48,8 @@ fix_timeout = False
 linearPID = PID(L_P, L_I, L_D, setpoint=0)  #minimize error
 angularPID = PID(A_P, A_I, A_D, setpoint=0) #minimize error
 
+debug_pub = None
+
 """ -HELPER FUNCTION DEFINITIONS- """
 #convert from hours-minutes-seconds to seconds
 def hms_to_s(h,m,s):
@@ -75,10 +77,10 @@ def waypoint_cb(data):
 def gps_cb(data):
     #how often does the gps publish? do we have to compare values here?
     global position, prev_position, fix_time, good_fix, heading
-
+    
     prev_position = position
     position = [data.latitude, data.longitude]
-    fix_time = hms_to_s(data.timeh, data.timem, data.times)
+    fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
     good_fix = data.good_fix
     heading = data.heading
 
@@ -94,7 +96,7 @@ def talker():
     
     pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
-
+    
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
     gps_sub = rospy.Subscriber("/GPS_Data", GPS, gps_cb, queue_size=10)
@@ -104,7 +106,6 @@ def talker():
     Rover_MinTurnRadius = rospy.get_param("~Rover_MinTurnRadius", 2)
 
     rate = rospy.Rate(2)    #2 Hz
-
     while not rospy.is_shutdown():
         #wait for enable
         if not enabled:
@@ -137,10 +138,12 @@ def talker():
             #solve the geodesic problem corresponding to these lat-lon values
             #   assumes WGS-84 ellipsoid model
             geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
-            
+            debug_pub.publish('cur lat, long, tgt lat, lon : %f, %f, %f, %f' % (pos[0], pos[1], tgt[0], tgt[1]))
             #get linear error in meters
-            linear_error = geod['s12']
-            debug_pub.publish(str(linear_error))
+            debug_pub.publish(str(geod))
+            linear_error = float(geod['s12'])
+            debug_pub.publish(str(float(geod['s12'])))
+            debug_pub.publish('lin_error %f' % linear_error)
 
             #calculate angle between pos and tgt
             #   assumes great-circle (spherical Earth) model
@@ -159,8 +162,8 @@ def talker():
             tgt_head = (tgt_head + 360) % 360
             angular_error = tgt_head - heading
 
-            debug_pub.publish(str(tgt_head))
-            debug_pub.publish(str(head))
+            debug_pub.publish('heading to target: %f' % (tgt_head))
+            debug_pub.publish('current heading: %f' % (heading))
             #convert clockwise angle to counterclockwise
             #NOTE should do this to an abs angle, not the error!
             #angular_error = 360 - angular_error
@@ -196,13 +199,13 @@ def talker():
         
         if(angular_error < 0):
             print("Turning left...")
-            left_power = get_inner_power(Scale, Rover_MinTurnRadius)
+            left_power = -Scale  #get_inner_power(Scale, Rover_MinTurnRadius)
             right_power = Scale
 
         if(angular_error > 0):
             print("Turning right...")
             left_power = Scale
-            right_power = get_inner_power(Scale, Rover_MinTurnRadius)
+            right_power = -Scale #get_inner_power(Scale, Rover_MinTurnRadius)
 
         if(abs(angular_error) < ANG_ERROR_THRESHOLD and
            abs(linear_error) > LIN_ERROR_THRESHOLD):
