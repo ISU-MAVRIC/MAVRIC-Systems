@@ -43,6 +43,7 @@ prev_fix_time = 0
 
 enabled = True
 good_fix = False
+good_imu = False
 fix_timeout = False
 
 linearPID = PID(L_P, L_I, L_D, setpoint=0)  #minimize error
@@ -76,13 +77,27 @@ def waypoint_cb(data):
 
 def gps_cb(data):
     #how often does the gps publish? do we have to compare values here?
-    global position, prev_position, fix_time, good_fix, heading
-    
+    global position, prev_position, fix_time, good_fix #, heading
+
     prev_position = position
     position = [data.latitude, data.longitude]
     fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
     good_fix = data.good_fix
-    heading = data.heading
+    #heading = data.heading
+
+def imu_cb(data):
+    global heading, good_imu
+
+    if good_imu:
+        heading = data.z
+
+def imu_cal_cb(data):
+    global good_imu
+
+    if data.z > 0:
+        good_imu = True
+    else:
+        good_imu = False
 
 """ -MAIN LOOP- """
 def talker():
@@ -100,6 +115,9 @@ def talker():
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
     gps_sub = rospy.Subscriber("/GPS_Data", GPS, gps_cb, queue_size=10)
+
+    imu_sub = rospy.Subscriber("/Drive_Board_HW/IMU/FusedAngle", Vector3, imu_cb, queue_size=10)
+    imu_cal_sub = rospy.Subscriber("/Drive_Board_HW/IMU/SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
 
     Scale = rospy.get_param("~Range", 0.5)
     Rover_Width = rospy.get_param("~Rover_Width", 1)
@@ -148,8 +166,6 @@ def talker():
             #calculate angle between pos and tgt
             #   assumes great-circle (spherical Earth) model
 
-            #TODO just use the 'azi1' parameter from the geodesic solution
-            
             #convert lat-lon to radians
             pos = [radians(pos[0]), radians(pos[1])]
             tgt = [radians(tgt[0]), radians(tgt[1])]
@@ -164,6 +180,10 @@ def talker():
 
             debug_pub.publish('heading to target: %f' % (tgt_head))
             debug_pub.publish('current heading: %f' % (heading))
+
+            #just use the 'azi1' parameter from the geodesic solution
+            #angular_error = geod['azi1'] - heading
+            
             #convert clockwise angle to counterclockwise
             #NOTE should do this to an abs angle, not the error!
             #angular_error = 360 - angular_error
