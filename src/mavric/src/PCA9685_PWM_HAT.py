@@ -14,9 +14,9 @@
 
 import rospy
 from std_msgs.msg import Float64
-import Adafruit_PCA9685
+import PCA9685
 
-pwm = Adafruit_PCA9685.PCA9685()
+pwm = PCA9685.PCA9685()
 period = 0
 
 def time_callback(data, channel):
