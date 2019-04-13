@@ -34,7 +34,7 @@
 
     <node name="Arm_Scaling" pkg="mavric" type="LinearMapping.py" >
       <param name="inputs" value="ShoulderRotRamped,ShoulderPitchRamped,ElbowPitch,WristRot,WristPitch,ClawActuation" />
-      <param name="outputs" value="$(eval 'pwm_path/CH15,pwm_path/CH14,pwm_path/CH13,pwm_path/CH12,pwm_path/CH11,pwm_path/CH10'.replace('pwm_path/', arg('pwm_path')))" />
+      <param name="outputs" value="$(eval 'pwm_path/CH15,pwm_path/CH11,pwm_path/CH13,pwm_path/CH12,pwm_path/CH14,pwm_path/CH10'.replace('pwm_path/', arg('pwm_path')))" />
       <param name="slopes" value="$(eval str(list(map(lambda x: x*0.0005/100,[arg('ShoulderRot_Scale'),arg('ShoulderPitch_Scale'),arg('ElbowPitch_Scale'),arg('WristRot_Scale'),arg('WristPitch_Scale'),arg('ClawActuation_Scale')])))[1:-1])" />
       <param name="intercepts" value="0.0015,0.0015,0.0015,0.0015,0.0015,0.0015" />
     </node>

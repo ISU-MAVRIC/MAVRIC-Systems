@@ -6,9 +6,14 @@
       <!-- we want to run as fast as possible here -->
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
     </node>
+	
 <!--    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
       <remap from="GPS_Data" to="/GPS_Data" />
     </node> -->
+	
+	<node name="LTC2497_ADC_HAT" pkg="mavric" type="LTC2497_ADC_HAT.py" respawn="true">
+		<param name="frequency" value="10" />
+	</node>
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" >
