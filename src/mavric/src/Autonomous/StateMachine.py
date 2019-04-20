@@ -3,8 +3,9 @@ class StateMachine:
         self._prevState = initialState
         self._currentState = initialState
 
-        self._currentState.enter()
-        self._currentState.run()
+	#maybe add in? currently problems w/ idle publishing in enter() before main()
+        #self._currentState.enter()
+        #self._currentState.run()
 
     def run(self):
         self._prevState = self._currentState

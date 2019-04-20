@@ -1,6 +1,12 @@
 import auto_globals
+from geographiclib.geodesic import Geodesic
+from math import copysign
 
 from StateMachine import State
+
+#define functions
+def get_inner_power(outer_power, radius):
+    return (radius / (radius + auto_globals.Rover_Width)) * outer_power
 
 class TurnTowardWaypoint(State):
     def __init__(self, stateMachine):
@@ -25,26 +31,13 @@ class TurnTowardWaypoint(State):
         geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
         
         #get linear error in meters
-        linear_error = geod['s12']
+        self.linear_error = geod['s12']
 
-        #calculate angle between pos and tgt
-        #   assumes great-circle (spherical Earth) model
-
-        #convert lat-lon to radians
-        #pos = [radians(pos[0]), radians(pos[1])]
-        #tgt = [radians(tgt[0]), radians(tgt[1])]
-
-        #calculate heading to target, then angular error
-        #kY = cos(tgt[0]) * sin(tgt[1] - pos[1])
-        #kX = (cos(pos[0]) * sin(tgt[0])) - (sin(pos[0]) * cos(tgt[0]) * cos(tgt[1] - pos[1]))
-        
-        #tgt_head = degrees(atan2(kY, kX))
-        #tgt_head = (tgt_head + 360) % 360
-        #angular_error = tgt_head - heading
-
-
-        #just use the 'azi1' parameter from the geodesic solution
+        #get angular error in CW degrees (account for 360 rollover)
         self.angular_error = geod['azi1'] - auto_globals.heading
+	self.angular_error = copysign(abs(self.angular_error) % 360, self.angular_error)
+
+	#TODO: turning +2 is better than -358
 
         #apply power based on heading
         left_power = 0
@@ -55,7 +48,7 @@ class TurnTowardWaypoint(State):
             left_power = get_inner_power(auto_globals.Scale, auto_globals.Rover_MinTurnRadius)
             right_power = auto_globals.Scale
 
-        if(angular_error > 0):
+        if(self.angular_error > 0):
             #turn right
             left_power = auto_globals.Scale
             right_power = get_inner_power(auto_globals.Scale, auto_globals.Rover_MinTurnRadius)
@@ -65,11 +58,14 @@ class TurnTowardWaypoint(State):
         #remember angular error for the next cycle
         auto_globals.prev_angular_error = self.angular_error
 
+	auto_globals.debug_pub.publish("ang error, left power, right power")
+	auto_globals.debug_pub.publish("%d, %d, %d" % (self.angular_error, left_power, right_power))
+
     def next(self):
         if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
             return self._stateMachine.idle
 
-        if(abs(self.angular_error) < auto_globals.ANG_ERROR_THRESHOLD)
+        if(abs(self.angular_error) < auto_globals.ANG_ERROR_THRESHOLD):
             return self._stateMachine.driveTowardWaypoint
-        
+
         return self._stateMachine.turnTowardWaypoint

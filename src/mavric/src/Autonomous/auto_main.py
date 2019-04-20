@@ -5,7 +5,7 @@ import auto_globals
 import rospy
 
 from std_msgs.msg import String
-from geometric_msgs.msg import Vector3
+from geometry_msgs.msg import Vector3
 from mavric.msg import Autonomous, Waypoint, Drivetrain, GPS
 
 from StateMachine import StateMachine, State
@@ -15,14 +15,14 @@ from DriveTowardWaypointState import DriveTowardWaypoint
 from ReachedWaypointState import ReachedWaypoint
 
 #define state machine class
-class Autonomous(StateMachine):
+class AutonomousStateMachine(StateMachine):
     def __init__(self):
-        StateMachine.__init__(self, Autonomous.idle)
+        StateMachine.__init__(self, AutonomousStateMachine.idle)
 
-Autonomous.idle = Idle(Autonomous)
-Autonomous.turnTowardWaypoint = TurnTowardWaypoint(Autonomous)
-Autonomous.driveTowardWaypoint = DriveTowardWaypoint(Autonomous)
-Autonomous.reachedWaypoint = ReachedWaypoint(Autonomous)
+AutonomousStateMachine.idle = Idle(AutonomousStateMachine)
+AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(AutonomousStateMachine)
+AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(AutonomousStateMachine)
+AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(AutonomousStateMachine)
 
 #define functions
 def hms_to_s(h,m,s):
@@ -65,14 +65,17 @@ def imu_cal_cb(data):
     #else:
     #    auto_globals.good_imu = False
 
+#define publishers
+#auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
+#auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
+
 #main loop
-auto = Autonomous()
+auto = AutonomousStateMachine()
 
 def main():
     #setup ROS node
     rospy.init_node("ANS")
 
-    #globalize publishers somehow
     auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
 
@@ -88,7 +91,7 @@ def main():
     auto_globals.Rover_MinTurnRadius = rospy.get_param("~Rover_MinTurnRadius", 2)
 
     rate = rospy.Rate(2)    #2 Hz
-    
+
     while not rospy.is_shutdown():
         auto.run()
         rate.sleep()
@@ -96,5 +99,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except:
+    except rospy.ROSInterruptException:
         pass
