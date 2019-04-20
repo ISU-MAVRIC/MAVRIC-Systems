@@ -31,7 +31,7 @@ while running:
         running = 0
 
     screen.fill(bgcolor)
-    pygame.draw.lines(screen, linecolor1, False,  ((originX,originY),(originX + B, originY - C),(originX + B + 100, originY - C), (originX + B + 200, originY - 100), 1))
+    pygame.draw.lines(screen, linecolor1, False,  ((originX,originY),(originX + B, originY - C),(originX + B + 100, originY - C), (originX + B + 200, originY - 100)))
 	#So I drew the lines in a rough arm shape for visualization, you're going to want to find a way to get the data into points and draw the lines with the proof of concept.
     pygame.draw.line(screen, linecolor2, (10,10), (10,height - 10))
     pygame.draw.line(screen, linecolor2, (10,height - 10), (width - 10,height - 10))
