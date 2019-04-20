@@ -5,6 +5,7 @@ import time
 import rospy
 
 from std_msgs.msg import String
+from geometry_msgs.msg import Vector3
 from mavric.msg import Autonomous, Waypoint, Drivetrain, GPS
 
 from math import sin, cos, atan2, radians, degrees
@@ -83,21 +84,24 @@ def gps_cb(data):
     position = [data.latitude, data.longitude]
     fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
     good_fix = data.good_fix
-    #heading = data.heading
+    heading = data.heading
 
 def imu_cb(data):
     global heading, good_imu
 
     if good_imu:
-        heading = data.z
+        #heading = data.z
+	pass
 
 def imu_cal_cb(data):
     global good_imu
 
-    if data.z > 0:
-        good_imu = True
-    else:
-        good_imu = False
+    good_imu = True
+
+    #if data.z > 0:
+    #    good_imu = True
+    #else:
+    #    good_imu = False
 
 """ -MAIN LOOP- """
 def talker():
