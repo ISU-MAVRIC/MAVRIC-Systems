@@ -81,10 +81,10 @@ def main():
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
-    gps_sub = rospy.Subscriber("/GPS_Data", GPS, gps_cb, queue_size=10)
+    gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
 
-    imu_sub = rospy.Subscriber("/Drive_Board_HW/IMU/FusedAngle", Vector3, imu_cb, queue_size=10)
-    imu_cal_sub = rospy.Subscriber("/Drive_Board_HW/IMU/SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
+    imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
+    imu_cal_sub = rospy.Subscriber("SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
 
     auto_globals.Scale = rospy.get_param("~Range", 0.5)
     auto_globals.Rover_Width = rospy.get_param("~Rover_Width", 1)
