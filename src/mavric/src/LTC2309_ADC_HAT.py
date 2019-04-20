@@ -21,7 +21,10 @@ def read_adc(adc_address, adc_channel):
     #print(adc_channel)
     sign = adc_channel%2
     sel = adc_channel/2
-    bus.write(bytearray(0b10001000 | (sign << 6) | (sel << 4)))
+    message = bytearray()
+    message.append(0b10001000 | (sign << 6) | (sel << 4))
+    print(len(message))
+    bus.write(message)
 
     reading = bus.read(i2c_read_bytes)
     valor = (((reading[0]) << 4) + (reading[1] >> 4))
