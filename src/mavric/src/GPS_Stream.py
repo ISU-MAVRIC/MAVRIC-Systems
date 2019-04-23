@@ -13,7 +13,7 @@ def talker():
         rospy.init_node('GPS_Streamer')
         pub = rospy.Publisher("GPS_Data", mavric.msg.GPS, queue_size=10, latch=True)
         r = rospy.Rate(10);
-        gps = GPS('/dev/serial0')
+        gps = GPS('/dev/ttyS0')
         gps.begin()
         while not rospy.is_shutdown():
                 print(gps._data)

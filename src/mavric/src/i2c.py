@@ -34,7 +34,6 @@ class I2C:
         wasOpen = self._isOpen
         if (not wasOpen):
             self.open()
-            print(bytes)
         self.fw.write(bytes)
         if (not wasOpen):
             self.close()

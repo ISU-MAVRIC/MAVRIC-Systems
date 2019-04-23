@@ -63,7 +63,7 @@ def software_reset(busnum=1):
 class PCA9685(object):
     """PCA9685 PWM LED/servo controller."""
 
-    def __init__(self, busnum=1, address=PCA9685_ADDRESS):
+    def __init__(self, address=PCA9685_ADDRESS, busnum=1):
         """Initialize the PCA9685."""
         # Setup I2C interface for the device.
         self._i2c = SMBus(busnum)
