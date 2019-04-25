@@ -16,13 +16,18 @@ def talker():
         inputs = rospy.get_param('~inputs', '').split(',')
         outputs = rospy.get_param('~outputs', '').split(',')
 
-        slopes = map(float,rospy.get_param('~slopes', '0').split(','))
-        intercepts = map(float,rospy.get_param('~intercepts', '0').split(','))
+        slopes = rospy.get_param('~slopes', '0')
+        if type(slopes) == str:
+                slopes = map(float,slopes.split(','))
+        else:
+                slopes = [slopes]
+                
+        intercepts = rospy.get_param('~intercepts', '0')
+        if type(intercepts) == str:
+                intercepts = map(float,intercepts.split(','))
+        else:
+                intercepts = [intercepts]
 
-        print(inputs)
-        print(outputs)
-        print(slopes)
-        print(intercepts)
         if len(inputs) != len(outputs):
                 raise ValueError("The inputs and outputs are not the same size")
         if len(inputs) != len(slopes):

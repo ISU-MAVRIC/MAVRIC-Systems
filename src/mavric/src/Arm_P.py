@@ -24,12 +24,6 @@ data = 'stop'
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-host = ""
-port = 10001
-
-print(host)
-print(port)
-
 def talker():
     #Arm commands update one joint at a time, so we need one topic per joint
     pub_shoulder_r = rospy.Publisher("ShoulderRot", Float64, queue_size=10)
@@ -43,8 +37,8 @@ def talker():
     pub_claw_a = rospy.Publisher("ClawActuation", Float64, queue_size=10)
     
     rospy.init_node('ARP')
-
-    serversocket.bind((host, port))
+    port = rospy.get_param("port", 10001)
+    serversocket.bind(('', port))
     serversocket.listen(1)
 
     rospy.loginfo('server started')
