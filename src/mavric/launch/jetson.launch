@@ -3,23 +3,23 @@
   <arg name="noarm" default="false" />
   <arg name="nocooling" default="false" />
 
-  <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/PulseTimeConrol/CH0" />
-  <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/PulseTimeConrol/CH1" />
-  <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/PulseTimeConrol/CH2" />
-  <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/PulseTimeConrol/CH3" />
-  <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/PulseTimeConrol/CH4" />
-  <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/PulseTimeConrol/CH5" />
+  <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
+  <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
+  <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH2" />
+  <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH3" />
+  <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH4" />
+  <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH5" />
 
-  <arg name="FrontLeftPWM_CH"     value="/HW/SlowPWM/PulseTimeConrol/CH6" />
-  <arg name="MiddleLeftPWM_CH"    value="/HW/SlowPWM/PulseTimeConrol/CH7" />
-  <arg name="BackLeftPWM_CH"      value="/HW/SlowPWM/PulseTimeConrol/CH8" />
-  <arg name="FrontRightPWM_CH"    value="/HW/SlowPWM/PulseTimeConrol/CH9" />
-  <arg name="MiddleRightPWM_CH"   value="/HW/SlowPWM/PulseTimeConrol/CH10" />
-  <arg name="BackRightPWM_CH"     value="/HW/SlowPWM/PulseTimeConrol/CH11" />
-  
+  <arg name="FrontLeftPWM_CH"     value="/HW/SlowPWM/CH6" />
+  <arg name="MiddleLeftPWM_CH"    value="/HW/SlowPWM/CH7" />
+  <arg name="BackLeftPWM_CH"      value="/HW/SlowPWM/CH8" />
+  <arg name="FrontRightPWM_CH"    value="/HW/SlowPWM/CH9" />
+  <arg name="MiddleRightPWM_CH"   value="/HW/SlowPWM/CH10" />
+  <arg name="BackRightPWM_CH"     value="/HW/SlowPWM/CH11" />
+
   <group ns="HW" unless="$(arg simulated)">
     <node name="FastPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
-      <remap from="PWM_Channels" to="FastPWM" />
+      <remap from="PWM_Channels/DutyCycleControl" to="FastPWM" />
       <param name="frequency" value="25000" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
@@ -29,7 +29,7 @@
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
     </node>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
-      <remap from="PWM_Channels" to="SlowPWM" />
+      <remap from="PWM_Channels/PulseTimeControl" to="SlowPWM" />
       <param name="frequency" value="250" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
@@ -53,8 +53,8 @@
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" unless="$(arg nocooling)">
-    <arg name="Fan_Output_Out" value="/HW/FastPWM/DutyCycleControl/CH0" />
-    <arg name="Fan_Output_In"  value="/HW/FastPWM/DutyCycleControl/CH1" />
+    <arg name="Fan_Output_Out" value="/HW/FastPWM/CH0" />
+    <arg name="Fan_Output_In"  value="/HW/FastPWM/CH1" />
     <arg name="simulated" value="$(arg simulated)" />
   </include>
   
