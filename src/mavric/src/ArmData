@@ -1,0 +1,15 @@
+To access arm potentiometer data:
+
+Putty IP 13 for arm board
+
+catkin_ws/src/mavric/src
+./2309_ADC_HAT.py
+
+In new Putty session:
+
+$ rostopic echo/ADC_channels/CH#
+
+CH0-elbow
+CH1-shoulder
+CH2-wrist
+CH3-base
