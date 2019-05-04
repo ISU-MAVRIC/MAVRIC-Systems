@@ -85,7 +85,7 @@ class PCA9685(object):
         prescaleval -= 1.0
         logger.debug('Setting PWM frequency to {0} Hz'.format(freq_hz))
         logger.debug('Estimated pre-scale: {0}'.format(prescaleval))
-        prescale = int(math.floor(prescaleval + 0.5))
+        prescale = min(int(math.floor(prescaleval + 0.5)), 255)
         logger.debug('Final pre-scale: {0}'.format(prescale))
         oldmode = self._i2c.read_byte_data(self._device, MODE1);
         newmode = (oldmode & 0x7F) | 0x10    # sleep

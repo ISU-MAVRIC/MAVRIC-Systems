@@ -2,6 +2,7 @@
   <arg name="simulated" default="false" />
   <arg name="noarm" default="false" />
   <arg name="nocooling" default="false" />
+  <arg name="nogps" default="false" />
 
   <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
   <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
@@ -19,7 +20,8 @@
 
   <group ns="HW" unless="$(arg simulated)">
     <node name="FastPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
-      <remap from="PWM_Channels/DutyCycleControl" to="FastPWM" />
+      <param name="container" value="FastPWM/" />
+      <param name="control_mode" value="DutyCycle" />
       <param name="frequency" value="25000" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
@@ -29,7 +31,8 @@
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
     </node>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
-      <remap from="PWM_Channels/PulseTimeControl" to="SlowPWM" />
+      <param name="container" value="SlowPWM/" />
+      <param name="control_mode" value="PulseTime" />
       <param name="frequency" value="250" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
@@ -39,7 +42,7 @@
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
     </node>
 	
-    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" unless="$(arg nogps)" >
       <remap from="GPS_Data" to="/GPS_Data" />
     </node>
 	

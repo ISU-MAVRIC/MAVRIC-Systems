@@ -40,13 +40,23 @@ def listener():
         period = 1./freq
         clk_error = rospy.get_param('~clk_error', 1);
         address = rospy.get_param('~address', 0x40);
+        mode = rospy.get_param('~control_mode', "both");
+        container = rospy.get_param('~container', "PWM_Channels/");
+        
         pwm = PCA9685.PCA9685(address=address)
         print("freq period corrected_freq")
         print(freq, period, freq/clk_error)
         pwm.set_pwm_freq(freq/clk_error)
         for i in range(16):
-                rospy.Subscriber("PWM_Channels/PulseTimeControl/CH"+str(i), Float64, time_callback, i, queue_size=10)
-                rospy.Subscriber("PWM_Channels/DutyCycleControl/CH"+str(i), Float64, percent_callback, i, queue_size=10)
+                if (mode == "DutyCycle"):
+                        rospy.Subscriber(container + "CH"+str(i), Float64, percent_callback, i, queue_size=10)
+                        
+                elif (mode == "PulseTime"):
+                        rospy.Subscriber(container + "CH"+str(i), Float64, time_callback, i, queue_size=10)
+                
+                else: #if (mode == "both"):
+                        rospy.Subscriber(container + "PulseTimeControl/CH"+str(i), Float64, time_callback, i, queue_size=10)
+                        rospy.Subscriber(container + "DutyCycleControl/CH"+str(i), Float64, percent_callback, i, queue_size=10)
 
         rospy.spin()
 
