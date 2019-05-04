@@ -32,13 +32,13 @@ def talker():
         pub = rospy.Publisher("ADC_Channels/CH" + str(i), Float64, queue_size=10)
         publishers.append(pub)
 
-    frequency = 8*rospy.get_param("~frequency", 100);
+    frequency = rospy.get_param("~frequency", 100);
     i2c_address = rospy.get_param("~address", 0x18);
     rate = rospy.Rate(frequency)
-    adc = I2C(adc_address, 1)
+    adc = I2C(i2c_address, 1)
 
     while not rospy.is_shutdown():
-        for i in range(0, 8):  #supports 16
+        for i in range(0, 8):
             adc_val = read_adc(adc, i)
             publishers[i].publish(adc_val)
 
