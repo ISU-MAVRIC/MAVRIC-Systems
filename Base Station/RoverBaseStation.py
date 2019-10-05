@@ -151,8 +151,7 @@ def add_autonomous_waypoint(mouse_click_pos):
     waypoints.append(map_pos_gps)
     waypoints_draw.append(gps_to_screen_pos(map_pos_gps))
 
-    print(map_pos_gps)
-    rover.addWaypoint(map_pos_gps)
+    rover.addWaypoint(float(map_pos_gps[0]), float(map_pos_gps[1]))
 
 def gps_to_screen_pos(gps_pos):
     #solve the inverse geodesic problem to find the rover's position in meters

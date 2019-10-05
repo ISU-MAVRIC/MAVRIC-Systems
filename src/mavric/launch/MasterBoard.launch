@@ -43,15 +43,17 @@
     <remap from="Autonomous" to="Autonomous_Command" />
       <remap from="Next_Waypoint" to="Next_Waypoint" />
     </node>
-    <node name="Autonomous_Logic" pkg="mavric" type="Autonomous_S.py" respawn="true">
+    <node name="Autonomous_Logic" pkg="mavric" type="auto_main.py" respawn="true" output="screen">
       <remap from="Autonomous" to="Autonomous_Command" />
       <remap from="Drive_Train" to="Command" />
       <remap from="Next_Waypoint" to="Next_Waypoint" />
       <remap from="GPS" to="/GPS_Data" />
-	  
-	  <param name="Range" value="0.5" />
-	  <param name="Rover_Width" value="0.855" />
-	  <param name="Rover_MinTurnRadius" value="2" /> <!-- TODO: measure me -->
+      <remap from="FusedAngle" to="/Drive_Board_HW/IMU/FusedAngle" />
+      <remap from="SensorCalibrations" to="/Drive_Board_HW/IMU/SensorCalibrations" />
+
+      <param name="Range" value="0.5" />
+      <param name="Rover_Width" value="0.855" />
+      <param name="Rover_MinTurnRadius" value="2" /> <!-- TODO: measure me -->
     </node>
   </group>
 
