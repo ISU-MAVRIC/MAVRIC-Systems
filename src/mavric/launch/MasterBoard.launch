@@ -9,6 +9,9 @@
     <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
       <remap from="GPS_Data" to="/GPS_Data" />
     </node>
+	<node name="LTC2497_ADC_HAT" pkg="mavric" type="LTC2497_ADC_HAT.py" respawn="true">
+		<param name="frequency" value="10" />
+	</node>
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" >
