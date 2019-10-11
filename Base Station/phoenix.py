@@ -29,6 +29,8 @@ class Phoenix:
             self._actuator_getter.close()
 
     def killAll(self):
+        self.disableAutonomous()
+        
         self.setWheels(0, 0)
         self.setArmBaseRot(0)
         self.setArmBasePitch(0)
@@ -86,6 +88,49 @@ class Phoenix:
 
     def setArmClawActuation(self, rate):
         self.setArm('CC', rate)
+
+    def enableAutonomous(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((self._ip, 9002))
+            s.sendall('NE'.encode())
+            s.close()
+
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((self._ip, 9003))
+            s.sendall('NE'.encode())
+            s.close()
+            
+        except socket.error as e:
+            print(e)
+
+    def addWaypoint(self, latitude, longitude):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((self._ip, 9003))
+            s.sendall(('NW'+str(latitude)+','+str(longitude)).encode())
+            s.close()
+        except socket.error as e:
+            print(e)
+
+    def disableAutonomous(self):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((self._ip, 9002))
+            s.sendall('ND'.encode())
+            s.close()
+
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(1)
+            s.connect((self._ip, 9003))
+            s.sendall('ND'.encode())
+            s.close()
+        except socket.error as e:
+            print(e)
 
     @property
     def temperature(self):

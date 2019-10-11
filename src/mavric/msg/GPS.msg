@@ -3,7 +3,7 @@ bool good_fix
 
 #degrees
 float64 latitude
-float64 longititude
+float64 longitude
 
 #meters
 float64 altitude
@@ -16,3 +16,7 @@ float64 heading
 
 #count
 int16 num_satellites
+
+int16 time_h
+int16 time_m
+float32 time_s
