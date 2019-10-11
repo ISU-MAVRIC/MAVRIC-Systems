@@ -20,8 +20,6 @@ LIBS:intel
 LIBS:audio
 LIBS:interface
 LIBS:opto
-LIBS:HAT_parts
-LIBS:HAT-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -100,7 +98,9 @@ Connection ~ 3150 2650
 Wire Wire Line
 	3300 2650 3300 2600
 Wire Wire Line
-	3150 2650 3600 2650
+	3150 2650 3300 2650
+Wire Wire Line
+	3300 2700 3600 2700
 Wire Wire Line
 	3600 2650 3600 2600
 Wire Wire Line
@@ -109,11 +109,11 @@ Wire Wire Line
 	3450 2200 3450 2700
 Connection ~ 3450 3000
 Wire Wire Line
-	3150 3000 3750 3000
+	3150 3000 3450 3000
+Wire Wire Line
+	3450 3000 3750 3000
 Wire Wire Line
 	3750 2700 3750 2600
-Wire Wire Line
-	3150 2600 3150 2700
 Connection ~ 3750 1900
 Wire Wire Line
 	3750 2200 3750 1900
@@ -133,9 +133,15 @@ Source
 Text HLabel 3900 1900 2    60   Output ~ 0
 Target
 Wire Wire Line
-	3650 1900 3900 1900
+	3650 1900 3750 1900
 Wire Wire Line
-	3000 1900 3250 1900
+	3750 1900 3900 1900
+Wire Wire Line
+	3000 1900 3150 1900
+Wire Wire Line
+	3150 1900 3250 1900
 Wire Notes Line
 	3600 1500 3600 1700
+Wire Wire Line
+	3150 2600 3150 2700
 $EndSCHEMATC

@@ -20,13 +20,11 @@ LIBS:intel
 LIBS:audio
 LIBS:interface
 LIBS:opto
-LIBS:HAT_parts
-LIBS:HAT-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 3
+Sheet 2 2
 Title ""
 Date ""
 Rev ""
@@ -55,10 +53,10 @@ Pi21
 Text Label 1400 2500 0    60   ~ 0
 Pi23
 $Comp
-L GND #PWR7
+L GND #PWR04
 U 1 1 59374B19
 P 2900 3000
-F 0 "#PWR7" H 2900 2750 50  0001 C CNN
+F 0 "#PWR04" H 2900 2750 50  0001 C CNN
 F 1 "GND" H 2900 2850 50  0000 C CNN
 F 2 "" H 2900 3000 50  0000 C CNN
 F 3 "" H 2900 3000 50  0000 C CNN
@@ -115,10 +113,10 @@ Pi38
 Text Label 2750 3300 2    60   ~ 0
 Pi40
 $Comp
-L GND #PWR6
+L GND #PWR05
 U 1 1 59374B39
 P 1350 3300
-F 0 "#PWR6" H 1350 3050 50  0001 C CNN
+F 0 "#PWR05" H 1350 3050 50  0001 C CNN
 F 1 "GND" H 1350 3150 50  0000 C CNN
 F 2 "" H 1350 3300 50  0000 C CNN
 F 3 "" H 1350 3300 50  0000 C CNN
@@ -191,8 +189,6 @@ Text HLabel 4050 4000 2    60   BiDi ~ 0
 GPIO11
 Text HLabel 4050 4100 2    60   Output ~ 0
 SCLK
-Text HLabel 4050 4500 2    60   BiDi ~ 0
-ID_SD
 Text HLabel 4050 4750 2    60   BiDi ~ 0
 GPIO5
 Text HLabel 4050 5000 2    60   BiDi ~ 0
@@ -235,8 +231,6 @@ Text HLabel 5200 5500 2    60   BiDi ~ 0
 GPIO16
 Text HLabel 5200 5000 2    60   BiDi ~ 0
 GPIO12
-Text HLabel 5200 4500 2    60   BiDi ~ 0
-ID_SC
 Text HLabel 5200 4250 2    60   BiDi ~ 0
 GPIO7
 Text HLabel 5200 4000 2    60   BiDi ~ 0
@@ -547,4 +541,8 @@ Text HLabel 1750 1250 1    60   Input ~ 0
 +3.3_Pi
 Text HLabel 2500 1250 1    60   Input ~ 0
 +5V_Pi
+Text Label 5200 4500 0    60   ~ 0
+ID_SC
+Text Label 4050 4500 0    60   ~ 0
+ID_SD
 $EndSCHEMATC
