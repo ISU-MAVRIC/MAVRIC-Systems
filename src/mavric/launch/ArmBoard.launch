@@ -13,7 +13,7 @@
     <arg name="ShoulderRot_Scale" value="-0.4" />
     <arg name="ShoulderPitch_Scale" value="0.9" />
     <arg name="ElbowPitch_Scale" value="1.0" />
-    <arg name="WristRot_Scale" value="0.3" />
+    <arg name="WristRot_Scale" value="-0.4" />
     <arg name="WristPitch_Scale" value="0.3" />
     <arg name="ClawActuation_Scale" value="1.0" />
 
