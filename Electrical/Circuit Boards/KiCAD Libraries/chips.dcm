@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP PCA9685
+D PWM Driver
+K PWM,LED
+F Datasheets/PCA9685.pdf
+$ENDCMP
+#
+#End Doc Library

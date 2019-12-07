@@ -42,12 +42,15 @@ class GPS:
 
     @property
     def good_fix(self):
-        if (self._data[1] == ""):
+        if (self._data == [] or self._data[1] == ""):
             return False
         return bool(int(self._data[1])) #returns 1 if gps position is valid
 
     @property
     def date(self):
+	if(self._data == [] or self._data[2] == ""):
+		return [0,0,0]
+
         y = int(self._data[2][0:4])
         m = int(self._data[2][4:6])
         d = int(self._data[2][6:8])
@@ -56,6 +59,9 @@ class GPS:
 
     @property
     def time(self):
+	if(self._data == [] or self._data[2] == ""):
+		return [0,0,0]
+
         h = int(self._data[2][8:10])
         m = int(self._data[2][10:12])
         s = float(self._data[2][12:18])
@@ -64,42 +70,42 @@ class GPS:
     
     @property
     def latitude(self):
-        if(self._data[3] == ""):
+        if(self._data == [] or self._data[3] == ""):
             return 0
         
         return float(self._data[3])     #returns latitude in decimal-degrees
 
     @property
     def longitude(self):
-        if(self._data[4] == ""):
+        if(self._data == [] or self._data[4] == ""):
             return 0
         
         return float(self._data[4])     #returns longitude in decimal-degrees
 
     @property
     def altitude(self):
-        if (self._data[5] == ""):
+        if (self._data == [] or self._data[5] == ""):
             return 0
         
         return float(self._data[5])     #returns altitude in meters
 
     @property
     def speed(self):
-        if (self._data[6] == ""):
+        if (self._data == [] or self._data[6] == ""):
             return 0
         
         return float(self._data[6])     #returns ground speed in km / h
 
     @property
     def heading(self):
-        if (self._data[7] == ""):
+        if (self._data == [] or self._data[7] == ""):
             return 0
         
         return float(self._data[7])     #returns heading in degrees clockwise from true north
 
     @property
     def satellites(self):
-        if (self._data[15] == ""):
+        if (self._data == [] or self._data[15] == ""):
             return 0
         
         return int(self._data[14])      #returns number of visible satellites

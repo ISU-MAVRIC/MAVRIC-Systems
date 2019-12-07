@@ -24,7 +24,7 @@ output_topics = []
 left_target = 0
 right_target = 0
 
-suspension_protection = True
+suspension_protection = False
 
 # Takes in throttles as percents in the range [-1.0, +1.0]
 #     LF, LM, LB, RF, RM, RB

@@ -17,7 +17,20 @@ data = 'stop'
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+enabled = True
+
+host = ""
+port = 9002
+
+print (host)
+print (port)#", line 228, in meth
+#    return getattr(self._sock,name)(*args)
+#<class '__main__.client'>", line 228, in meth
+#    return getattr(self._sock,name)(*args)
+
 def talker():
+	global enabled
+
         pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
         rospy.init_node('DTP')
         port = rospy.get_param("~port", 8001)
@@ -33,9 +46,22 @@ def talker():
                         # Drive Command
                         parameters = data[1:].strip().split(',')
                         rospy.loginfo(parameters)
-                        left = float(parameters[0])
-                        right = float(parameters[1])
-                        pub.publish(left, right)
+                        
+                        if enabled:
+                                left = float(parameters[0])
+                                right = float(parameters[1])
+                                pub.publish(left, right)
+
+                elif (data[0] == 'N'):
+                        # Autonomous Command
+                        if data[1] == 'E':
+                                #enable autonomous, disable drive
+                                enabled = False
+
+                        elif data[1] == 'D':
+                                #disable autonomous, enable drive
+                                enabled = True
+                
                 connection.close()
         serversocket.close()
 
