@@ -23,6 +23,7 @@ def talker():
         global frame
         rospy.init_node('Float64_Heartbeat')
         timeout = rospy.get_param('~timeout', 2)
+        reset_val = rospy.get_param("~value", 0)
         rospy.Subscriber('topic', Float64, callback, queue_size=10)
         pub = rospy.Publisher('topic', Float64, queue_size=10)
         frame = 0
@@ -32,7 +33,7 @@ def talker():
                 frame = frame + 1
                 if (frame > 100):
                         print('timeout')
-                        pub.publish(0)
+                        pub.publish(reset_val)
                         frame = 0
 
 if __name__ == '__main__':

@@ -1,0 +1,220 @@
+<launch>
+  <arg name="simulated" default="false" />
+  <arg name="noarm" default="false" />
+  <arg name="nocooling" default="false" />
+  <arg name="nogps" default="false" />
+
+  <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
+  <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
+  <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH2" />
+  <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH3" />
+  <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH4" />
+  <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH5" />
+
+  <arg name="FrontLeftPWM_CH"     value="/HW/SlowPWM/CH6" />
+  <arg name="MiddleLeftPWM_CH"    value="/HW/SlowPWM/CH7" />
+  <arg name="BackLeftPWM_CH"      value="/HW/SlowPWM/CH8" />
+  <arg name="FrontRightPWM_CH"    value="/HW/SlowPWM/CH9" />
+  <arg name="MiddleRightPWM_CH"   value="/HW/SlowPWM/CH10" />
+  <arg name="BackRightPWM_CH"     value="/HW/SlowPWM/CH11" />
+
+  <group ns="HW" unless="$(arg simulated)">
+    <node name="FastPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
+      <param name="container" value="FastPWM/" />
+      <param name="control_mode" value="DutyCycle" />
+      <param name="frequency" value="25000" />
+      
+      <!-- addresses start at 0x40 (64) and can be configured on the board -->
+      <param name="address" value="64" />
+      
+      <!-- we want to run as fast as possible here -->
+      <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+    </node>
+    <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
+      <param name="container" value="SlowPWM/" />
+      <param name="control_mode" value="PulseTime" />
+      <param name="frequency" value="250" />
+      
+      <!-- addresses start at 0x40 (64) and can be configured on the board -->
+      <param name="address" value="65" />
+      
+      <!-- we want to run as fast as possible here -->
+      <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+    </node>
+	
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" unless="$(arg nogps)" >
+      <remap from="GPS_Data" to="/GPS_Data" />
+    </node>
+	
+    <node name="LTC2309_ADC_HAT" pkg="mavric" type="LTC2309_ADC_HAT.py" respawn="true">
+      <param name="frequency" value="100" />
+      
+      <!-- Address defaults to 0x18 (24) and can be configured on the board -->
+      <!-- See datasheet for address configuration table -->
+      <param name="address" value="24" />
+    </node>
+  </group>
+  
+  <include file="$(find mavric)/launch/SystemCooling.launch" unless="$(arg nocooling)">
+    <arg name="Fan_Output_Out" value="/HW/FastPWM/CH0" />
+    <arg name="Fan_Output_In"  value="/HW/FastPWM/CH1" />
+    <arg name="simulated" value="$(arg simulated)" />
+  </include>
+  
+  <!-- Interface Nodes -->
+  <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
+  <node name="Temperature_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true">
+    <remap from="value" to="/SystemCooling/Temperature" />
+    <param name="port" value="8002" />
+  </node>
+
+  <group ns="Arm" unless="$(arg noarm)">
+    <arg name="ShoulderRot_Scale" value="-0.4" />
+    <arg name="ShoulderPitch_Scale" value="0.9" />
+    <arg name="ElbowPitch_Scale" value="1.0" />
+    <arg name="WristRot_Scale" value="0.3" />
+    <arg name="WristPitch_Scale" value="0.3" />
+    <arg name="ClawActuation_Scale" value="1.0" />
+
+    <node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
+      <param name="port" value="10001" />
+    </node>
+
+    <node name="ShoulderRot_Ramping" pkg="mavric" type="Ramping.py" >
+      <param name="ramp_rate_up" value="300"/>
+      <param name="ramp_rate_down" value="400"/>
+      <param name="centerpoint" value="0"/>
+      <remap from="input" to="ShoulderRot"/>
+      <remap from="output" to="ShoulderRotRamped" />
+    </node>
+    <node name="ShoulderPitch_Ramping" pkg="mavric" type="Ramping.py" >
+      <param name="ramp_rate_up" value="100"/>
+      <param name="ramp_rate_down" value="200"/>
+      <param name="centerpoint" value="0"/>
+      <remap from="input" to="ShoulderPitch"/>
+      <remap from="output" to="ShoulderPitchRamped" />
+    </node>
+
+    <!-- Each scaling node takes one channel and scales it from +- 100 to the PWM control range--> 
+    <node name="ShoulderRot_Scale" pkg="mavric" type="LinearMapping.py">
+      <param name="inputs"  value="ShoulderRotRamped" />
+      <param name="outputs" value="$(arg ShoulderRotPWM_CH)" />
+      <param name="slopes"      value="$(eval ShoulderRot_Scale*0.0005/100)" />
+      <param name="intercepts"  value="0.0015" />
+    </node>
+    <node name="ShoulderPitch_Scale" pkg="mavric" type="LinearMapping.py">
+      <param name="inputs"  value="ShoulderPitchRamped" />
+      <param name="outputs" value="$(arg ShoulderPitchPWM_CH)" />
+      <param name="slopes"      value="$(eval ShoulderPitch_Scale*0.0005/100)" />
+      <param name="intercepts"  value="0.0015" />
+    </node>
+    <node name="ElbowPitch_Scale" pkg="mavric" type="LinearMapping.py">
+      <param name="inputs"  value="ElbowPitch" />
+      <param name="outputs" value="$(arg ElbowPitchPWM_CH)" />
+      <param name="slopes"      value="$(eval ElbowPitch_Scale*0.0005/100)" />
+      <param name="intercepts"  value="0.0015" />
+    </node>
+    <node name="WristRot_Scale" pkg="mavric" type="LinearMapping.py">
+      <param name="inputs"  value="WristRot" />
+      <param name="outputs" value="$(arg WristRotPWM_CH)" />
+      <param name="slopes"      value="$(eval WristRot_Scale*0.0005/100)" />
+      <param name="intercepts"  value="0.0015" />
+    </node>
+    <node name="WristPitch_Scale" pkg="mavric" type="LinearMapping.py">
+      <param name="inputs"  value="WristPitch" />
+      <param name="outputs" value="$(arg WristPitchPWM_CH)" />
+      <param name="slopes"      value="$(eval WristPitch_Scale*0.0005/100)" />
+      <param name="intercepts"  value="0.0015" />
+    </node>
+
+    <node name="ShoulderRotHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />
+      <param name="value" value="0" />
+      <remap from="topic" to="ShoulderRot" />
+    </node>
+    <node name="ShoulderPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />
+      <param name="value" value="0" />     
+      <remap from="topic" to="ShoulderPitch" />
+    </node>
+    <node name="ElbowPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />
+      <param name="value" value="0" />     
+      <remap from="topic" to="ElbowPitch" />
+    </node>
+    <node name="WristPitchHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />
+      <param name="value" value="0" />     
+      <remap from="topic" to="WristPitch" />
+    </node>
+    <node name="WristRotHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
+      <param name="timeout" value="1" />
+      <param name="value" value="0" />     
+      <remap from="topic" to="WristRot" />
+    </node>
+  </group>
+
+
+  <group ns="Drive">
+    <arg name="DrivePWM_Outputs" value="$(eval FrontLeftPWM_CH + ',' + MiddleLeftPWM_CH + ',' + BackLeftPWM_CH + ',' + FrontRightPWM_CH + ',' + MiddleRightPWM_CH + ',' + BackRightPWM_CH)" />
+
+    <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" >
+      <remap from="Drive_Train" to="Command" />
+      <param name="port" value="9002" />
+    </node>
+     <node name="Drivetrain_Heartbeat" pkg="mavric" type="DrivetrainHeartbeat.py" respawn="true" >
+      <param name="timeout" value="1" />
+      <remap from="Drive_Train" to="Command" />
+    </node>
+    
+    <node name="Drivetrain_Control" pkg="mavric" type="Drive_Train_S.py" >
+      <param name="Range" value="0.3" />
+      <remap from="Drive_Train" to="Command" />
+
+      <param name="Left_Front/Scale" value="-1" />
+      <param name="Left_Back/Scale" value="-1" />
+      <param name="Right_Back/Scale" value="-1" />
+
+      <param name="ramp_rate_up" value="2.0" />
+      <param name="ramp_rate_down" value="4.0" />
+    </node>
+
+    <node name="DriveLFscale" pkg="mavric" type="LinearMapping.py" >
+      <param name="inputs" value="LeftFront"/>
+      <param name="outputs" value="$(arg FrontLeftPWM_CH)"/>
+      <param name="slopes" value="0.0005" />
+      <param name="intercepts" value="0.0015" />
+    </node>
+    <node name="DriveLMscale" pkg="mavric" type="LinearMapping.py" >
+      <param name="inputs" value="LeftMiddle"/>
+      <param name="outputs" value="$(arg MiddleLeftPWM_CH)"/>
+      <param name="slopes" value="0.0005" />
+      <param name="intercepts" value="0.0015" />
+    </node>
+    <node name="DriveLBscale" pkg="mavric" type="LinearMapping.py" >
+      <param name="inputs" value="LeftBack"/>
+      <param name="outputs" value="$(arg BackLeftPWM_CH)"/>
+      <param name="slopes" value="0.0005" />
+      <param name="intercepts" value="0.0015" />
+    </node>
+    <node name="DriveRFscale" pkg="mavric" type="LinearMapping.py" >
+      <param name="inputs" value="RightFront"/>
+      <param name="outputs" value="$(arg FrontRightPWM_CH)"/>
+      <param name="slopes" value="0.0005" />
+      <param name="intercepts" value="0.0015" />
+    </node>
+    <node name="DriveRMscale" pkg="mavric" type="LinearMapping.py" >
+      <param name="inputs" value="RightMiddle"/>
+      <param name="outputs" value="$(arg MiddleRightPWM_CH)"/>
+      <param name="slopes" value="0.0005" />
+      <param name="intercepts" value="0.0015" />
+    </node>
+    <node name="DriveRBscale" pkg="mavric" type="LinearMapping.py" >
+      <param name="inputs" value="RightBack"/>
+      <param name="outputs" value="$(arg BackRightPWM_CH)"/>
+      <param name="slopes" value="0.0005" />
+      <param name="intercepts" value="0.0015" />
+    </node>
+  </group>
+
+</launch>

@@ -33,7 +33,9 @@ def talker():
 
         pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
         rospy.init_node('DTP')
-        serversocket.bind((host, port))
+        port = rospy.get_param("~port", 8001)
+        print(port)
+        serversocket.bind(('', port))
         serversocket.listen(1)
         rospy.loginfo('server started')
         while not rospy.is_shutdown():

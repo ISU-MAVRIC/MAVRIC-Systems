@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Monitors the Drive_Train topic and publishes a 0,0 message if there are no updates for too long
+# Monitors the input topic and publishes a 0,0 message if there are no updates for too long
 
 # Parameters
 #  ~timeout: Defines the length of time (in seconds) before the stop message is sent.
