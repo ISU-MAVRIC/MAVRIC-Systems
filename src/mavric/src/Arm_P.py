@@ -47,9 +47,10 @@ def talker():
         connection, address = serversocket.accept()
         data = connection.recv(1024).decode()
 
-        rospy.loginfo(data)
+        if(data == ''):
+            pass
 
-        if(data[0] == 'A'):
+        elif(data[0] == 'A'):
             # Arm Command
             parameters = data[2:].strip().split(',')
             rospy.loginfo(parameters)
