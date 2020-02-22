@@ -65,6 +65,7 @@
   </include>
   
   <!-- Interface Nodes -->
+  <node name="CAN_RobotEnable" pkg="mavric" type="CAN_RobotEnable.py" respawn="true" />
   <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
   <node name="Temperature_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true">
     <remap from="value" to="/SystemCooling/Temperature" />
