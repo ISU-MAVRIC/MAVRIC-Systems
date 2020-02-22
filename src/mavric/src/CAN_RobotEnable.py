@@ -2,14 +2,14 @@
 # CAN Robot Enable controller. Implements the robot enable heartbeat required by the Talon SRXs when controlled over CAN. If the Talons do not receive this heartbeat every 100ms, they will shut down.
 
 # Topics:
-#   Enabled - Subscription: Listens for input from the user to enable or disable the rover. Defaults to enabled, relying on the base station to 
+#   Enabled - Subscription: Listens for input from the user to enable or disable the rover. Defaults to enabled for now, though it may be a good idea to stay disabled whenever the base station is not up.
 
 import rospy
 import os
 from std_msgs.msg import Bool
 import time
 
-enabled = False
+enabled = True
 
 def callback(data):
         global enabled
