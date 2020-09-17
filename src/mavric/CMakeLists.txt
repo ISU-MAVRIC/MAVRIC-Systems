@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(mavric)
 
+#PHOENIX_JETSONLIB = ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib
+#PHOENIX_INCLUDE = ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/include/ctre
+
 ## Add support for C++11, supported in ROS Kinetic and newer
-# add_definitions(-std=c++11)
+add_definitions(-std=c++11)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -13,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
 )
+
+find_package(Threads REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -107,7 +115,7 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES mavric
   CATKIN_DEPENDS rospy std_msgs message_runtime
 #  DEPENDS system_lib
@@ -119,7 +127,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
@@ -150,9 +158,11 @@ add_executable(${PROJECT_NAME}_CAN_Drive_Train_S src/CAN_Drive_Train_S.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S
-  ${catkin_LIBRARIES}
-)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_Phoenix.a)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCCI.a)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
 
 #############
 ## Install ##
@@ -176,11 +186,11 @@ target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S
 # )
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
