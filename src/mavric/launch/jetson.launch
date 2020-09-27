@@ -22,13 +22,14 @@
     <node name="FastPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="container" value="FastPWM/" />
       <param name="control_mode" value="DutyCycle" />
-      <param name="frequency" value="25000" />
+      <param name="frequency" value="2500" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
-      <param name="address" value="65" />
+      <param name="address" value="64" />
       
       <!-- we want to run as fast as possible here -->
-      <param name="clk_error" value="1.0893246187363834422657952069717" />
+      <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+      <param name="clk_error" value="1.04166667" />
     </node>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="container" value="SlowPWM/" />
@@ -36,7 +37,7 @@
       <param name="frequency" value="250" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
-      <param name="address" value="64" />
+      <param name="address" value="65" />
       
       <!-- we want to run as fast as possible here -->
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
@@ -65,7 +66,7 @@
   </include>
   
   <!-- Interface Nodes -->
-  <node name="CAN_RobotEnable" pkg="mavric" type="CAN_RobotEnable.py" respawn="true" />
+  <!-- <node name="CAN_RobotEnable" pkg="mavric" type="CAN_RobotEnable.py" respawn="true" /> -->
   <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
   <node name="Temperature_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true">
     <remap from="value" to="/SystemCooling/Temperature" />
@@ -171,7 +172,7 @@
       <remap from="Drive_Train" to="Command" />
     </node>
     
-    <node name="Drivetrain_Control" pkg="mavric" type="Drive_Train_S.py" >
+    <node name="Drivetrain_Control" pkg="mavric" type="mavric_CAN_Drive_Train_S" >
       <param name="Range" value="0.3" />
       <remap from="Drive_Train" to="Command" />
 

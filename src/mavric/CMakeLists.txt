@@ -145,6 +145,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
+#add_executable(${PROJECT_NAME}_example src/example.cpp)
 add_executable(${PROJECT_NAME}_CAN_Drive_Train_S src/CAN_Drive_Train_S.cpp)
 
 ## Rename C++ executable without prefix
