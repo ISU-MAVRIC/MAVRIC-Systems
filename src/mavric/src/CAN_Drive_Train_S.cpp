@@ -28,16 +28,13 @@ double c_lbDir = 1;
 double c_rfDir = -1;
 double c_rmDir = -1;
 double c_rbDir = -1;
+double c_str_lfDir = 1;
+double c_str_lbDir = 1;
+double c_str_rfDir = 1;
+double c_str_rbDir = 1;
 
 double leftTarget = 0;
 double rightTarget = 0;
-
-ros::Publisher lf_pub;
-ros::Publisher lm_pub;
-ros::Publisher lb_pub;
-ros::Publisher rf_pub;
-ros::Publisher rm_pub;
-ros::Publisher rb_pub;
 
 TalonSRX talon_lf(1);
 TalonSRX talon_lm(2);
@@ -46,6 +43,17 @@ TalonSRX talon_rf(4);
 TalonSRX talon_rm(5);
 TalonSRX talon_rb(6);
 
+TalonSRX talon_str_lf(7);
+TalonSRX talon_str_lb(8);
+TalonSRX talon_str_rf(9);
+TalonSRX talon_str_rb(10);
+
+void strCallback(const std_msgs::Float64::ConstPtr & data)
+{
+	double str = data->data;
+	int stri = (int) str;
+	talon_str_lf.Set(ControlMode::Position, stri);
+}
 
 void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 {
@@ -66,7 +74,7 @@ void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 	rightTarget = dRight / 100;
 }
 
-void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb)
+void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb, double str_lf, double str_lb, double str_rf, double str_rb)
 {
 	talon_lf.Set(ControlMode::PercentOutput, lf*c_Scale*c_lfDir);
 	talon_lm.Set(ControlMode::PercentOutput, lm*c_Scale*c_lmDir);
@@ -74,6 +82,11 @@ void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb
 	talon_rf.Set(ControlMode::PercentOutput, rf*c_Scale*c_rfDir);
 	talon_rm.Set(ControlMode::PercentOutput, rm*c_Scale*c_rmDir);
 	talon_rb.Set(ControlMode::PercentOutput, rb*c_Scale*c_rbDir);
+
+	talon_str_lf.Set(ControlMode::Position, str_lf*c_Scale*c_str_lfDir);
+	talon_str_lb.Set(ControlMode::Position, str_lb*c_Scale*c_str_lbDir);
+	talon_str_rf.Set(ControlMode::Position, str_rf*c_Scale*c_str_rfDir);
+	talon_str_rb.Set(ControlMode::Position, str_rb*c_Scale*c_str_rbDir);
 }
 
 double rampVal(double current, double target, double rampAmountUp, double rampAmountDown)
@@ -126,6 +139,7 @@ int main(int argc, char **argv)
 
 	ros::NodeHandle n;
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
+	ros::Subscriber str_sub = n.subscribe("Steer", 1000, strCallback);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
 
@@ -139,7 +153,7 @@ int main(int argc, char **argv)
 	ros::param::get("~ramp_rate_up", rampRateUp);
 	ros::param::get("~ramp_rate_down", rampRateDown);
 
-	setOutputs(0,0,0, 0,0,0);
+	setOutputs(0,0,0, 0,0,0, 0,0,0,0);
 
 	ros::Rate r(100);
 	while(ros::ok())
@@ -151,7 +165,7 @@ int main(int argc, char **argv)
 		{
 			left = rampVal(left, leftTarget, rampRateUp, rampRateDown);
 			right = rampVal(right, rightTarget, rampRateUp, rampRateDown);
-			setOutputs(left, left, left, right, right, right);
+			setOutputs(left, left, left, right, right, right, 0,0,0,0);
 		}
 
 		r.sleep();
