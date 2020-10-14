@@ -1,34 +1,33 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import string
+from std_msgs.msg import Float64
 from i2c import I2C
 
 vref = 5
-max_reading = 2**12-1.0
-bits = 1023  # number of steps
-reference = 3300  # reference voltage in mV
+max_reading = (2**12)-1.0
+bits = 4096  # number of steps
+reference = 5000  # reference voltage in mV
 voltage_divider = 8.718  # R1=68k, R2=10k
-publishers = []
 
 
 def talker():
     rospy.init_node('ADC_Monitor', anonymous=True)
-    rate = rospy.Rate(10)  # 10hz
-    for i in range(0, 1):
+    publishers = []
+    for i in range(0, 2):
         pub = rospy.Publisher("ADC_Channels/CH" + str(i), Float64, queue_size=10)
         publishers.append(pub)
 
     frequency = rospy.get_param("frequency", 100)
     i2c_address = rospy.get_param("address", 0x18)
     rate = rospy.Rate(frequency)  # 10hz
-    adc = I2C(i2c_address, 1)
+    adc = 1 #I2C(i2c_address, 1)
 
     while not rospy.is_shutdown():
-        for i in range(0, 1):
+        for i in range(0, 2):
             voltage = read_from_adc(adc, i)
             result = ((reference * voltage_divider) / bits) * voltage  # in mV
-            Rospy.loginfo(result)
-            publihers[i].publish(result)
+            rospy.loginfo(result)
+            publishers[i].publish(result)
             rate.sleep()
 
 
@@ -43,9 +42,9 @@ def read_from_adc(adc, channel):
 
     #reading = adc.read(i2c_read_bytes)
     #valor = (((reading[0]) << 4) + (reading[1] >> 4))
-    #volts = valor * vref / max_reading
-    #print(volts)
-    volts = 100
+    valor = 2048
+    volts = valor * vref / max_reading * 1000
+    print(volts)
     return volts
 
 

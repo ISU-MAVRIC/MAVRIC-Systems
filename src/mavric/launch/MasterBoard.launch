@@ -6,11 +6,12 @@
       <!-- we want to run as fast as possible here -->
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
     </node>
-    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" >
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Test.py" respawn="true" >
       <remap from="GPS_Data" to="/GPS_Data" />
     </node>
-	<node name="LTC2497_ADC_HAT" pkg="mavric" type="LTC2497_ADC_HAT.py" respawn="true">
+	<node name="ADC_Monitor" pkg="mavric" type="Voltage_Monitor.py" respawn="true">
 		<param name="frequency" value="10" />
+		<param name="address" value="0x18" />
 	</node>
   </group>
   
