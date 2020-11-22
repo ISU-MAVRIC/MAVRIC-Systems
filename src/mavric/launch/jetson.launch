@@ -44,19 +44,19 @@
       <param name="clk_error" value="1.04166667" />
     </node>
 	
-<!--
-    <node name="GPS_Streamer" pkg="mavric" type="GPS_Stream.py" respawn="true" unless="$(arg nogps)" >
+
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Test.py" respawn="true" unless="$(arg nogps)" >
       <remap from="GPS_Data" to="/GPS_Data" />
     </node>
--->
+
 	
-<!--    <node name="LTC2309_ADC_HAT" pkg="mavric" type="LTC2309_ADC_HAT.py" respawn="true"> -->
-<!--      <param name="frequency" value="100" /> -->
+    <node name="ADC_Monitor" pkg="mavric" type="Voltage_Monitor.py" respawn="true">
+      <param name="frequency" value="100" />
       
       <!-- Address defaults to 0x18 (24) and can be configured on the board -->
       <!-- See datasheet for address configuration table -->
-<!--      <param name="address" value="24" /> -->
-<!--    </node> -->
+      <param name="address" value="24" />
+    </node>
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" unless="$(arg nocooling)">
