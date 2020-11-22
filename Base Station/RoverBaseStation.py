@@ -38,7 +38,7 @@ rover_icon_radius = 5
 rover_icon_fin_angle = 135
 
 #system constants
-master_ip = '192.168.1.11'
+master_ip = '192.168.1.10'
 
 drive_stick = None
 drive_stick_name = "Mad Catz V.1 Stick" #hardcoded for now
@@ -192,19 +192,19 @@ def draw_rover_icon(screen_pos, heading):
     heading -= 90
 
     #calculate forward point
-    fd_pt[0] = screen_pos[0] + rover_icon_radius * math.cos(math.radians(heading))
-    fd_pt[1] = screen_pos[1] + rover_icon_radius * math.sin(math.radians(heading))
+    fd_pt[0] = screen_pos[0] + int(rover_icon_radius * math.cos(math.radians(heading)))
+    fd_pt[1] = screen_pos[1] + int(rover_icon_radius * math.sin(math.radians(heading)))
 
     #calculate fin angles
     bk_lf_h = heading + rover_icon_fin_angle
     bk_rt_h = heading - rover_icon_fin_angle
 
     #calculate fin points
-    bk_lf_pt[0] = screen_pos[0] + rover_icon_radius * math.cos(math.radians(bk_lf_h))
-    bk_lf_pt[1] = screen_pos[1] + rover_icon_radius * math.sin(math.radians(bk_lf_h))
+    bk_lf_pt[0] = screen_pos[0] + int(rover_icon_radius * math.cos(math.radians(bk_lf_h)))
+    bk_lf_pt[1] = screen_pos[1] + int(rover_icon_radius * math.sin(math.radians(bk_lf_h)))
 
-    bk_rt_pt[0] = screen_pos[0] + rover_icon_radius * math.cos(math.radians(bk_rt_h))
-    bk_rt_pt[1] = screen_pos[1] + rover_icon_radius * math.sin(math.radians(bk_rt_h))
+    bk_rt_pt[0] = screen_pos[0] + int(rover_icon_radius * math.cos(math.radians(bk_rt_h)))
+    bk_rt_pt[1] = screen_pos[1] + int(rover_icon_radius * math.sin(math.radians(bk_rt_h)))
 
     #draw icon
     pygame.draw.polygon(screen, (255,0,0), [screen_pos, bk_rt_pt, fd_pt, bk_lf_pt], 0)
@@ -384,12 +384,12 @@ try:
         if not emergency_stop:
             rover.setWheels(drive_l, drive_r)
             
-            rover.setArmBaseRot(shoulder_r_axis)
-            rover.setArmBasePitch(shoulder_p_axis)
-            rover.setArmElbowPitch(elbow_p_val)
-            rover.setArmClawRot(wrist_r_axis)
-            rover.setArmClawPitch(wrist_p_axis)
-            rover.setArmClawActuation(claw_a_val)
+            #rover.setArmBaseRot(shoulder_r_axis)
+            #rover.setArmBasePitch(shoulder_p_axis)
+            #rover.setArmElbowPitch(elbow_p_val)
+            #rover.setArmClawRot(wrist_r_axis)
+            #rover.setArmClawPitch(wrist_p_axis)
+            #rover.setArmClawActuation(claw_a_val)
 
         #draw UI
         if emergency_stop:
@@ -403,24 +403,24 @@ try:
             screen.blit(label, autonomous_label_draw_pos)
 
         #draw axis frames
-        pygame.draw.rect(screen, (0,100,100), (drive_stick_draw_pos[0] - drive_stick_draw_size/2,
-                                               drive_stick_draw_pos[1] - drive_stick_draw_size/2,
+        pygame.draw.rect(screen, (0,100,100), (drive_stick_draw_pos[0] - int(drive_stick_draw_size/2),
+                                               drive_stick_draw_pos[1] - int(drive_stick_draw_size/2),
                                                drive_stick_draw_size, drive_stick_draw_size), 3)
         
-        pygame.draw.rect(screen, (0,100,0), (shoulder_stick_draw_pos[0] - shoulder_stick_draw_size/2,
-                                             shoulder_stick_draw_pos[1] - shoulder_stick_draw_size/2,
+        pygame.draw.rect(screen, (0,100,0), (shoulder_stick_draw_pos[0] - int(shoulder_stick_draw_size/2),
+                                             shoulder_stick_draw_pos[1] - int(shoulder_stick_draw_size/2),
                                              shoulder_stick_draw_size, shoulder_stick_draw_size), 3)
         
-        pygame.draw.rect(screen, (100,0,0), (wrist_stick_draw_pos[0] - wrist_stick_draw_size/2,
-                                             wrist_stick_draw_pos[1] - wrist_stick_draw_size/2,
+        pygame.draw.rect(screen, (100,0,0), (wrist_stick_draw_pos[0] - int(wrist_stick_draw_size/2),
+                                             wrist_stick_draw_pos[1] - int(wrist_stick_draw_size/2),
                                              wrist_stick_draw_size, wrist_stick_draw_size), 3)
 
         #draw axis lines
-        pygame.draw.line(screen, (100,100,0), (elbow_pitch_draw_pos[0], elbow_pitch_draw_pos[1] + elbow_pitch_draw_size/2),
-                                              (elbow_pitch_draw_pos[0], elbow_pitch_draw_pos[1] - elbow_pitch_draw_size/2), 3)
+        pygame.draw.line(screen, (100,100,0), (elbow_pitch_draw_pos[0], int(elbow_pitch_draw_pos[1] + elbow_pitch_draw_size/2)),
+                                              (elbow_pitch_draw_pos[0], int(elbow_pitch_draw_pos[1] - elbow_pitch_draw_size/2)), 3)
         
-        pygame.draw.line(screen, (100,0,100), (claw_actuation_draw_pos[0], claw_actuation_draw_pos[1] + claw_actuation_draw_size/2),
-                                              (claw_actuation_draw_pos[0], claw_actuation_draw_pos[1] - claw_actuation_draw_size/2), 3)
+        pygame.draw.line(screen, (100,0,100), (claw_actuation_draw_pos[0], int(claw_actuation_draw_pos[1] + claw_actuation_draw_size/2)),
+                                              (claw_actuation_draw_pos[0], int(claw_actuation_draw_pos[1] - claw_actuation_draw_size/2)), 3)
 
         #draw controller points
         pygame.draw.circle(screen, (0,255,255), (drive_stick_draw_pos[0] + int(drive_x_axis * ((drive_stick_draw_size/2) / 100.0)),
@@ -439,8 +439,8 @@ try:
                                                  claw_actuation_draw_pos[1] - int(claw_a_val * ((claw_actuation_draw_size/2) / 100.))), 5)
 
         #draw autonomous frame
-        pygame.draw.rect(screen, (100,100,0), (autonomous_map_draw_pos[0] - autonomous_map_draw_size/2,
-                                               autonomous_map_draw_pos[1] - autonomous_map_draw_size/2,
+        pygame.draw.rect(screen, (100,100,0), (autonomous_map_draw_pos[0] - int(autonomous_map_draw_size/2),
+                                               autonomous_map_draw_pos[1] - int(autonomous_map_draw_size/2),
                                                autonomous_map_draw_size, autonomous_map_draw_size), 3)
 
         #draw north label
