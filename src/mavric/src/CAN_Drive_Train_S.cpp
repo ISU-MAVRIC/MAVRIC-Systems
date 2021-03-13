@@ -2,6 +2,7 @@
 
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"
+#include "std_msgs/Float64MultiArray.h"
 #include "mavric/Drivetrain.h"
 
 #include <algorithm>
@@ -19,7 +20,6 @@ using namespace ctre::phoenix::platform;
 using namespace ctre::phoenix::unmanaged;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
-
 
 double c_Scale = 0.4;
 double c_lfDir = 1;
@@ -48,10 +48,21 @@ TalonSRX talon_str_lb(8);
 TalonSRX talon_str_rf(9);
 TalonSRX talon_str_rb(10);
 
-void strCallback(const std_msgs::Float64::ConstPtr & data)
+talon_str_lf.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
+talon_str_lb.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
+talon_str_rf.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
+talon_str_rb.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
+
+void strpub(const pub)
+{
+	float feedback = talon_str_lb.GetSensorCollection();
+	pub.publish(feedback);
+}
+
+void strCallback(const std_msgs::Float64::ConstPtr &data)
 {
 	double str = data->data;
-	int stri = (int) str;
+	int stri = (int)str;
 	talon_str_lf.Set(ControlMode::Position, stri);
 }
 
@@ -60,14 +71,14 @@ void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 	double dLeft = data->left;
 	double dRight = data->right;
 
-	if(dLeft > 100)
+	if (dLeft > 100)
 		dLeft = 100;
-	if(dLeft < -100)
+	if (dLeft < -100)
 		dLeft = -100;
 
-	if(dRight > 100)
+	if (dRight > 100)
 		dRight = 100;
-	if(dRight < -100)
+	if (dRight < -100)
 		dRight = -100;
 
 	leftTarget = dLeft / 100;
@@ -76,47 +87,56 @@ void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 
 void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb, double str_lf, double str_lb, double str_rf, double str_rb)
 {
-	talon_lf.Set(ControlMode::PercentOutput, lf*c_Scale*c_lfDir);
-	talon_lm.Set(ControlMode::PercentOutput, lm*c_Scale*c_lmDir);
-	talon_lb.Set(ControlMode::PercentOutput, lb*c_Scale*c_lbDir);
-	talon_rf.Set(ControlMode::PercentOutput, rf*c_Scale*c_rfDir);
-	talon_rm.Set(ControlMode::PercentOutput, rm*c_Scale*c_rmDir);
-	talon_rb.Set(ControlMode::PercentOutput, rb*c_Scale*c_rbDir);
+	talon_lf.Set(ControlMode::PercentOutput, lf * c_Scale * c_lfDir);
+	talon_lm.Set(ControlMode::PercentOutput, lm * c_Scale * c_lmDir);
+	talon_lb.Set(ControlMode::PercentOutput, lb * c_Scale * c_lbDir);
+	talon_rf.Set(ControlMode::PercentOutput, rf * c_Scale * c_rfDir);
+	talon_rm.Set(ControlMode::PercentOutput, rm * c_Scale * c_rmDir);
+	talon_rb.Set(ControlMode::PercentOutput, rb * c_Scale * c_rbDir);
 
-	talon_str_lf.Set(ControlMode::Position, str_lf*c_Scale*c_str_lfDir);
-	talon_str_lb.Set(ControlMode::Position, str_lb*c_Scale*c_str_lbDir);
-	talon_str_rf.Set(ControlMode::Position, str_rf*c_Scale*c_str_rfDir);
-	talon_str_rb.Set(ControlMode::Position, str_rb*c_Scale*c_str_rbDir);
+	talon_str_lf.Set(ControlMode::Position, str_lf * c_Scale * c_str_lfDir);
+	talon_str_lb.Set(ControlMode::Position, str_lb * c_Scale * c_str_lbDir);
+	talon_str_rf.Set(ControlMode::Position, str_rf * c_Scale * c_str_rfDir);
+	talon_str_rb.Set(ControlMode::Position, str_rb * c_Scale * c_str_rbDir);
 }
 
 double rampVal(double current, double target, double rampAmountUp, double rampAmountDown)
 {
-	if(current == target)
+	if (current == target)
 		return target;
 
-	if(current >= 0 && target > 0)
+	if (current >= 0 && target > 0)
 	{
-		if(current < target)
+		if (current < target)
 		{
-			current += min(rampAmountUp, target-current);
-		} else {
-			current -= min(rampAmountDown, current-target);
+			current += min(rampAmountUp, target - current);
 		}
-	} else if(current > 0 && target <= 0)
-	{
-		current -= min(rampAmountDown, current-target);
-	} else if(current <= 0 && target < 0)
-	{
-		if(current > target)
+		else
 		{
-			current -= min(rampAmountUp, current-target);
-		} else {
-			current += min(rampAmountDown, target-current);
+			current -= min(rampAmountDown, current - target);
 		}
-	} else if(current < 0 && target >= 0)
+	}
+	else if (current > 0 && target <= 0)
 	{
-		current += min(rampAmountDown, target-current);
-	} else {
+		current -= min(rampAmountDown, current - target);
+	}
+	else if (current <= 0 && target < 0)
+	{
+		if (current > target)
+		{
+			current -= min(rampAmountUp, current - target);
+		}
+		else
+		{
+			current += min(rampAmountDown, target - current);
+		}
+	}
+	else if (current < 0 && target >= 0)
+	{
+		current += min(rampAmountDown, target - current);
+	}
+	else
+	{
 		printf("case missed (%lf -> %lf)", current, target);
 		current = target;
 	}
@@ -140,6 +160,7 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
 	ros::Subscriber str_sub = n.subscribe("Steer", 1000, strCallback);
+	ros::Publisher str_pub = n.advertise<std_msgs::Float64>("Steer_Feedback", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
 
@@ -153,21 +174,22 @@ int main(int argc, char **argv)
 	ros::param::get("~ramp_rate_up", rampRateUp);
 	ros::param::get("~ramp_rate_down", rampRateDown);
 
-	setOutputs(0,0,0, 0,0,0, 0,0,0,0);
+	setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 	ros::Rate r(100);
-	while(ros::ok())
+	while (ros::ok())
 	{
 		ctre::phoenix::unmanaged::FeedEnable(200);
 		ros::spinOnce();
 
-		if(left != leftTarget || right != rightTarget)
+		if (left != leftTarget || right != rightTarget)
 		{
 			left = rampVal(left, leftTarget, rampRateUp, rampRateDown);
 			right = rampVal(right, rightTarget, rampRateUp, rampRateDown);
-			setOutputs(left, left, left, right, right, right, 0,0,0,0);
+			setOutputs(left, left, left, right, right, right, 0, 0, 0, 0);
 		}
 
+		strpub(str_pub);
 		r.sleep();
 	}
 
