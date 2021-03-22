@@ -53,7 +53,7 @@ ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevic
 ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
 ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
 
-void strpub(const pub)
+void strpub(const ros::Publisher pub)
 {
 	int feedback = talon_str_lb.GetQuadraturePosition();
 	pub.publish(feedback);
