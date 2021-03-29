@@ -48,15 +48,17 @@ TalonSRX talon_str_lb(8);
 TalonSRX talon_str_rf(9);
 TalonSRX talon_str_rb(10);
 
-ErrorCode sen1 = talon_str_lf.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
-ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
-ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
-ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(TalonSRXFeedbackDevice::QuadEncoder, int pidldx = 0, int timeoutMs = 0);
+ErrorCode sen1 = talon_str_lf.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
+ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
+ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
+ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
 
 void strpub(const ros::Publisher pub)
 {
-	int feedback = talon_str_lb.GetQuadraturePosition();
-	pub.publish(feedback);
+      SensorCollection feedback = talon_str_lb.GetSensorCollection();
+      std_msgs::Float64 value;
+      value.data = feedback.GetQuadraturePosition();
+      pub.publish(value);
 }
 
 void strCallback(const std_msgs::Float64::ConstPtr &data)

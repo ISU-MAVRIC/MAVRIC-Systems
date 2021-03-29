@@ -160,10 +160,10 @@ add_executable(${PROJECT_NAME}_CAN_Drive_Train_S src/CAN_Drive_Train_S.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_Phoenix.a)
-target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCCI.a)
-target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
-target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/lib/jetsontx/libCTRE_Phoenix.a)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/lib/jetsontx/libCTRE_PhoenixCCI.a)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
+target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
 
 #############
 ## Install ##
