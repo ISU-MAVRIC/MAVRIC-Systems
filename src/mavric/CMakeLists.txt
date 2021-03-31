@@ -59,6 +59,8 @@ find_package(Threads REQUIRED)
 add_message_files(
   FILES
   Drivetrain.msg
+  Steertrain.msg
+  steer.msg
   GPS.msg
   Arm.msg
   Autonomous.msg

@@ -3,6 +3,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"
 #include "std_msgs/Float64MultiArray.h"
+#include "mavric/Steer.h"
 #include "mavric/Drivetrain.h"
 
 #include <algorithm>
@@ -35,6 +36,8 @@ double c_str_rbDir = 1;
 
 double leftTarget = 0;
 double rightTarget = 0;
+double strLeftTarget = 0;
+double strRightTarget = 0;
 
 TalonSRX talon_lf(1);
 TalonSRX talon_lm(2);
@@ -48,24 +51,34 @@ TalonSRX talon_str_lb(8);
 TalonSRX talon_str_rf(9);
 TalonSRX talon_str_rb(10);
 
-ErrorCode sen1 = talon_str_lf.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
-ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
-ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
-ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(QuadEncoder,0,0);
+ErrorCode sen1 = talon_str_lf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
+ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
+ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
+ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
+
+SensorCollection lf_FB = talon_str_lf.GetSensorCollection();
+SensorCollection lb_FB = talon_str_lb.GetSensorCollection();
+SensorCollection rf_FB = talon_str_rf.GetSensorCollection();
+SensorCollection rb_FB = talon_str_rb.GetSensorCollection();
 
 void strpub(const ros::Publisher pub)
 {
-      SensorCollection feedback = talon_str_lb.GetSensorCollection();
-      std_msgs::Float64 value;
-      value.data = feedback.GetQuadraturePosition();
-      pub.publish(value);
+	mavric::Steer values;
+	value.lf = lf_FB.GetQuadraturePosition();
+	value.lb = lb_FB.GetQuadraturePosition();
+	value.rf = rf_FB.GetQuadraturePosition();
+	value.rb = rb_FB.GetQuadraturePosition();
+	pub.publish(value);
 }
 
 void strCallback(const std_msgs::Float64::ConstPtr &data)
 {
 	double str = data->data;
-	int stri = (int)str;
-	talon_str_lf.Set(ControlMode::Position, stri);
+	if (str > 90)
+		str = 90;
+	if (str < -90)
+		str = -90;
+	steerTarget = (int)str;
 }
 
 void driveCallback(const mavric::Drivetrain::ConstPtr &data)
@@ -150,6 +163,8 @@ int main(int argc, char **argv)
 {
 	double left = 0;
 	double right = 0;
+	double strLeft = 0;
+	double strRight = 0;
 
 	double rampRateUp = 0.5;
 	double rampRateDown = 0.5;
@@ -161,8 +176,8 @@ int main(int argc, char **argv)
 
 	ros::NodeHandle n;
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
-	ros::Subscriber str_sub = n.subscribe("Steer", 1000, strCallback);
-	ros::Publisher str_pub = n.advertise<std_msgs::Float64>("Steer_Feedback", 1000);
+	ros::Subscriber str_sub = n.subscribe("Steer_Train", 1000, strCallback);
+	ros::Publisher str_pub = n.advertise<mavric::Steer>("Steer_Feedback", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
 
@@ -184,11 +199,13 @@ int main(int argc, char **argv)
 		ctre::phoenix::unmanaged::FeedEnable(200);
 		ros::spinOnce();
 
-		if (left != leftTarget || right != rightTarget)
+		if (left != leftTarget || right != rightTarget || steer != steerTarget)
 		{
 			left = rampVal(left, leftTarget, rampRateUp, rampRateDown);
 			right = rampVal(right, rightTarget, rampRateUp, rampRateDown);
-			setOutputs(left, left, left, right, right, right, 0, 0, 0, 0);
+			strLeft = rampVal(strLeft, strLeftTarget, rampRateUp, rampRateDown);
+			strRight = rampVal(strRight, strRightTarget, rampRateUp, rampRateDown);
+			setOutputs(left, left, left, right, right, right, strLeft, strLeft, strRight, strRight);
 		}
 
 		strpub(str_pub);
