@@ -5,6 +5,7 @@
 #include "std_msgs/Float64MultiArray.h"
 #include "mavric/Steer.h"
 #include "mavric/Drivetrain.h"
+#include "mavric/Steertrain.h"
 
 #include <algorithm>
 #include "ctre/Phoenix.h"
