@@ -71,14 +71,21 @@ void strpub(const ros::Publisher pub)
 	pub.publish(value);
 }
 
-void strCallback(const std_msgs::Float64::ConstPtr &data)
+void strCallback(const mavric::Steertrain::ConstPtr &data)
 {
-	double str = data->data;
-	if (str > 90)
-		str = 90;
-	if (str < -90)
-		str = -90;
-	steerTarget = (int)str;
+	double sleft = data->strLeft;
+	if (sleft > 10000)
+		sleft = 10000;
+	if (sleft < -10000)
+		sleft = -10000;
+	strLeftTarget = (int)sleft;
+
+	double sright = data->strRight;
+	if (sright > 10000)
+		sright = 10000;
+	if (sright < -10000)
+		sright = -10000;
+	strRightTarget = (int)sright;
 }
 
 void driveCallback(const mavric::Drivetrain::ConstPtr &data)
@@ -109,10 +116,10 @@ void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb
 	talon_rm.Set(ControlMode::PercentOutput, rm * c_Scale * c_rmDir);
 	talon_rb.Set(ControlMode::PercentOutput, rb * c_Scale * c_rbDir);
 
-	talon_str_lf.Set(ControlMode::Position, str_lf * c_Scale * c_str_lfDir);
-	talon_str_lb.Set(ControlMode::Position, str_lb * c_Scale * c_str_lbDir);
-	talon_str_rf.Set(ControlMode::Position, str_rf * c_Scale * c_str_rfDir);
-	talon_str_rb.Set(ControlMode::Position, str_rb * c_Scale * c_str_rbDir);
+	talon_str_lf.Set(ControlMode::Position, str_lf * c_str_lfDir);
+	talon_str_lb.Set(ControlMode::Position, str_lb * c_str_lbDir);
+	talon_str_rf.Set(ControlMode::Position, str_rf * c_str_rfDir);
+	talon_str_rb.Set(ControlMode::Position, str_rb * c_str_rbDir);
 }
 
 double rampVal(double current, double target, double rampAmountUp, double rampAmountDown)
@@ -168,6 +175,8 @@ int main(int argc, char **argv)
 
 	double rampRateUp = 0.5;
 	double rampRateDown = 0.5;
+	double strRateUp = 100;
+	double strRateDown = 100;
 
 	ros::init(argc, argv, "CAN_DTS");
 
@@ -190,6 +199,8 @@ int main(int argc, char **argv)
 	ros::param::get("~Right_Back/Scale", c_rbDir);
 	ros::param::get("~ramp_rate_up", rampRateUp);
 	ros::param::get("~ramp_rate_down", rampRateDown);
+	ros::param::get("~str_ramp_rate_up", strRateUp);
+	ros::param::get("~str_ramp_rate_down", strRateDown);
 
 	setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
@@ -199,12 +210,12 @@ int main(int argc, char **argv)
 		ctre::phoenix::unmanaged::FeedEnable(200);
 		ros::spinOnce();
 
-		if (left != leftTarget || right != rightTarget || steer != steerTarget)
+		if (left != leftTarget || right != rightTarget || strLeft != strLeftTarget || strRight != strRightTarget)
 		{
 			left = rampVal(left, leftTarget, rampRateUp, rampRateDown);
 			right = rampVal(right, rightTarget, rampRateUp, rampRateDown);
-			strLeft = rampVal(strLeft, strLeftTarget, rampRateUp, rampRateDown);
-			strRight = rampVal(strRight, strRightTarget, rampRateUp, rampRateDown);
+			strLeft = rampVal(strLeft, strLeftTarget, strRateUp, strRateDown);
+			strRight = rampVal(strRight, strRightTarget, strRateUp, strRateDown);
 			setOutputs(left, left, left, right, right, right, strLeft, strLeft, strRight, strRight);
 		}
 

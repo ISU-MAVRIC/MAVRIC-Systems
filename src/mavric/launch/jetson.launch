@@ -182,6 +182,9 @@
 
       <param name="ramp_rate_up" value="2.0" />
       <param name="ramp_rate_down" value="4.0" />
+      <param name="str_ramp_rate_up" value="200.0" />
+      <param name="str_ramp_rate_down" value="200.0" />
+
     </node>
   </group>
 
