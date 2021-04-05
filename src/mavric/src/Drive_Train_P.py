@@ -8,6 +8,7 @@
 import rospy
 from std_msgs.msg import String
 from mavric.msg import Drivetrain
+from mavric.msg import Steertrain
 
 import time
 
@@ -33,9 +34,9 @@ def talker():
     global enabled
 
     drive = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
-    steer = rospy.Publisher("Steer_Train", Steertrain, que_size=10)
+    steer = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
     rospy.init_node('DTP')
-    port = rospy.get_param("~port", 8001)
+    port = rospy.get_param("~port", 9002)
     print(port)
     serversocket.bind(('', port))
     serversocket.listen(1)
@@ -52,7 +53,10 @@ def talker():
             if enabled:
                 left = float(parameters[0])
                 right = float(parameters[1])
+		strleft = float(parameters[2])
+		strright = float(parameters[3])
                 drive.publish(left, right)
+		steer.publish(strleft, strright)
 
         elif (data[0] == 'S'):
             # Steer Command

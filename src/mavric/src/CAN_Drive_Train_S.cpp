@@ -25,15 +25,15 @@ using namespace ctre::phoenix::motorcontrol::can;
 
 double c_Scale = 0.4;
 double c_lfDir = 1;
-double c_lmDir = 1;
+double c_lmDir = -1;
 double c_lbDir = 1;
 double c_rfDir = -1;
 double c_rmDir = -1;
 double c_rbDir = -1;
-double c_str_lfDir = 1;
-double c_str_lbDir = 1;
-double c_str_rfDir = 1;
-double c_str_rbDir = 1;
+double c_str_lfDir = -164;
+double c_str_lbDir = 164;
+double c_str_rfDir = 164;
+double c_str_rbDir = -164;
 
 double leftTarget = 0;
 double rightTarget = 0;
@@ -57,14 +57,25 @@ ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 
+ErrorCode cur1 = talon_str_lf.ConfigPeakCurrentLimit(7, 0);
+ErrorCode cur2 = talon_str_lb.ConfigPeakCurrentLimit(7, 0);
+ErrorCode cur3 = talon_str_rf.ConfigPeakCurrentLimit(7, 0);
+ErrorCode cur4 = talon_str_rb.ConfigPeakCurrentLimit(7, 0);
+
 SensorCollection lf_FB = talon_str_lf.GetSensorCollection();
 SensorCollection lb_FB = talon_str_lb.GetSensorCollection();
 SensorCollection rf_FB = talon_str_rf.GetSensorCollection();
 SensorCollection rb_FB = talon_str_rb.GetSensorCollection();
 
+ErrorCode cal1 = lf_FB.SetQuadraturePosition(0, 0);
+ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
+ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
+ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
+
+
 void strpub(const ros::Publisher pub)
 {
-	mavric::Steer values;
+	mavric::Steer value;
 	value.lf = lf_FB.GetQuadraturePosition();
 	value.lb = lb_FB.GetQuadraturePosition();
 	value.rf = rf_FB.GetQuadraturePosition();
@@ -75,17 +86,17 @@ void strpub(const ros::Publisher pub)
 void strCallback(const mavric::Steertrain::ConstPtr &data)
 {
 	double sleft = data->strLeft;
-	if (sleft > 10000)
-		sleft = 10000;
-	if (sleft < -10000)
-		sleft = -10000;
+	if (sleft > 100)
+		sleft = 100;
+	if (sleft < -100)
+		sleft = -100;
 	strLeftTarget = (int)sleft;
 
 	double sright = data->strRight;
-	if (sright > 10000)
-		sright = 10000;
-	if (sright < -10000)
-		sright = -10000;
+	if (sright > 100)
+		sright = 100;
+	if (sright < -100)
+		sright = -100;
 	strRightTarget = (int)sright;
 }
 
