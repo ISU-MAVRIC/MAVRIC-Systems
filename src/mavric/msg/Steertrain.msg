@@ -1,0 +1,2 @@
+float32 strLeft
+float32 strRight
