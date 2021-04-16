@@ -7,16 +7,9 @@
   <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
   <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
   <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH2" />
-  <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH3" />
-  <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH4" />
-  <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH5" />
-
-  <arg name="FrontLeftPWM_CH"     value="/HW/SlowPWM/CH6" />
-  <arg name="MiddleLeftPWM_CH"    value="/HW/SlowPWM/CH7" />
-  <arg name="BackLeftPWM_CH"      value="/HW/SlowPWM/CH8" />
-  <arg name="FrontRightPWM_CH"    value="/HW/SlowPWM/CH9" />
-  <arg name="MiddleRightPWM_CH"   value="/HW/SlowPWM/CH10" />
-  <arg name="BackRightPWM_CH"     value="/HW/SlowPWM/CH11" />
+  <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH5" />
+  <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH7" />
+  <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH9" />
 
   <group ns="HW" unless="$(arg simulated)">
     <node name="FastPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
@@ -74,11 +67,10 @@
   </node>
 
   <group ns="Arm" unless="$(arg noarm)">
-    <arg name="ShoulderRot_Scale" value="-0.4" />
-    <arg name="ShoulderPitch_Scale" value="0.9" />
+    <arg name="ShoulderRot_Scale" value="1.0" />
     <arg name="ElbowPitch_Scale" value="1.0" />
-    <arg name="WristRot_Scale" value="0.3" />
-    <arg name="WristPitch_Scale" value="0.3" />
+    <arg name="WristRot_Scale" value="1.0" />
+    <arg name="WristPitch_Scale" value="1.0" />
     <arg name="ClawActuation_Scale" value="1.0" />
 
     <node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
@@ -92,13 +84,6 @@
       <remap from="input" to="ShoulderRot"/>
       <remap from="output" to="ShoulderRotRamped" />
     </node>
-    <node name="ShoulderPitch_Ramping" pkg="mavric" type="Ramping.py" >
-      <param name="ramp_rate_up" value="100"/>
-      <param name="ramp_rate_down" value="200"/>
-      <param name="centerpoint" value="0"/>
-      <remap from="input" to="ShoulderPitch"/>
-      <remap from="output" to="ShoulderPitchRamped" />
-    </node>
 
     <!-- Each scaling node takes one channel and scales it from +- 100 to the PWM control range--> 
     <node name="ShoulderRot_Scale" pkg="mavric" type="LinearMapping.py">
@@ -107,11 +92,6 @@
       <param name="slopes"      value="$(eval ShoulderRot_Scale*0.0005/100)" />
       <param name="intercepts"  value="0.0015" />
     </node>
-    <node name="ShoulderPitch_Scale" pkg="mavric" type="LinearMapping.py">
-      <param name="inputs"  value="ShoulderPitchRamped" />
-      <param name="outputs" value="$(arg ShoulderPitchPWM_CH)" />
-      <param name="slopes"      value="$(eval ShoulderPitch_Scale*0.0005/100)" />
-      <param name="intercepts"  value="0.0015" />
     </node>
     <node name="ElbowPitch_Scale" pkg="mavric" type="LinearMapping.py">
       <param name="inputs"  value="ElbowPitch" />
@@ -175,6 +155,7 @@
       <param name="Range" value="0.3" />
       <remap from="Drive_Train" to="Drive_Command" />
       <remap from="Steer_Train" to="Steer_Command" />
+      <remap from="Pitch_Train" to="ShoulderPitch" />
 
       <param name="Left_Front/Scale" value="-1" />
       <param name="Left_Back/Scale" value="-1" />

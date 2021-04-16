@@ -34,11 +34,13 @@ double c_str_lfDir = -164;
 double c_str_lbDir = 164;
 double c_str_rfDir = 164;
 double c_str_rbDir = -164;
+double c_pitch = 1;
 
 double leftTarget = 0;
 double rightTarget = 0;
 double strLeftTarget = 0;
 double strRightTarget = 0;
+double pitchTarget = 0;
 
 TalonSRX talon_lf(1);
 TalonSRX talon_lm(2);
@@ -52,15 +54,17 @@ TalonSRX talon_str_lb(8);
 TalonSRX talon_str_rf(9);
 TalonSRX talon_str_rb(10);
 
+TalonSRX talon_pitch(11);
+
 ErrorCode sen1 = talon_str_lf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 
-ErrorCode cur1 = talon_str_lf.ConfigPeakCurrentLimit(7, 0);
-ErrorCode cur2 = talon_str_lb.ConfigPeakCurrentLimit(7, 0);
-ErrorCode cur3 = talon_str_rf.ConfigPeakCurrentLimit(7, 0);
-ErrorCode cur4 = talon_str_rb.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur1 = talon_str_lf.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur2 = talon_str_lb.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur3 = talon_str_rf.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur4 = talon_str_rb.ConfigPeakCurrentLimit(7, 0);
 
 SensorCollection lf_FB = talon_str_lf.GetSensorCollection();
 SensorCollection lb_FB = talon_str_lb.GetSensorCollection();
@@ -71,7 +75,6 @@ ErrorCode cal1 = lf_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
-
 
 void strpub(const ros::Publisher pub)
 {
@@ -117,6 +120,18 @@ void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 
 	leftTarget = dLeft / 100;
 	rightTarget = dRight / 100;
+}
+
+void pitchCallback(const mavric::Drivetrain::ConstPtr &data)
+{
+	double pitch = data->data;
+
+	if (pitch > 100)
+		pitch = 100;
+	if (pitch < -100)
+		pitch = -100;
+
+	pitchTarget = pitch;
 }
 
 void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb, double str_lf, double str_lb, double str_rf, double str_rb)
@@ -184,11 +199,13 @@ int main(int argc, char **argv)
 	double right = 0;
 	double strLeft = 0;
 	double strRight = 0;
+	double strRight = 0;
+	double pitch = 0;
 
 	double rampRateUp = 0.5;
 	double rampRateDown = 0.5;
-	double strRateUp = 100;
-	double strRateDown = 100;
+	double strRateUp = 1;
+	double strRateDown = 1;
 
 	ros::init(argc, argv, "CAN_DTS");
 
@@ -198,6 +215,7 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
 	ros::Subscriber str_sub = n.subscribe("Steer_Train", 1000, strCallback);
+	ros::Subscriber str_sub = n.subscribe("Pitch_Train", 1000, pitchCallback);
 	ros::Publisher str_pub = n.advertise<mavric::Steer>("Steer_Feedback", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
@@ -209,6 +227,7 @@ int main(int argc, char **argv)
 	ros::param::get("~Right_Front/Scale", c_rfDir);
 	ros::param::get("~Right_Middle/Scale", c_rmDir);
 	ros::param::get("~Right_Back/Scale", c_rbDir);
+	ros::param::get("~Pitch/Scale", c_pitch);
 	ros::param::get("~ramp_rate_up", rampRateUp);
 	ros::param::get("~ramp_rate_down", rampRateDown);
 	ros::param::get("~str_ramp_rate_up", strRateUp);
@@ -229,6 +248,12 @@ int main(int argc, char **argv)
 			strLeft = rampVal(strLeft, strLeftTarget, strRateUp, strRateDown);
 			strRight = rampVal(strRight, strRightTarget, strRateUp, strRateDown);
 			setOutputs(left, left, left, right, right, right, strLeft, strLeft, strRight, strRight);
+		}
+
+		if (pitch != pitchTarget)
+		{
+			pitch = rampVal(pitch, pitchTarget, rampRateUp, rampRateDown);
+			talon_lf.Set(ControlMode::PercentOutput, pitch * c_Scale * c_lfDir);
 		}
 
 		strpub(str_pub);
