@@ -1,33 +1,33 @@
 #!/usr/bin/env python
 import rospy
 import Jetson.GPIO as GPIO
-import time
+from time import time
 from std_msgs.msg import Int32
 
 GPIO.setmode(GPIO.BOARD) 
-GPIO.setup(38, GPIO.IN) #pin 38
-GPIO.setup(40, GPIO.IN) #pin 40
+GPIO.setup(31, GPIO.IN) #pin 38
+GPIO.setup(33, GPIO.IN) #pin 40
 
-GPIO.add_event_detect(38, GPIO.RISING)
-GPIO.add_event_detect(40, GPIO.RISING)
-atime = none
-btime = none
-counter = 0
-
-    def talker():
-        pub = rospy.Publisher('chatter', Int32, queue_size=10)
+def talker():
+	pub = rospy.Publisher('Motor_Feedback', Int32, queue_size=10)
         rospy.init_node('encoderFB', anonymous=True)
+	atime = None
+	btime = None
+	counter = 0
+	GPIO.add_event_detect(31, GPIO.RISING)
+	GPIO.add_event_detect(33, GPIO.RISING)
         while not rospy.is_shutdown():
-
-            if GPIO.event_detected(38):
-                atime = time.perf.counter()
+            if GPIO.event_detected(31):
+                atime = time()
+		print('a')
             else:
-                atime = none
+                atime = None
 
-            if GPIO.event_detected(40):
-                btime = time.perf.counter()
+            if GPIO.event_detected(33):
+		print('a')
+                btime = time()
             else:
-                btime = none
+                btime = None
 
             if atime == None or btime == None:
                 counter = counter
