@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Reads from the GPS pHAT and publishes the data to the GPS_Data topic.
 
 # Topics:
@@ -10,17 +10,17 @@ from gps import GPS
 
 def talker():
 
-        rospy.init_node('GPS_Streamer')
-        pub = rospy.Publisher("GPS_Data", mavric.msg.GPS, queue_size=10, latch=True)
-        r = rospy.Rate(10);
-        gps = GPS('/dev/ttyS0')
-        gps.begin()
-        while not rospy.is_shutdown():
-                print(gps._data)
-                gps.update()
-                h,m,s =  gps.time;
-                pub.publish(gps.good_fix, gps.latitude, gps.longitude, gps.altitude, gps.speed, gps.heading, gps.satellites, h, m, s)
-                r.sleep()
+	rospy.init_node('GPS_Streamer')
+	pub = rospy.Publisher("GPS_Data", mavric.msg.GPS, queue_size=10, latch=True)
+	r = rospy.Rate(10);
+	gps = GPS('/dev/ttyS0')
+	gps.begin()
+	while not rospy.is_shutdown():
+		print(gps._data)
+		gps.update()
+		h,m,s =  gps.time;
+		pub.publish(gps.good_fix, gps.latitude, gps.longitude, gps.altitude, gps.speed, gps.heading, gps.satellites, h, m, s)
+		r.sleep()
         
 
 if __name__ == '__main__':

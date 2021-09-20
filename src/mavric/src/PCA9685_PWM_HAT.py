@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Subscribes to a topic for each PWM output, setting the output accordingly.
 # Each topic is a std_msgs/Float64 topic named CH# where # is the channel number (0-15)
