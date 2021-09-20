@@ -2,7 +2,7 @@
   <arg name="simulated" default="false" />
   <arg name="noarm" default="false" />
   <arg name="nocooling" default="false" />
-  <arg name="nogps" default="false" />
+  <arg name="nogps" default="true" />
 
   <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
   <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
@@ -19,6 +19,7 @@
   <arg name="BackRightPWM_CH"     value="/HW/SlowPWM/CH11" />
 
   <group ns="HW" unless="$(arg simulated)">
+<?ignore
     <node name="FastPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="container" value="FastPWM/" />
       <param name="control_mode" value="DutyCycle" />
@@ -31,13 +32,14 @@
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
       <param name="clk_error" value="1.04166667" />
     </node>
+?>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="container" value="SlowPWM/" />
       <param name="control_mode" value="PulseTime" />
       <param name="frequency" value="250" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
-      <param name="address" value="65" />
+      <param name="address" value="64" />
       
       <!-- we want to run as fast as possible here -->
       <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->

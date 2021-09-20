@@ -22,7 +22,7 @@ from __future__ import division
 import logging
 import time
 import math
-from smbus import SMBus
+from smbus2 import SMBus
 
 
 # Registers/etc:
