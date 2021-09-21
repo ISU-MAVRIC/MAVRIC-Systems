@@ -37,8 +37,10 @@ double c_str_rbDir = -164;
 
 double leftTarget = 0;
 double rightTarget = 0;
-double strLeftTarget = 0;
-double strRightTarget = 0;
+double strLfTarget = 0;
+double strLbTarget = 0;
+double strRfTarget = 0;
+double strRbTarget = 0;
 
 TalonSRX talon_lf(1);
 TalonSRX talon_lm(2);
@@ -72,7 +74,6 @@ ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
 
-
 void strpub(const ros::Publisher pub)
 {
 	mavric::Steer value;
@@ -83,21 +84,47 @@ void strpub(const ros::Publisher pub)
 	pub.publish(value);
 }
 
+void CalCallback(const mavric::Steercal::ConstPtr &data)
+{
+	if (data->calLf == true)
+		ErrorCode cal1 = lf_FB.SetQuadraturePosition(0, 0);
+	if (data->calLb == true)
+		ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
+	if (data->calRf == true)
+		ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
+	if (data->calRb == true)
+		ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
+}
+
 void strCallback(const mavric::Steertrain::ConstPtr &data)
 {
-	double sleft = data->strLeft;
-	if (sleft > 100)
-		sleft = 100;
-	if (sleft < -100)
-		sleft = -100;
-	strLeftTarget = (int)sleft;
+	double slf = data->strLf;
+	if (slf > 100)
+		slf = 100;
+	if (slf < -100)
+		slf = -100;
+	strLfTarget = (int)slf;
 
-	double sright = data->strRight;
-	if (sright > 100)
-		sright = 100;
-	if (sright < -100)
-		sright = -100;
-	strRightTarget = (int)sright;
+	double slb = data->strLb;
+	if (slb > 100)
+		slb = 100;
+	if (slb < -100)
+		slb = -100;
+	strLbTarget = (int)slb;
+
+	double srf = data->strRf;
+	if (srf > 100)
+		srf = 100;
+	if (srf < -100)
+		srf = -100;
+	strRfTarget = (int)srf;
+
+	double srb = data->strRb;
+	if (srb > 100)
+		srb = 100;
+	if (srb < -100)
+		srb = -100;
+	strRbTarget = (int)srb;
 }
 
 void driveCallback(const mavric::Drivetrain::ConstPtr &data)
@@ -182,8 +209,10 @@ int main(int argc, char **argv)
 {
 	double left = 0;
 	double right = 0;
-	double strLeft = 0;
-	double strRight = 0;
+	double strLf = 0;
+	double strLb = 0;
+	double strRf = 0;
+	double strRb = 0;
 
 	double rampRateUp = 0.5;
 	double rampRateDown = 0.5;
@@ -198,6 +227,7 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
 	ros::Subscriber str_sub = n.subscribe("Steer_Train", 1000, strCallback);
+	ros::Subscriber str_sub = n.subscribe("Steer_Cal", 1000, CalCallback);
 	ros::Publisher str_pub = n.advertise<mavric::Steer>("Steer_Feedback", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
@@ -222,13 +252,15 @@ int main(int argc, char **argv)
 		ctre::phoenix::unmanaged::FeedEnable(200);
 		ros::spinOnce();
 
-		if (left != leftTarget || right != rightTarget || strLeft != strLeftTarget || strRight != strRightTarget)
+		if (left != leftTarget || right != rightTarget || strLf != strLfTarget || strRf != strRfTarget || strLb != strLbTarget || strRb != strRbTarget)
 		{
 			left = rampVal(left, leftTarget, rampRateUp, rampRateDown);
 			right = rampVal(right, rightTarget, rampRateUp, rampRateDown);
-			strLeft = rampVal(strLeft, strLeftTarget, strRateUp, strRateDown);
-			strRight = rampVal(strRight, strRightTarget, strRateUp, strRateDown);
-			setOutputs(left, left, left, right, right, right, strLeft, strLeft, strRight, strRight);
+			strLf = rampVal(strLf, strLfTarget, strRateUp, strRateDown);
+			strRf = rampVal(strRf, strRfTarget, strRateUp, strRateDown);
+			strLf = rampVal(strLb, strLbTarget, strRateUp, strRateDown);
+			strRf = rampVal(strRb, strRbTarget, strRateUp, strRateDown);
+			setOutputs(left, left, left, right, right, right, strLf, strLb, strRf, strRb);
 		}
 
 		strpub(str_pub);
