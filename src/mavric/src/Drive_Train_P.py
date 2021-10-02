@@ -13,6 +13,7 @@ import rospy
 from std_msgs.msg import String
 from mavric.msg import Drivetrain
 from mavric.msg import Steertrain
+from mavric.msg import Steercal
 
 import time
 
@@ -55,13 +56,9 @@ def talker():
             parameters = data[1:].strip().split(',')
             # rospy.loginfo(parameters)
 
-            if enabled:
-                left = float(parameters[0])
-                right = float(parameters[1])
-                strleft = float(parameters[2])
-                strright = float(parameters[3])
-                drive.publish(left, right)
-                steer.publish(strleft, strright)
+            if enabled:		
+                drive.publish(float(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]))
+                steer.publish(float(parameters[6]), float(parameters[7]), float(parameters[8]), float(parameters[9]))
 
         elif (data[0] == 'S'):
             # Steer Command

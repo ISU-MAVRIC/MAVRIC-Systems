@@ -6,6 +6,7 @@
 #include "mavric/Steer.h"
 #include "mavric/Drivetrain.h"
 #include "mavric/Steertrain.h"
+#include "mavric/Steercal.h"
 
 #include <algorithm>
 #include "ctre/Phoenix.h"
@@ -30,13 +31,17 @@ double c_lbDir = 1;
 double c_rfDir = -1;
 double c_rmDir = -1;
 double c_rbDir = -1;
-double c_str_lfDir = -164;
-double c_str_lbDir = 164;
-double c_str_rfDir = 164;
-double c_str_rbDir = -164;
+double c_str_lfDir = 56.88;
+double c_str_lbDir = -56.88;
+double c_str_rfDir = 56.88;
+double c_str_rbDir = -56.88;
 
-double leftTarget = 0;
-double rightTarget = 0;
+double lfTarget = 0;
+double lmTarget = 0;
+double lbTarget = 0;
+double rfTarget = 0;
+double rmTarget = 0;
+double rbTarget = 0;
 double strLfTarget = 0;
 double strLbTarget = 0;
 double strRfTarget = 0;
@@ -129,21 +134,49 @@ void strCallback(const mavric::Steertrain::ConstPtr &data)
 
 void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 {
-	double dLeft = data->left;
-	double dRight = data->right;
+	double lf = data->lf;
+	double lm = data->lm;
+	double lb = data->lb;
+	double rf = data->rf;
+	double rm = data->rm;
+	double rb = data->rb;
 
-	if (dLeft > 100)
-		dLeft = 100;
-	if (dLeft < -100)
-		dLeft = -100;
+	if (lf > 100)
+		lf = 100;
+	if (lf < -100)
+		lf = -100;
 
-	if (dRight > 100)
-		dRight = 100;
-	if (dRight < -100)
-		dRight = -100;
+	if (lm > 100)
+		lm = 100;
+	if (lm < -100)
+		lm = -100;
+	
+	if (lb > 100)
+		lb = 100;
+	if (lb < -100)
+		lb = -100;
 
-	leftTarget = dLeft / 100;
-	rightTarget = dRight / 100;
+	if (rf > 100)
+		rf = 100;
+	if (rf < -100)
+		rf = -100;
+
+	if (rm > 100)
+		rm = 100;
+	if (rm < -100)
+		rm = -100;
+
+	if (rb > 100)
+		rb = 100;
+	if (rb < -100)
+		rb = -100;
+
+	lfTarget = lf / 100;
+	lmTarget = lm / 100;
+	lbTarget = lb / 100;
+	rfTarget = rf / 100;
+	rmTarget = rm / 100;
+	rbTarget = rb / 100;
 }
 
 void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb, double str_lf, double str_lb, double str_rf, double str_rb)
@@ -207,8 +240,12 @@ double rampVal(double current, double target, double rampAmountUp, double rampAm
 
 int main(int argc, char **argv)
 {
-	double left = 0;
-	double right = 0;
+	double dlf = 0;
+	double dlm = 0;
+	double dlb = 0;
+	double drf = 0;
+	double drm = 0;
+	double drb = 0;
 	double strLf = 0;
 	double strLb = 0;
 	double strRf = 0;
@@ -227,7 +264,7 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
 	ros::Subscriber str_sub = n.subscribe("Steer_Train", 1000, strCallback);
-	ros::Subscriber str_sub = n.subscribe("Steer_Cal", 1000, CalCallback);
+	ros::Subscriber cal_sub = n.subscribe("Steer_Cal", 1000, CalCallback);
 	ros::Publisher str_pub = n.advertise<mavric::Steer>("Steer_Feedback", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
@@ -252,15 +289,19 @@ int main(int argc, char **argv)
 		ctre::phoenix::unmanaged::FeedEnable(200);
 		ros::spinOnce();
 
-		if (left != leftTarget || right != rightTarget || strLf != strLfTarget || strRf != strRfTarget || strLb != strLbTarget || strRb != strRbTarget)
+		if (dlf != lfTarget || dlm != lmTarget ||dlb != lbTarget || drf != rfTarget ||  drm != rmTarget || drb != rbTarget || strLf != strLfTarget || strRf != strRfTarget || strLb != strLbTarget || strRb != strRbTarget)
 		{
-			left = rampVal(left, leftTarget, rampRateUp, rampRateDown);
-			right = rampVal(right, rightTarget, rampRateUp, rampRateDown);
+			dlf = rampVal(dlf, lfTarget, rampRateUp, rampRateDown);
+			dlm = rampVal(dlm, lmTarget, rampRateUp, rampRateDown);
+			dlb = rampVal(dlb, lbTarget, rampRateUp, rampRateDown);
+			drf = rampVal(drf, rfTarget, rampRateUp, rampRateDown);
+			drm = rampVal(drm, rmTarget, rampRateUp, rampRateDown);
+			drb = rampVal(drb, rbTarget, rampRateUp, rampRateDown);
 			strLf = rampVal(strLf, strLfTarget, strRateUp, strRateDown);
-			strRf = rampVal(strRf, strRfTarget, strRateUp, strRateDown);
-			strLf = rampVal(strLb, strLbTarget, strRateUp, strRateDown);
-			strRf = rampVal(strRb, strRbTarget, strRateUp, strRateDown);
-			setOutputs(left, left, left, right, right, right, strLf, strLb, strRf, strRb);
+			strLb = rampVal(strRf, strLbTarget, strRateUp, strRateDown);
+			strRf = rampVal(strLb, strRfTarget, strRateUp, strRateDown);
+			strRb = rampVal(strRb, strRbTarget, strRateUp, strRateDown);
+			setOutputs(dlf, dlm, dlb, drf, drm, drb, strLf, strLb, strRf, strRb);
 		}
 
 		strpub(str_pub);
