@@ -186,8 +186,8 @@
 
       <param name="ramp_rate_up" value="2.0" />
       <param name="ramp_rate_down" value="4.0" />
-      <param name="str_ramp_rate_up" value="2" />
-      <param name="str_ramp_rate_down" value="2" />
+      <param name="str_ramp_rate_up" value="1" />
+      <param name="str_ramp_rate_down" value="1" />
     </node>
 
     <node name="Steer_Feedback" pkg="mavric" type="Drive_Feedback_Interface.py" respawn="true" >

@@ -24,17 +24,18 @@ using namespace ctre::phoenix::unmanaged;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
 
-double c_Scale = 0.4;
+double c_Scale = 0.3;
 double c_lfDir = 1;
 double c_lmDir = -1;
 double c_lbDir = 1;
 double c_rfDir = -1;
 double c_rmDir = -1;
 double c_rbDir = -1;
-double c_str_lfDir = 56.88;
-double c_str_lbDir = -56.88;
-double c_str_rfDir = 56.88;
-double c_str_rbDir = -56.88;
+double c_str_Scale = 227.55;
+double c_str_lfDir = 1;
+double c_str_lbDir = -1;
+double c_str_rfDir = 1;
+double c_str_rbDir = -1;
 
 double lfTarget = 0;
 double lmTarget = 0;
@@ -64,10 +65,10 @@ ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 
-ErrorCode cur1 = talon_str_lf.ConfigPeakCurrentLimit(7, 0);
-ErrorCode cur2 = talon_str_lb.ConfigPeakCurrentLimit(7, 0);
-ErrorCode cur3 = talon_str_rf.ConfigPeakCurrentLimit(7, 0);
-ErrorCode cur4 = talon_str_rb.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur1 = talon_str_lf.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur2 = talon_str_lb.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur3 = talon_str_rf.ConfigPeakCurrentLimit(7, 0);
+//ErrorCode cur4 = talon_str_rb.ConfigPeakCurrentLimit(7, 0);
 
 SensorCollection lf_FB = talon_str_lf.GetSensorCollection();
 SensorCollection lb_FB = talon_str_lb.GetSensorCollection();
@@ -188,10 +189,10 @@ void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb
 	talon_rm.Set(ControlMode::PercentOutput, rm * c_Scale * c_rmDir);
 	talon_rb.Set(ControlMode::PercentOutput, rb * c_Scale * c_rbDir);
 
-	talon_str_lf.Set(ControlMode::Position, str_lf * c_str_lfDir);
-	talon_str_lb.Set(ControlMode::Position, str_lb * c_str_lbDir);
-	talon_str_rf.Set(ControlMode::Position, str_rf * c_str_rfDir);
-	talon_str_rb.Set(ControlMode::Position, str_rb * c_str_rbDir);
+	talon_str_lf.Set(ControlMode::Position, str_lf * c_str_lfDir * c_str_Scale);
+	talon_str_lb.Set(ControlMode::Position, str_lb * c_str_lbDir * c_str_Scale);
+	talon_str_rf.Set(ControlMode::Position, str_rf * c_str_rfDir * c_str_Scale);
+	talon_str_rb.Set(ControlMode::Position, str_rb * c_str_rbDir * c_str_Scale);
 }
 
 double rampVal(double current, double target, double rampAmountUp, double rampAmountDown)
@@ -250,7 +251,7 @@ int main(int argc, char **argv)
 	double strLb = 0;
 	double strRf = 0;
 	double strRb = 0;
-
+	
 	double rampRateUp = 0.5;
 	double rampRateDown = 0.5;
 	double strRateUp = 100;
@@ -270,6 +271,7 @@ int main(int argc, char **argv)
 	//ros::Service("SetProtection", SetBool, changeProtection);
 
 	ros::param::get("~Range", c_Scale);
+	ros::param::get("~Str/Range", c_str_Scale);
 	ros::param::get("~Left_Front/Scale", c_lfDir);
 	ros::param::get("~Left_Middle/Scale", c_lmDir);
 	ros::param::get("~Left_Back/Scale", c_lbDir);
@@ -298,8 +300,8 @@ int main(int argc, char **argv)
 			drm = rampVal(drm, rmTarget, rampRateUp, rampRateDown);
 			drb = rampVal(drb, rbTarget, rampRateUp, rampRateDown);
 			strLf = rampVal(strLf, strLfTarget, strRateUp, strRateDown);
-			strLb = rampVal(strRf, strLbTarget, strRateUp, strRateDown);
-			strRf = rampVal(strLb, strRfTarget, strRateUp, strRateDown);
+			strLb = rampVal(strLb, strLbTarget, strRateUp, strRateDown);
+			strRf = rampVal(strRf, strRfTarget, strRateUp, strRateDown);
 			strRb = rampVal(strRb, strRbTarget, strRateUp, strRateDown);
 			setOutputs(dlf, dlm, dlb, drf, drm, drb, strLf, strLb, strRf, strRb);
 		}
