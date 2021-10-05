@@ -48,6 +48,22 @@ double strLbTarget = 0;
 double strRfTarget = 0;
 double strRbTarget = 0;
 
+double dlf = 0;
+double dlm = 0;
+double dlb = 0;
+double drf = 0;
+double drm = 0;
+double drb = 0;
+double strLf = 0;
+double strLb = 0;
+double strRf = 0;
+double strRb = 0;
+
+double rampRateUp = 0.5;
+double rampRateDown = 0.5;
+double strRateUp = 100;
+double strRateDown = 100;
+
 TalonSRX talon_lf(1);
 TalonSRX talon_lm(2);
 TalonSRX talon_lb(3);
@@ -93,13 +109,33 @@ void strpub(const ros::Publisher pub)
 void CalCallback(const mavric::Steercal::ConstPtr &data)
 {
 	if (data->calLf == true)
+	{
 		ErrorCode cal1 = lf_FB.SetQuadraturePosition(0, 0);
+		talon_str_lf.Set(ControlMode::Position, 0);
+		strLf = 0;
+		strLfTarget = 0;
+	}
 	if (data->calLb == true)
+	{
 		ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
+		talon_str_lb.Set(ControlMode::Position, 0);
+		strLb = 0;
+		strLbTarget = 0;
+	}
 	if (data->calRf == true)
+	{
 		ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
+		talon_str_rf.Set(ControlMode::Position, 0);
+		strRf = 0;
+		strRfTarget = 0;
+	}
 	if (data->calRb == true)
+	{
 		ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
+		talon_str_rb.Set(ControlMode::Position, 0);
+		strRb = 0;
+		strRbTarget = 0;
+	}
 }
 
 void strCallback(const mavric::Steertrain::ConstPtr &data)
@@ -151,7 +187,7 @@ void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 		lm = 100;
 	if (lm < -100)
 		lm = -100;
-	
+
 	if (lb > 100)
 		lb = 100;
 	if (lb < -100)
@@ -241,21 +277,6 @@ double rampVal(double current, double target, double rampAmountUp, double rampAm
 
 int main(int argc, char **argv)
 {
-	double dlf = 0;
-	double dlm = 0;
-	double dlb = 0;
-	double drf = 0;
-	double drm = 0;
-	double drb = 0;
-	double strLf = 0;
-	double strLb = 0;
-	double strRf = 0;
-	double strRb = 0;
-	
-	double rampRateUp = 0.5;
-	double rampRateDown = 0.5;
-	double strRateUp = 100;
-	double strRateDown = 100;
 
 	ros::init(argc, argv, "CAN_DTS");
 
@@ -291,7 +312,7 @@ int main(int argc, char **argv)
 		ctre::phoenix::unmanaged::FeedEnable(200);
 		ros::spinOnce();
 
-		if (dlf != lfTarget || dlm != lmTarget ||dlb != lbTarget || drf != rfTarget ||  drm != rmTarget || drb != rbTarget || strLf != strLfTarget || strRf != strRfTarget || strLb != strLbTarget || strRb != strRbTarget)
+		if (dlf != lfTarget || dlm != lmTarget || dlb != lbTarget || drf != rfTarget || drm != rmTarget || drb != rbTarget || strLf != strLfTarget || strRf != strRfTarget || strLb != strLbTarget || strRb != strRbTarget)
 		{
 			dlf = rampVal(dlf, lfTarget, rampRateUp, rampRateDown);
 			dlm = rampVal(dlm, lmTarget, rampRateUp, rampRateDown);
