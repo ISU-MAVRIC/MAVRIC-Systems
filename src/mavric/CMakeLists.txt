@@ -60,6 +60,7 @@ add_message_files(
   FILES
   Drivetrain.msg
   Steertrain.msg
+  Steercal.msg
   Steer.msg
   GPS.msg
   Arm.msg
