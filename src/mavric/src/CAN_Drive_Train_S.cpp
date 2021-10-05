@@ -110,31 +110,31 @@ void CalCallback(const mavric::Steercal::ConstPtr &data)
 {
 	if (data->calLf == true)
 	{
-		ErrorCode cal1 = lf_FB.SetQuadraturePosition(0, 0);
-		talon_str_lf.Set(ControlMode::Position, 0);
 		strLf = 0;
 		strLfTarget = 0;
+		ErrorCode cal1 = lf_FB.SetQuadraturePosition(0, 0);
+		talon_str_lf.Set(ControlMode::Position, 0);
 	}
 	if (data->calLb == true)
 	{
-		ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
-		talon_str_lb.Set(ControlMode::Position, 0);
 		strLb = 0;
 		strLbTarget = 0;
+		ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
+		talon_str_lb.Set(ControlMode::Position, 0);
 	}
 	if (data->calRf == true)
 	{
-		ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
-		talon_str_rf.Set(ControlMode::Position, 0);
 		strRf = 0;
 		strRfTarget = 0;
+		ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
+		talon_str_rf.Set(ControlMode::Position, 0);
 	}
 	if (data->calRb == true)
 	{
-		ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
-		talon_str_rb.Set(ControlMode::Position, 0);
 		strRb = 0;
 		strRbTarget = 0;
+		ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
+		talon_str_rb.Set(ControlMode::Position, 0);
 	}
 }
 
