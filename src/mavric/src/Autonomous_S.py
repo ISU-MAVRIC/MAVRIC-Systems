@@ -4,7 +4,7 @@ import serial
 import time
 import rospy
 
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 from geometry_msgs.msg import Vector3
 from mavric.msg import Autonomous, Waypoint, Drivetrain, GPS
 
@@ -78,13 +78,16 @@ def waypoint_cb(data):
 
 def gps_cb(data):
     #how often does the gps publish? do we have to compare values here?
-    global position, prev_position, fix_time, good_fix #, heading
+    global position, prev_position, fix_time #, heading
 
     prev_position = position
     position = [data.latitude, data.longitude]
     fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
-    good_fix = data.good_fix
     heading = data.heading
+
+def gps_fix_cb(data):
+    global good_fix
+    good_fix = data.data
 
 def imu_cb(data):
     global heading, good_imu
@@ -119,6 +122,7 @@ def talker():
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
     gps_sub = rospy.Subscriber("/GPS_Data", GPS, gps_cb, queue_size=10)
+    gps_fix_sub = rospy.Subscriber("/GPS_Fix", Bool, queue_size=10)
 
     imu_sub = rospy.Subscriber("/Drive_Board_HW/IMU/FusedAngle", Vector3, imu_cb, queue_size=10)
     imu_cal_sub = rospy.Subscriber("/Drive_Board_HW/IMU/SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
