@@ -26,10 +26,15 @@ def talker():
             pub_gps_fix.publish(False)
         else:
             pub_gps_fix.publish(True)
+<<<<<<< HEAD
             h = gps.timestamp_utc.tm_hour
             m = gps.timestamp_utc.tm_min
             s = gps.timestamp_utc.tm_sec
             pub.publish(gps.has_fix, gps.latitude, gps.longitude, gps.altitude_m, gps.speed_knots, gps.track_angle_deg, gps.satellites, h, m, s)
+=======
+            h, m, s = gps.timestamp_utc
+            pub.publish(gps.latitude, gps.longitude, gps.altitude_m, gps.speed_knots, gps.track_angle_deg, gps.satellites, h, m, s)
+>>>>>>> dbaf31f4e2b059c3898c9d819cc47f0edb177950
         rate.sleep()
 
 
