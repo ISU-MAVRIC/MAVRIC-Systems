@@ -47,7 +47,7 @@
     </node>
 	
 
-    <node name="GPS_Streamer" pkg="mavric" type="GPS_Test.py" respawn="true" unless="$(arg nogps)" >
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)" >
       <remap from="GPS_Data" to="/GPS_Data" />
     </node>
 
