@@ -8,6 +8,8 @@ from StateMachine import State
 def get_inner_power(outer_power, radius):
     return (radius / (radius + auto_globals.Rover_Width)) * outer_power
 
+
+#On inital trek to a waypoint, turn twords the waypoint, then advance the state
 class TurnTowardWaypoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
