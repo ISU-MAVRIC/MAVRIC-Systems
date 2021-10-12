@@ -22,6 +22,8 @@ class DriveTowardWaypoint(State):
         #capture position in case it changes later
         pos = auto_globals.position
 
+        #https://geographiclib.sourceforge.io/html/python/code.html#geographiclib.geodesic.Geodesic.Inverse
+        #The inverse function returns an array of data regarding the soltion of the geodesic problem, more can be read about it above
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
         geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])

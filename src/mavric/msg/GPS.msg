@@ -1,7 +1,7 @@
 # bool
 bool good_fix
 
-#degrees
+#coordinates
 float64 latitude
 float64 longitude
 
