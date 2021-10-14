@@ -4,12 +4,11 @@ import Jetson.GPIO as GPIO
 from std_msgs.msg import Bool
 
 config = {
-    "Lightbar": 1
+    "Lightbar": 40
 }
 
 def callback(data, args):
-    print(args[1], data.data)
-    #GPIO.output(args[1], data.data)
+    GPIO.output(args[1], data.data)
 
 def talker():
         rospy.init_node('Relay_Switcher')
