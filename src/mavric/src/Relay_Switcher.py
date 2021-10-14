@@ -12,13 +12,14 @@ def callback(data, args):
 
 def talker():
         rospy.init_node('Relay_Switcher')
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         for relay_name, relay_pin in config.items():
-            rospy.Subscriber('/Relay/' + relay_name, Bool, callback, (relay_name, relay_pin))
             GPIO.setup(relay_pin, GPIO.OUT)
+            rospy.Subscriber('/Relay/' + relay_name, Bool, callback, (relay_name, relay_pin))
         r = rospy.Rate(10)
         while not rospy.is_shutdown():
                 r.sleep()
+        GPIO.cleanup()
 
 if __name__ == '__main__':
     talker()
