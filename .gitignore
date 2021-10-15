@@ -37,3 +37,4 @@ src/gtest
 rospy
 *.pyc
 *~
+*.DS_Store
