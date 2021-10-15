@@ -76,7 +76,9 @@ def main():
     #setup ROS node
     rospy.init_node("ANS")
 
+    #init publishers
     auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
+    auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
     auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)

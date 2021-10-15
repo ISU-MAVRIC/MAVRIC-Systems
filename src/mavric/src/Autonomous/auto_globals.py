@@ -31,4 +31,5 @@ Rover_MinTurnRadius = 0
 
 #ROS publishers (initialized in main)
 drive_pub = None
+steer_pub = None
 debug_pub = None

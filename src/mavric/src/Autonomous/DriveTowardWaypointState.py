@@ -3,10 +3,12 @@ from geographiclib.geodesic import Geodesic
 from math import copysign
 
 from StateMachine import State
+from driver import Driver
 
 class DriveTowardWaypoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
+        self.driveLib = Driver
 
     def enter(self):
         self.linear_error = auto_globals.LIN_ERROR_THRESHOLD * 2
@@ -35,6 +37,16 @@ class DriveTowardWaypoint(State):
         self.angular_error = geod['azi1'] - auto_globals.heading
 	self.angular_error = copysign(abs(self.angular_error) % 360, self.angular_error)
 
+
+        #Check speed based on distance, probably some hard coded number
+        #get values from some functions that do checking based on the offsets
+        driveVals = DriveLib.v_car_steer()
+
+
+
+
+
+
         #apply power based on heading
         left_power = 0
         right_power = 0
@@ -44,7 +56,10 @@ class DriveTowardWaypoint(State):
             left_power = auto_globals.Scale
             right_power = auto_globals.Scale
 
-        auto_globals.drive_pub.publish(left_power * 100, right_power * 100)
+        #TODO, update publisher data, and how it works. You need to get a publisher for steering
+        auto_globals.drive_pub.publish() #TODO
+        auto_globals.steer_pub.publish() #TODO
+
 
         #remember linear error for the next cycle
         auto_globals.prev_linear_error = self.linear_error
