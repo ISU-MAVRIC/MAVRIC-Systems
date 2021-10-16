@@ -2,7 +2,7 @@
   <arg name="simulated" default="false" />
   <arg name="noarm" default="false" />
   <arg name="nocooling" default="false" />
-  <arg name="nogps" default="true" />
+  <arg name="nogps" default="false" />
 
   <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
   <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
@@ -48,7 +48,6 @@
 	
 
     <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)" >
-      <remap from="GPS_Data" to="/GPS_Data" />
     </node>
 
 	
@@ -59,6 +58,9 @@
       <!-- See datasheet for address configuration table -->
       <param name="address" value="24" />
     </node>
+
+    <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
+
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" unless="$(arg nocooling)">
@@ -69,7 +71,6 @@
   
   <!-- Interface Nodes -->
   <!-- <node name="CAN_RobotEnable" pkg="mavric" type="CAN_RobotEnable.py" respawn="true" /> -->
-  <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
   <node name="Temperature_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true">
     <remap from="value" to="/SystemCooling/Temperature" />
     <param name="port" value="8002" />
