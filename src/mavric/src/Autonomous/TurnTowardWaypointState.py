@@ -1,12 +1,12 @@
 import auto_globals
 from geographiclib.geodesic import Geodesic
 from math import copysign
+import time
+
+from driver import v_point_steer
 
 from StateMachine import State
 
-#define functions
-def get_inner_power(outer_power, radius):
-    return (radius / (radius + auto_globals.Rover_Width)) * outer_power
 
 class TurnTowardWaypoint(State):
     def __init__(self, stateMachine):
@@ -29,37 +29,16 @@ class TurnTowardWaypoint(State):
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
         geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
-        
-        #get linear error in meters
-        self.linear_error = geod['s12']
 
-        #get angular error in CW degrees (account for 360 rollover)
-        self.angular_error = geod['azi1'] - auto_globals.heading
-	self.angular_error = copysign(abs(self.angular_error) % 360, self.angular_error)
+        self.desired_heading = geod['azi1']
 
-	#TODO: turning +2 is better than -358
+        start_time = time.time()
 
-        #apply power based on heading
-        left_power = 0
-        right_power = 0
-        
-        if(self.angular_error < 0):
-            #turn left
-            left_power = get_inner_power(auto_globals.Scale, auto_globals.Rover_MinTurnRadius)
-            right_power = auto_globals.Scale
+        while abs(get_angular_error()) > auto_globals.ANG_ERROR_THRESHOLD and time.time() < (start_time + auto_globals.ANG_POINT_STEER_TIMEOUT):
+            lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = v_point_steer(get_ramped_turn_speed())
+            auto_globals.drive_pub.publish(lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs)
 
-        if(self.angular_error > 0):
-            #turn right
-            left_power = auto_globals.Scale
-            right_power = get_inner_power(auto_globals.Scale, auto_globals.Rover_MinTurnRadius)
-
-        auto_globals.drive_pub.publish(left_power * 100, right_power * 100)
-
-        #remember angular error for the next cycle
-        auto_globals.prev_angular_error = self.angular_error
-
-	auto_globals.debug_pub.publish("ang error, left power, right power")
-	auto_globals.debug_pub.publish("%d, %d, %d" % (self.angular_error, left_power, right_power))
+        auto_globals.drive_pub.publish(0,0,0,0,0,0,0,0,0,0)
 
     def next(self):
         if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
@@ -69,3 +48,14 @@ class TurnTowardWaypoint(State):
             return self._stateMachine.driveTowardWaypoint
 
         return self._stateMachine.turnTowardWaypoint
+
+    
+    def get_angular_error(self):
+        return_heading = self.desired_heading - auto_globals.heading
+        return copysign(return_heading % 180, return_heading)
+
+
+    def get_ramped_turn_speed(self):
+        turn_speed = ((auto_globals.ANG_POINT_STEER_MAX - auto_globals.ANG_POINT_STEER_MIN) / 90) * abs(get_angular_error()) + auto_globals.ANG_POINT_STEER_MIN
+        turn_speed = turn_speed if turn_speed < auto_globals.ANG_POINT_STEER_MAX else auto_globals.ANG_POINT_STEER_MAX
+        return copysign(turn_speed, get_angular_error())
