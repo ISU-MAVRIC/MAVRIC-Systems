@@ -3,7 +3,7 @@ from geographiclib.geodesic import Geodesic
 from math import copysign
 import time
 
-from driver import v_point_steer
+from driver import Driver
 
 from StateMachine import State
 
@@ -37,7 +37,7 @@ class TurnTowardWaypoint(State):
         start_time = time.time()
 
         while abs(get_angular_error()) > auto_globals.ANG_ERROR_THRESHOLD and time.time() < (start_time + auto_globals.ANG_POINT_STEER_TIMEOUT):
-            lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = v_point_steer(get_ramped_turn_speed())
+            lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = Driver.v_point_steer(get_ramped_turn_speed())
             auto_globals.drive_pub.publish(lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs)
 
         auto_globals.drive_pub.publish(0,0,0,0,0,0,0,0,0,0)
