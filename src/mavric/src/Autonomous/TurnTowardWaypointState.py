@@ -8,6 +8,8 @@ from driver import v_point_steer
 from StateMachine import State
 
 
+
+#On inital trek to a waypoint, turn twords the waypoint, then advance the state
 class TurnTowardWaypoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine

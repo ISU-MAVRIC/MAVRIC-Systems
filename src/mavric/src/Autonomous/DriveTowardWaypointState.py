@@ -3,10 +3,12 @@ from geographiclib.geodesic import Geodesic
 from math import copysign
 
 from StateMachine import State
+from driver import Driver
 
 class DriveTowardWaypoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
+        self.driveLib = Driver
 
     def enter(self):
         self.linear_error = auto_globals.LIN_ERROR_THRESHOLD * 2
@@ -22,6 +24,8 @@ class DriveTowardWaypoint(State):
         #capture position in case it changes later
         pos = auto_globals.position
 
+        #https://geographiclib.sourceforge.io/html/python/code.html#geographiclib.geodesic.Geodesic.Inverse
+        #The inverse function returns an array of data regarding the soltion of the geodesic problem, more can be read about it above
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
         geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
@@ -29,26 +33,70 @@ class DriveTowardWaypoint(State):
         #get linear error in meters
         self.linear_error = geod['s12']
 
+        #todo, investigate what needs to happen here if we are messing with the heading this early
         #get angular error in CW degrees (account for 360 rollover)
         self.angular_error = geod['azi1'] - auto_globals.heading
-	self.angular_error = copysign(abs(self.angular_error) % 360, self.angular_error)
+        self.angular_error = copysign(abs(self.angular_error) % 360, self.angular_error)
 
-        #apply power based on heading
-        left_power = 0
-        right_power = 0
 
-        if(self.linear_error > auto_globals.LIN_ERROR_THRESHOLD):
-            #drive forward
-            left_power = auto_globals.Scale
-            right_power = auto_globals.Scale
+        #Check speed based on distance, probably some hard coded number
+        #get values from some functions that do checking based on the offsets
+        #remaining distance in meters
+        decel_dist = 100
+        
+        rem_dist = self.linear_error
+        turn_error = self.angular_error
+        
+        
+        
+        #Calculate linear velocity
+        #Based on linear offset, output scaled max velocity        
+        
+        
+        #shifts velocity by c, on the x axis
+        #directly correlates by 1 meter
+        #this could also help if rover doesn't seem to be slowing enough before a stop
+        c = 7
+        
+        #controls the top end of the curve. top velocity, presumably 0 -> 100
+        #TODO check range, starting with 40 percent power, if 100 is max velocity
+        b = 40
+        
+        #r controls when the deccel starts, 0.75 is around 10 - 15m
+        #0.3 is around 20m
+        #note that this literally stretches the curve, the funciton then may need to be shifted
+        r = 0.75
+        
+        #do speed input based on remaining distance, use r to adjust when the algo kicks in
+        velocity = (b * math.exp(r * rem_dist)) / ( math.exp(c * r) + math.exp(r * rem_dist))
 
-        auto_globals.drive_pub.publish(left_power * 100, right_power * 100)
+        #Calculate wheel angle
+        #Based on angular offset, turning angle based severity of offset
+        
+        #TODO should the wheel turn angle just literally be the offset? or the opposite of the offset?
+        #TODO, do we need to ramp this value somehow, or scale it base on the offset?
+        wheel_angle = turn_error
+        
+        
+        #given some steering data, return vector of motor data
+        driveVals = DriveLib.v_car_steer(velocity, wheel_angle) #TODO implement actual function
+
+        #publish drive data, given from DriveLib
+        #publish first 6 wheel speed values    
+        auto_globals.drive_pub.publish(driveVals[0], driveVals[1], driveVals[2], driveVals[3], driveVals[4], driveVals[5])
+        #publish 4 wheel steer parameters
+        auto_globals.steer_pub.publish(driveVals[6], driveVals[7], driveVals[8], driveVals[9])
+
+        #TODO, update publisher data, and how it works. You need to get a publisher for steering
+        #auto_globals.drive_pub.publish() #TODO
+        #auto_globals.steer_pub.publish() #TODO
+
 
         #remember linear error for the next cycle
         auto_globals.prev_linear_error = self.linear_error
 
-	auto_globals.debug_pub.publish("lin error, left power, right power")
-	auto_globals.debug_pub.publish("%d, %d, %d" % (self.linear_error, left_power, right_power))
+	#auto_globals.debug_pub.publish("lin error, left power, right power")
+	#auto_globals.debug_pub.publish("%d, %d, %d" % (self.linear_error, left_power, right_power))
 
     def next(self):
         if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
