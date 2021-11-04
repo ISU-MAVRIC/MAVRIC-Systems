@@ -3,7 +3,7 @@
 import rospy
 from std_msgs.msg import Float64
 from geometry_msgs.msg import Vector3
-from Adafruit_BNO055 import BNO055
+import adafruit_bno055 as BNO055
 import board
 
 i2c = board.I2C()
@@ -55,8 +55,8 @@ def talker():
     servo_cal_roll(pub_servo)
 
     while not rospy.is_shutdown():
-        sys_cal, gyro_cal, accel_cal, mag_cal = bno.calibration_status()
-        yaw, roll, pitch = bno.euler()
+        sys_cal, gyro_cal, accel_cal, mag_cal = bno.calibration_status
+        yaw, roll, pitch = bno.euler
 
         # if necessary
         #m_x, m_y, m_z = bno.read_magnetometer()
