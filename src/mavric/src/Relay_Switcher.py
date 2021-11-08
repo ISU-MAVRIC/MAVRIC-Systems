@@ -4,7 +4,10 @@ import Jetson.GPIO as GPIO
 from std_msgs.msg import Bool
 
 config = {
-    "Lightbar": 40
+    "light_pole/red": 40,
+    "light_pole/blue": 38,
+    "light_pole/green": 36,
+    "light_pole/buzzer": 37
 }
 
 def callback(data, args):
@@ -15,7 +18,7 @@ def talker():
         GPIO.setmode(GPIO.BOARD)
         for relay_name, relay_pin in config.items():
             GPIO.setup(relay_pin, GPIO.OUT)
-            rospy.Subscriber('/Relay/' + relay_name, Bool, callback, (relay_name, relay_pin))
+            rospy.Subscriber('/relay/' + relay_name, Bool, callback, (relay_name, relay_pin))
         r = rospy.Rate(10)
         while not rospy.is_shutdown():
                 r.sleep()
