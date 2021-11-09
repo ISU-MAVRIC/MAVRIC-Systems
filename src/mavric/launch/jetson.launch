@@ -11,12 +11,7 @@
   <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH4" />
   <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH5" />
 
-  <arg name="FrontLeftPWM_CH"     value="/HW/SlowPWM/CH6" />
-  <arg name="MiddleLeftPWM_CH"    value="/HW/SlowPWM/CH7" />
-  <arg name="BackLeftPWM_CH"      value="/HW/SlowPWM/CH8" />
-  <arg name="FrontRightPWM_CH"    value="/HW/SlowPWM/CH9" />
-  <arg name="MiddleRightPWM_CH"   value="/HW/SlowPWM/CH10" />
-  <arg name="BackRightPWM_CH"     value="/HW/SlowPWM/CH11" />
+  <arg name="IMUServoPWM_CH" value="/HW/SlowPWM/CH6" />
 
   <group ns="HW" unless="$(arg simulated)">
 <?ignore
@@ -56,10 +51,13 @@
       
       <!-- Address defaults to 0x18 (24) and can be configured on the board -->
       <!-- See datasheet for address configuration table -->
-      <param name="address" value="24" />
     </node>
 
-    <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
+    <node name="IMU_Streamer" pkg="mavric" type="BNO055_IMU.py" respawn="true" >
+      <remap from="IMU_Cal_Servo" to="IMUServoPWM_CH" />
+    </node>
+
+    <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" unless="$(arg nogps)" />
 
   </group>
   
