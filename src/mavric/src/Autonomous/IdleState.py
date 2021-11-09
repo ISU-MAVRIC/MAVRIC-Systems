@@ -7,10 +7,11 @@ class Idle(State):
         self._stateMachine = stateMachine
     
     def enter(self):
-        auto_globals.drive_pub.publish(0, 0)
+        auto_globals.drive_pub.publish(0, 0, 0, 0, 0, 0)
+        auto_globals.steer_pub.publish(0, 0, 0, 0)
 
     def run(self):
-	auto_globals.debug_pub.publish("en, waypoints>0, gps, imu, gps timeout")
+        auto_globals.debug_pub.publish("en, waypoints>0, gps, imu, gps timeout")
         auto_globals.debug_pub.publish("%d, %d, %d, %d, %d" % (auto_globals.enabled, len(auto_globals.waypoints) > 0, auto_globals.good_fix, auto_globals.good_imu, auto_globals.fix_timeout))
 
     def next(self):

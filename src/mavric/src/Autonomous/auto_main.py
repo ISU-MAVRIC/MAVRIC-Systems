@@ -23,12 +23,9 @@ class AutonomousStateMachine(StateMachine):
 
 
 AutonomousStateMachine.idle = Idle(AutonomousStateMachine)
-AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(
-    AutonomousStateMachine)
-AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(
-    AutonomousStateMachine)
-AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(
-    AutonomousStateMachine)
+AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(AutonomousStateMachine)
+AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(AutonomousStateMachine)
+AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(AutonomousStateMachine)
 
 # define functions
 
@@ -54,6 +51,9 @@ def waypoint_cb(data):
     # add new waypoint to list
     auto_globals.waypoints.append([data.latitude, data.longitude])
 
+def gps_fix_cb(data):
+    auto_globals.good_fix = data.good_fix
+
 
 def gps_cb(data):
     # how often does the gps publish? do we have to compare values here?
@@ -61,7 +61,6 @@ def gps_cb(data):
     auto_globals.prev_position = auto_globals.position
     auto_globals.position = [data.latitude, data.longitude]
     auto_globals.fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
-    auto_globals.good_fix = data.good_fix
     #auto_globals.heading = data.heading
 
 
@@ -94,18 +93,16 @@ def main():
 
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
-    way_sub = rospy.Subscriber(
-        "Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
+    way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
+    gps_fix_sub = rospy.Subscriber("GPS_Fix", gps_fix_cb, queue_size=10)
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
 
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
-    imu_cal_sub = rospy.Subscriber(
-        "SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
+    imu_cal_sub = rospy.Subscriber("SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
 
     auto_globals.Scale = rospy.get_param("~Range", 0.5)
     auto_globals.Rover_Width = rospy.get_param("~Rover_Width", 1)
-    auto_globals.Rover_MinTurnRadius = rospy.get_param(
-        "~Rover_MinTurnRadius", 2)
+    auto_globals.Rover_MinTurnRadius = rospy.get_param("~Rover_MinTurnRadius", 2)
 
     rate = rospy.Rate(2)  # 2 Hz
 
