@@ -1,0 +1,57 @@
+<launch>
+    <node name="controller" pkg="pid" type="controller" ns="shoulder_rotation" >
+      <param name="node_name" value="shoulder_rotation_pid" />
+      <param name="Kp" value="-4.0" />
+      <param name="Ki" value="-0.0" />
+      <param name="Kd" value="-0.3" />
+      <param name="upper_limit" value="10" />
+      <param name="lower_limit" value="-10" />
+      <param name="windup_limit" value="10" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="100.0" />
+     </node>
+     <node name="controller" pkg="pid" type="controller" ns="shoulder_pitch" >
+      <param name="node_name" value="shoulder_pitch_pid" />
+      <param name="Kp" value="-4.0" />
+      <param name="Ki" value="-0.0" />
+      <param name="Kd" value="-0.3" />
+      <param name="upper_limit" value="10" />
+      <param name="lower_limit" value="-10" />
+      <param name="windup_limit" value="10" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="100.0" />
+     </node>
+     <node name="controller" pkg="pid" type="controller" ns="elbow_pitch" >
+      <param name="node_name" value="elbow_pitch_pid" />
+      <param name="Kp" value="-4.0" />
+      <param name="Ki" value="-0.0" />
+      <param name="Kd" value="-0.3" />
+      <param name="upper_limit" value="10" />
+      <param name="lower_limit" value="-10" />
+      <param name="windup_limit" value="10" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="100.0" />
+     </node>
+     <node name="controller" pkg="pid" type="controller" ns="wrist_rotation" >
+      <param name="node_name" value="wrist_rotation_pid" />
+      <param name="Kp" value="-4.0" />
+      <param name="Ki" value="-0.0" />
+      <param name="Kd" value="-0.3" />
+      <param name="upper_limit" value="10" />
+      <param name="lower_limit" value="-10" />
+      <param name="windup_limit" value="10" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="100.0" />
+     </node>
+     <node name="controller" pkg="pid" type="controller" ns="wrist_pitch" >
+      <param name="node_name" value="wrist_pitch_pid" />
+      <param name="Kp" value="-4.0" />
+      <param name="Ki" value="-0.0" />
+      <param name="Kd" value="-0.3" />
+      <param name="upper_limit" value="10" />
+      <param name="lower_limit" value="-10" />
+      <param name="windup_limit" value="10" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="100.0" />
+     </node>
+</launch>
