@@ -10,6 +10,7 @@ i2c = board.I2C()
 bno = BNO055.BNO055_I2C(i2c)
 
 pwm_offset_ms = 0
+HEADING_OFFSET = -90
 
 
 def angle_to_ms(angle):
@@ -56,8 +57,11 @@ def talker():
 
     while not rospy.is_shutdown():
         sys_cal, gyro_cal, accel_cal, mag_cal = bno.calibration_status
-        yaw, roll, pitch = bno.euler
+        yaw, pitch, roll = bno.euler
 
+
+        yaw += HEADING_OFFSET
+        yaw %= 360
         # if necessary
         #m_x, m_y, m_z = bno.read_magnetometer()
         #g_x, g_y, g_z = bno.read_gyroscope()
