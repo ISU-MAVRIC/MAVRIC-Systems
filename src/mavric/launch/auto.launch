@@ -3,11 +3,13 @@
     <node name="Auto_Interface" pkg="mavric" type="Autonomous_P.py" respawn="true">
     </node>
 
-    <node name="Auto_System" pkg="mavric" type="Autonomous/auto_main.py" respawn="true">
+    <node name="Auto_System" pkg="mavric" type="auto_main.py" respawn="true">
         <remap from="GPS_Fix" to="/HW/GPS_Fix" />
         <remap from="GPS" to="/HW/GPS_Data" />
         <remap from="SensorCalibrations" to="/HW/IMU/SensorCalibrations" />
         <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
+        <remap from="Drive_Train" to="/Drive/Drive_Command" />
+        <remap from="Steer_Train" to="/Drive/Steer_Command" />
     </node>
     
 </launch>

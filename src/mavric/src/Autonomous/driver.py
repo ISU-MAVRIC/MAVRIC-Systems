@@ -15,9 +15,10 @@ Input parameters:
 
 
 class Driver():
-    def __init__(self, wheelLength=37.5, wheelWidth=28.4):
+    def __init__(self, wheelLength=37.5, wheelWidth=28.4, threshold=15):
         self.L = wheelLength
         self.W = wheelWidth
+        self.threshold = threshold
         # point steer motor position (deg)
         self.pointAngle = math.degrees(math.atan(self.L/self.W))
         # point steer radiuses (untits of w and l)
@@ -35,10 +36,11 @@ class Driver():
 	"""
 
     def v_car_steer(self, drive, steer):
-        in_angle = abs(steer)
+        if drive < self.threshold:
+            drive = self.threshold
+        in_angle = math.radians(abs(steer))*0.9
         if in_angle != 0:
-            out_angle = math.pi/2 - \
-                math.atan(1/math.tan(in_angle)+2*self.W/self.L)
+            out_angle = math.pi/2 - math.atan(1/math.tan(in_angle)+2*self.W/self.L)
             in_r = self.L / (2 * math.sin(in_angle))
             out_r = self.L / (2 * math.sin(out_angle))
             center_r = in_r * math.cos(in_angle) + self.W / 2
@@ -118,6 +120,8 @@ class Driver():
 	"""
 
     def v_point_steer(self, drive):
+        if abs(drive) < self.threshold:
+            drive = math.copysign(self.threshold, drive)
         str_v = drive
         mid_v = str_v*self.mid_r/self.str_r
-        return str_v, mid_v, str_v, str_v, mid_v, str_v, self.pointAngle, self.pointAngle, self.pointAngle, self.pointAngle
+        return str_v, mid_v, str_v, -str_v, -mid_v, -str_v, -self.pointAngle, -self.pointAngle, self.pointAngle, self.pointAngle

@@ -1,6 +1,7 @@
 import auto_globals
 from geographiclib.geodesic import Geodesic
 from math import copysign
+import math as m
 
 from StateMachine import State
 from driver import Driver
@@ -8,7 +9,7 @@ from driver import Driver
 class DriveTowardWaypoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
-        self.driveLib = Driver
+        self.DriveLib = Driver()
 
     def enter(self):
         self.linear_error = auto_globals.LIN_ERROR_THRESHOLD * 2
@@ -28,15 +29,14 @@ class DriveTowardWaypoint(State):
         #The inverse function returns an array of data regarding the soltion of the geodesic problem, more can be read about it above
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
-        geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
+        geod = Geodesic.WGS84.Inverse(pos[1], pos[0], tgt[1], tgt[0])
 
         #get linear error in meters
         self.linear_error = geod['s12']
 
         #todo, investigate what needs to happen here if we are messing with the heading this early
         #get angular error in CW degrees (account for 360 rollover)
-        self.angular_error = geod['azi1'] - auto_globals.heading
-        self.angular_error = copysign(abs(self.angular_error) % 360, self.angular_error)
+        self.angular_error = (((geod['azi1'] - auto_globals.heading) + 360) % 360) if (((geod['azi1'] - auto_globals.heading) + 360) % 360) < 180 else -(((auto_globals.heading - geod['azi1']) + 360) % 360)
 
 
         #Check speed based on distance, probably some hard coded number
@@ -60,7 +60,7 @@ class DriveTowardWaypoint(State):
         
         #controls the top end of the curve. top velocity, presumably 0 -> 100
         #TODO check range, starting with 40 percent power, if 100 is max velocity
-        b = 40
+        b = 20
         
         #r controls when the deccel starts, 0.75 is around 10 - 15m
         #0.3 is around 20m
@@ -68,7 +68,10 @@ class DriveTowardWaypoint(State):
         r = 0.75
         
         #do speed input based on remaining distance, use r to adjust when the algo kicks in
-        velocity = (b * math.exp(r * rem_dist)) / ( math.exp(c * r) + math.exp(r * rem_dist))
+        if rem_dist < 1000:
+            velocity = (b * m.exp(r * rem_dist)) / ( m.exp(c * r) + m.exp(r * rem_dist))
+        else:
+            velocity = b
 
         #Calculate wheel angle
         #Based on angular offset, turning angle based severity of offset
@@ -79,7 +82,7 @@ class DriveTowardWaypoint(State):
         
         
         #given some steering data, return vector of motor data
-        driveVals = DriveLib.v_car_steer(velocity, wheel_angle) #TODO implement actual function
+        driveVals = self.DriveLib.v_car_steer(velocity, wheel_angle) #TODO implement actual function
 
         #publish drive data, given from DriveLib
         #publish first 6 wheel speed values    

@@ -35,8 +35,9 @@ def data_callback(data):
 
 def fix_callback(data):
         has_fix = data.data
-        message = '%s,0,0,0,0,0,0\r\n' % str(has_fix)
-        send_socket_message(message)
+        if has_fix is False:
+                message = '%s,0,0,0,0,0,0\r\n' % str(has_fix)
+                send_socket_message(message)
 
 def talker():
 	rospy.init_node('GPS_Interface')

@@ -10,7 +10,7 @@ i2c = board.I2C()
 bno = BNO055.BNO055_I2C(i2c)
 
 pwm_offset_ms = 0
-HEADING_OFFSET = -90
+HEADING_OFFSET = 0
 
 
 def angle_to_ms(angle):
@@ -33,6 +33,7 @@ def servo_cal_roll(pub):
 
 def talker():
     global pwm_offset_ms
+    cal = True
 
     # define custom 3-variable message type for this
     pub_sys_cal = rospy.Publisher("IMU/SysCalibration", Float64, queue_size=10)
@@ -59,7 +60,10 @@ def talker():
         sys_cal, gyro_cal, accel_cal, mag_cal = bno.calibration_status
         yaw, pitch, roll = bno.euler
 
-
+        if cal is True and yaw != None:
+            HEADING_OFFSET = -yaw
+            cal = False
+        
         yaw += HEADING_OFFSET
         yaw %= 360
         # if necessary

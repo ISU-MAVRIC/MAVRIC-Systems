@@ -5,6 +5,7 @@ import auto_globals
 import rospy
 
 from std_msgs.msg import String
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Vector3
 from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS
 
@@ -52,14 +53,14 @@ def waypoint_cb(data):
     auto_globals.waypoints.append([data.latitude, data.longitude])
 
 def gps_fix_cb(data):
-    auto_globals.good_fix = data.good_fix
+    auto_globals.good_fix = data.data
 
 
 def gps_cb(data):
     # how often does the gps publish? do we have to compare values here?
 
     auto_globals.prev_position = auto_globals.position
-    auto_globals.position = [data.latitude, data.longitude]
+    auto_globals.position = [data.longitude, data.latitude]
     auto_globals.fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
     #auto_globals.heading = data.heading
 
@@ -94,7 +95,7 @@ def main():
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
-    gps_fix_sub = rospy.Subscriber("GPS_Fix", gps_fix_cb, queue_size=10)
+    gps_fix_sub = rospy.Subscriber("GPS_Fix", Bool, gps_fix_cb, queue_size=10)
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
 
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
