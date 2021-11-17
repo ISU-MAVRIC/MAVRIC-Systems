@@ -37,13 +37,13 @@ class LightPole(LED):
     def setColor(self, color):
         if self.prevColorPub is not None:   
             self.prevColorPub.publish(False)
-        if color == "red":
+        if color == "RED":
             self.redPub.publish(True)
             self.prevColorPub = self.redPub
-        elif color == "blue":
+        elif color == "BLUE":
             self.bluePub.publish(True)
             self.prevColorPub = self.bluePub
-        elif color == "green":
+        elif color == "GREEN":
             self.greenPub.publish(True)
             self.prevColorPub = self.greenPub
         else:
@@ -57,4 +57,4 @@ class LightPole(LED):
 
 
 class LightStrip(LED):
-    
+    pass
