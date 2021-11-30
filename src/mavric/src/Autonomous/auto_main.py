@@ -40,11 +40,11 @@ def cmd_cb(data):
     # enable/disable autonomous, forget current waypoints
     if data.command == 'E':
         auto_globals.enabled = True
-        auto_globals.indicator_pub(true, 255, "RED")
+        auto_globals.indicator_pub(True, 255, "RED")
 
     elif data.command == 'D':
         auto_globals.enabled = False
-        auto_globals.indicator_pub(true, 255, "BLUE")
+        auto_globals.indicator_pub(True, 255, "BLUE")
 
     elif data.command == 'F':
         auto_globals.waypoints = []
