@@ -1,5 +1,10 @@
 <launch>
-  <group ns="Tests">
-    <node name="DrivetrainSW" pkg="mavric" type="DrivetrainSW.py" respawn="false" />
+  <group ns="Arm">
+    <node name="Arm_Calculator" pkg="mavric" type="Arm_Controller.py" respawn="false" >
+    </node>
+
+    <include file="$(find mavric)/launch/ArmPID.launch">
+    </include>
+
   </group>
 </launch>

@@ -14,6 +14,7 @@
 import rospy
 from std_msgs.msg import Float64
 from mavric.msg import Arm
+from geometry_msgs.msg import Twist
 
 import time
 
@@ -25,6 +26,7 @@ serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 def talker():
+    global enabled
     #Arm commands update one joint at a time, so we need one topic per joint
     pub_shoulder_r = rospy.Publisher("ShoulderRot", Float64, queue_size=10)
     pub_shoulder_p = rospy.Publisher("ShoulderPitch", Float64, queue_size=10)
@@ -35,6 +37,7 @@ def talker():
     pub_wrist_p = rospy.Publisher("WristPitch", Float64, queue_size=10)
     
     pub_claw_a = rospy.Publisher("ClawActuation", Float64, queue_size=10)
+    pub_claw_pos = rospy.Publisher("ClawPosition", Twist, queue_size=10)
     
     rospy.init_node('ARP')
     port = rospy.get_param("port", 10001)
@@ -50,7 +53,7 @@ def talker():
         if(data == ''):
             pass
 
-        elif(data[0] == 'A'):
+        elif(data[0] == 'A') and enabled is not True:
             # Arm Command
             parameters = data[2:].strip().split(',')
             rospy.loginfo(parameters)
@@ -66,7 +69,7 @@ def talker():
                 pub_elbow_p.publish(cmd)
             
             
-        elif(data[0] == 'C'):
+        elif(data[0] == 'C') and enabled is not True:
             # Claw Command
             parameters = data[2:].strip().split(',')
             rospy.loginfo(parameters)
@@ -80,7 +83,27 @@ def talker():
             
             elif data[1] == 'C':
                 pub_claw_a.publish(cmd)
-            
+        
+        
+        elif(data[0] == 'P') and enabled is True:
+            # Claw Pos
+            parameters = data[1:].strip().split(',')
+            cmd = float(parameters)
+            pub_claw_pos.publish([cmd[0], cmd[1], cmd[2]], [cmd[3], cmd[4], 0])
+            pub_claw_a.publish(cmd[5])
+
+
+        elif (data[0] == 'N'):
+            # Complex Control Command
+            if data[1] == 'E':
+                # enable complex, disable manual
+                enabled = True
+
+            elif data[1] == 'D':
+                # disable complex, enable manual
+                enabled = False
+    
+
         connection.close()
     serversocket.close()
 

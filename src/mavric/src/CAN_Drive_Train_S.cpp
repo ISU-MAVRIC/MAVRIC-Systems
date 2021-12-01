@@ -36,6 +36,7 @@ double c_str_lfDir = 1;
 double c_str_lbDir = -1;
 double c_str_rfDir = 1;
 double c_str_rbDir = -1;
+double c_pitch = 1;
 
 double lfTarget = 0;
 double lmTarget = 0;
@@ -47,6 +48,7 @@ double strLfTarget = 0;
 double strLbTarget = 0;
 double strRfTarget = 0;
 double strRbTarget = 0;
+double pitchTarget = 0;
 
 double dlf = 0;
 double dlm = 0;
@@ -58,6 +60,7 @@ double strLf = 0;
 double strLb = 0;
 double strRf = 0;
 double strRb = 0;
+double pitch = 0;
 
 double rampRateUp = 0.5;
 double rampRateDown = 0.5;
@@ -75,6 +78,8 @@ TalonSRX talon_str_lf(7);
 TalonSRX talon_str_lb(8);
 TalonSRX talon_str_rf(9);
 TalonSRX talon_str_rb(10);
+
+TalonSRX talon_pitch(11);
 
 ErrorCode sen1 = talon_str_lf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
@@ -216,6 +221,18 @@ void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 	rbTarget = rb / 100;
 }
 
+void pitchCallback(const mavric::Drivetrain::ConstPtr &data)
+{
+	double pitch = data->data;
+
+	if (pitch > 100)
+		pitch = 100;
+	if (pitch < -100)
+		pitch = -100;
+
+	pitchTarget = pitch;
+}
+
 void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb, double str_lf, double str_lb, double str_rf, double str_rb)
 {
 	talon_lf.Set(ControlMode::PercentOutput, lf * c_Scale * c_lfDir);
@@ -287,6 +304,7 @@ int main(int argc, char **argv)
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
 	ros::Subscriber str_sub = n.subscribe("Steer_Train", 1000, strCallback);
 	ros::Subscriber cal_sub = n.subscribe("Steer_Cal", 1000, CalCallback);
+	ros::Subscriber str_sub = n.subscribe("Pitch_Train", 1000, pitchCallback);
 	ros::Publisher str_pub = n.advertise<mavric::Steer>("Steer_Feedback", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
@@ -299,6 +317,7 @@ int main(int argc, char **argv)
 	ros::param::get("~Right_Front/Scale", c_rfDir);
 	ros::param::get("~Right_Middle/Scale", c_rmDir);
 	ros::param::get("~Right_Back/Scale", c_rbDir);
+	ros::param::get("~Pitch/Scale", c_pitch);
 	ros::param::get("~ramp_rate_up", rampRateUp);
 	ros::param::get("~ramp_rate_down", rampRateDown);
 	ros::param::get("~str_ramp_rate_up", strRateUp);
@@ -325,6 +344,12 @@ int main(int argc, char **argv)
 			strRf = rampVal(strRf, strRfTarget, strRateUp, strRateDown);
 			strRb = rampVal(strRb, strRbTarget, strRateUp, strRateDown);
 			setOutputs(dlf, dlm, dlb, drf, drm, drb, strLf, strLb, strRf, strRb);
+		}
+
+		if (pitch != pitchTarget)
+		{
+			pitch = rampVal(pitch, pitchTarget, rampRateUp, rampRateDown);
+			talon_lf.Set(ControlMode::PercentOutput, pitch * c_Scale * c_lfDir);
 		}
 
 		strpub(str_pub);
