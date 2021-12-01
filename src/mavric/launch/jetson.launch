@@ -6,7 +6,7 @@
 
   <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
   <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
-  <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH3" />
+  <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH2" />
   <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH4" />
   <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH7" />
   <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH9" />
