@@ -26,7 +26,9 @@ class TurnTowardWaypoint(State):
     
     def enter(self):
         self.angular_error = auto_globals.ANG_ERROR_THRESHOLD * 2   #arbitrary, default
-        auto_globals.steer_pub.publish(0, 0, 0, 0)
+        lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(0)
+        auto_globals.drive_pub.publish(0,0,0,0,0,0)
+        auto_globals.steer_pub.publish(lfs, lbs, rfs, rbs)
         time.sleep(1)
 
     def run(self):
