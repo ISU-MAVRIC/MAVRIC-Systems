@@ -53,8 +53,8 @@ class TurnTowardWaypoint(State):
         while abs(self.get_angular_error()) > auto_globals.ANG_ERROR_THRESHOLD and time.time() < (start_time + auto_globals.ANG_POINT_STEER_TIMEOUT) and auto_globals.enabled:
             auto_globals.debug_pub.publish(str(self.get_ramped_turn_speed()))
             lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())
-            #auto_globals.debug_pub.publish(str(self.get_angular_error()))
-            #auto_globals.debug_pub.publish("a"+str(geod))
+            auto_globals.debug_pub.publish(str(self.get_angular_error()))
+            auto_globals.debug_pub.publish("a"+str(self.desired_heading))
             auto_globals.drive_pub.publish(lf, lm, lb, rf, rm, rb)
             auto_globals.steer_pub.publish(lfs, lbs, rfs, rbs)
 

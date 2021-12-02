@@ -15,7 +15,7 @@ Input parameters:
 
 
 class Driver():
-    def __init__(self, wheelLength=37.5, wheelWidth=28.4, threshold=15):
+    def __init__(self, wheelLength=37.5, wheelWidth=28.4, threshold=25):
         self.L = wheelLength
         self.W = wheelWidth
         self.threshold = threshold
@@ -37,7 +37,7 @@ class Driver():
 
     def v_car_steer(self, drive, steer):
         if drive < self.threshold:
-            drive = self.threshold
+            drive = math.copysign(self.threshold, drive)
         in_angle = math.radians(abs(steer))*0.9
         if in_angle != 0:
             out_angle = math.pi/2 - math.atan(1/math.tan(in_angle)+2*self.W/self.L)
