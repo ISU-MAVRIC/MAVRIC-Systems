@@ -221,7 +221,7 @@ void driveCallback(const mavric::Drivetrain::ConstPtr &data)
 	rbTarget = rb / 100;
 }
 
-void pitchCallback(const mavric::Drivetrain::ConstPtr &data)
+void pitchCallback(const std_msgs::Float64::ConstPtr &data)
 {
 	double pitch = data->data;
 
@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 	ros::Subscriber sub = n.subscribe("Drive_Train", 1000, driveCallback);
 	ros::Subscriber str_sub = n.subscribe("Steer_Train", 1000, strCallback);
 	ros::Subscriber cal_sub = n.subscribe("Steer_Cal", 1000, CalCallback);
-	ros::Subscriber str_sub = n.subscribe("Pitch_Train", 1000, pitchCallback);
+	ros::Subscriber pitch_sub = n.subscribe("Pitch_Train", 1000, pitchCallback);
 	ros::Publisher str_pub = n.advertise<mavric::Steer>("Steer_Feedback", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
@@ -348,8 +348,8 @@ int main(int argc, char **argv)
 
 		if (pitch != pitchTarget)
 		{
-			pitch = rampVal(pitch, pitchTarget, rampRateUp, rampRateDown);
-			talon_lf.Set(ControlMode::PercentOutput, pitch * c_Scale * c_lfDir);
+			pitch = rampVal(pitch, pitchTarget, 0.1*rampRateUp, 0.1*rampRateDown);
+			talon_pitch.Set(ControlMode::PercentOutput, pitch * c_pitch);
 		}
 
 		strpub(str_pub);

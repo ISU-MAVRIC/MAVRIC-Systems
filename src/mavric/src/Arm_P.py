@@ -27,6 +27,7 @@ serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 def talker():
     global enabled
+    enabled = 0
     #Arm commands update one joint at a time, so we need one topic per joint
     pub_shoulder_r = rospy.Publisher("ShoulderRot", Float64, queue_size=10)
     pub_shoulder_p = rospy.Publisher("ShoulderPitch", Float64, queue_size=10)
