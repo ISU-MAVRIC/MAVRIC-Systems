@@ -66,6 +66,7 @@ add_message_files(
   Arm.msg
   Autonomous.msg
   Waypoint.msg
+  LED.msg
 )
 
 ## Generate services in the 'srv' folder

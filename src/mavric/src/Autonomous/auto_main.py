@@ -7,7 +7,7 @@ import rospy
 from std_msgs.msg import String
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Vector3
-from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS, LED
+from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS#, LED
 
 from StateMachine import StateMachine, State
 from IdleState import Idle
@@ -40,11 +40,11 @@ def cmd_cb(data):
     # enable/disable autonomous, forget current waypoints
     if data.command == 'E':
         auto_globals.enabled = True
-        auto_globals.indicator_pub(True, 255, "RED")
+        #auto_globals.indicator_pub(True, 255, "RED")
 
     elif data.command == 'D':
         auto_globals.enabled = False
-        auto_globals.indicator_pub(True, 255, "BLUE")
+        #auto_globals.indicator_pub(True, 255, "BLUE")
 
     elif data.command == 'F':
         auto_globals.waypoints = []
@@ -93,7 +93,7 @@ def main():
     auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
     auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
-    auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
+    #auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
 
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
