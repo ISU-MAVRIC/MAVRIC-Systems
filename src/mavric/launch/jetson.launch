@@ -2,7 +2,7 @@
   <arg name="simulated" default="false" />
   <arg name="noarm" default="false" />
   <arg name="nocooling" default="false" />
-  <arg name="nogps" default="true" />
+  <arg name="nogps" default="false" />
 
   <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
   <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
@@ -11,12 +11,7 @@
   <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH4" />
   <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH5" />
 
-  <arg name="FrontLeftPWM_CH"     value="/HW/SlowPWM/CH6" />
-  <arg name="MiddleLeftPWM_CH"    value="/HW/SlowPWM/CH7" />
-  <arg name="BackLeftPWM_CH"      value="/HW/SlowPWM/CH8" />
-  <arg name="FrontRightPWM_CH"    value="/HW/SlowPWM/CH9" />
-  <arg name="MiddleRightPWM_CH"   value="/HW/SlowPWM/CH10" />
-  <arg name="BackRightPWM_CH"     value="/HW/SlowPWM/CH11" />
+  <arg name="IMUServoPWM_CH" value="/HW/SlowPWM/CH6" />
 
   <group ns="HW" unless="$(arg simulated)">
 <?ignore
@@ -47,8 +42,7 @@
     </node>
 	
 
-    <node name="GPS_Streamer" pkg="mavric" type="GPS_Test.py" respawn="true" unless="$(arg nogps)" >
-      <remap from="GPS_Data" to="/GPS_Data" />
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)" >
     </node>
 
 	
@@ -57,8 +51,14 @@
       
       <!-- Address defaults to 0x18 (24) and can be configured on the board -->
       <!-- See datasheet for address configuration table -->
-      <param name="address" value="24" />
     </node>
+
+    <node name="IMU_Streamer" pkg="mavric" type="BNO055_IMU.py" respawn="true" >
+      <remap from="IMU_Cal_Servo" to="IMUServoPWM_CH" />
+    </node>
+
+    <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" unless="$(arg nogps)" />
+
   </group>
   
   <include file="$(find mavric)/launch/SystemCooling.launch" unless="$(arg nocooling)">
@@ -69,7 +69,6 @@
   
   <!-- Interface Nodes -->
   <!-- <node name="CAN_RobotEnable" pkg="mavric" type="CAN_RobotEnable.py" respawn="true" /> -->
-  <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" />
   <node name="Temperature_Interface" pkg="mavric" type="Float64_Interface_out.py" respawn="true">
     <remap from="value" to="/SystemCooling/Temperature" />
     <param name="port" value="8002" />
@@ -175,7 +174,7 @@
     </node>
     
     <node name="Drivetrain_Control" pkg="mavric" type="mavric_CAN_Drive_Train_S" >
-      <param name="Range" value="0.2" />
+      <param name="Range" value="0.35" />
       <remap from="Drive_Train" to="Drive_Command" />
       <remap from="Steer_Train" to="Steer_Command" />
       <remap from="Steer_Cal" to="Cal_Command" />
