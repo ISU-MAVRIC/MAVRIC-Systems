@@ -42,13 +42,11 @@ def aruco_detection():
         frame2 = vs.read()
         markers1 = get_markers_from_frame(frame)
         markers2 = get_markers_from_frame(frame)
-        markers = []
         for index, ID in enumerate(markers2[0]):
             if ID not in markers1[0]:
                 markers1[0].append(markers2[0][index])
-                markers1[1].append(markrs2[1][index])
-        auto_globals.markers = markers
-
+                markers1[1].append(markers2[1][index])
+        auto_globals.markers = markers1
     vs.stop()
     vs2.stop()
 
