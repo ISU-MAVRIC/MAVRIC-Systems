@@ -172,9 +172,6 @@ point_steer = Base.Button([0, 0, 0, 0], 150, 450, "cross", ["Str 0", "Dri 0", "R
 steer_option = Base.Button([0, 0, 0, 0], 100, 375, "column", ["Tank Drive", "Car Drive", "Point Steer", "Calibration"])
 arm_cross = Base.Button([0, 0, 0, 0], 400, 450, "cross", ["+X Pos", "-X Pos", "+Y Pos", "-Y Pos", "Arm P"])
 arm_ab = Base.Button([0, 0], 363, 625, "row", ["-Z Pos", "+Z Pos"])
-steer_cal = Base.Button([0, 0, 0, 0], 900, 750, "row", ["Lf Cal", "Lb Cal", "Rf Cal", "Rb Cal"])
-manual_control = Base.Button([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 100, 750, "row", ["Lf D", "Lm D", "Lb D", "Rf D", "Rm D"
-                             , "Rb D", "Lf S", "Lb S", "Rf S", "Rb S"])
 drive_manual_xy = Base.Axis([0, 0], 100, 625, "rectangle", "Manual")
 arm_enable = Base.Button([0, 1], 225, 525, "column", ["Arm Enable", "Arm Disable"])
 temp_data = Base.Data("Temperature", 618, 625, 100, "C", 2)
@@ -219,7 +216,7 @@ for i in range(0, joystick.get_count()):
         print("Detected unbound controller '%s'" % joysticks[-1].get_name())
 
 # initialize rover
-rover = scarab.Scarab(master_ip, True)
+rover = scarab.Scarab(master_ip, False)
 rover.open()
 rover.kill_all()
 
@@ -566,11 +563,9 @@ while run:
     arm_bumper.draw(win, infofont, (255, 255, 255), (255, 255, 0))
     #point_steer.draw(win, infofont, (255, 255, 255), (21, 25, 101))
     steer_option.draw(win, infofont, (255, 255, 255), (145, 199, 136))
-    manual_control.draw(win, infofont, (255, 255, 255), (21, 25, 101))
     drive_manual_xy.draw(win, infofont, (255, 255, 255), (21, 25, 101))
     arm_cross.draw(win, infofont, (255, 255, 255), (240, 89, 69))
     arm_ab.draw(win, infofont, (255, 255, 255), (240, 89, 69))
-    steer_cal.draw(win, infofont, (255, 255, 255), (40, 150, 114))
     arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
     temp_data.draw(win, rover.temperature, infofont, (255, 255, 255), (200, 0, 200))
     bat1_data.draw(win, rover.voltage[0], infofont, (255, 255, 255), (232, 69, 69))
