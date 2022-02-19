@@ -47,6 +47,8 @@ def aruco_detection():
                 markers1[0].append(markers2[0][index])
                 markers1[1].append(markers2[1][index])
         auto_globals.markers = markers1
+        if len(auto_globals.markers) > 0:
+            print(auto_globals.markers)
     vs.stop()
     vs2.stop()
 
