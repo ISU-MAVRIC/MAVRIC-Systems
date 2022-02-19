@@ -11,7 +11,6 @@ import math
 
 # install classes
 import Base_Data as Base
-import Base_Sim
 import scarab
 
 # initial values
@@ -185,12 +184,13 @@ bat2_data = Base.Data("Bat 2 Voltage", 918, 625, 100, "V", 2)
 # py initialization
 py.init()
 joystick.init()
+py.font.init()
 win = display.set_mode((500, 500), py.RESIZABLE)
 display.set_caption('MAVRIC Base Station')
-infofont = py.font.SysFont("Arial", 15)
-titlefont = py.font.SysFont("Arial", 15)
-northfont = py.font.SysFont("Arial", 18)
-gpsfont = py.font.SysFont("Arial", 12)
+infofont = py.font.SysFont(None, 15)
+titlefont = py.font.SysFont(None, 15)
+northfont = py.font.SysFont(None, 18)
+gpsfont = py.font.SysFont(None, 12)
 
 # find and init controllers
 for i in range(0, joystick.get_count()):
