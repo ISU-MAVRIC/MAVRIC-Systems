@@ -25,7 +25,7 @@ def get_markers_from_frame(frame):
             # ArUco marker
             cX = int((topLeft[0] + bottomRight[0]) / 2.0)
             cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-            markerLocations.append(cX, cY)
+            markerLocations.append((cX, cY))
             markerIds.append(markerID)
     return (markerIds, markerLocations)
 
@@ -34,12 +34,13 @@ def get_markers_from_frame(frame):
 def aruco_detection():
     arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
     arucoParams = cv2.aruco.DetectorParameters_create()
-    vs = VideoStream(src=0).start()
+    vs = VideoStream(src=2).start()
     vs2 = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
     time.sleep(1)
     while True:
         frame = vs.read()
         frame2 = vs2.read()
+        time.sleep(1)
         markers1 = get_markers_from_frame(frame)
         markers2 = get_markers_from_frame(frame2)
         for index, ID in enumerate(markers2[0]):
