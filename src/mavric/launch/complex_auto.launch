@@ -15,7 +15,7 @@
     <node name="GPS_Sim" pkg="mavric" type="GPS_Sim.py" respawn="true">
         <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
         <remap from="Drive_Train" to="/Drive/Drive_Command" />
-        <remap from="GPdata" to="/HW/GPS_Data" />
-
+        <remap from="GPS_Data" to="/HW/GPS_Data" />
+    </node>
     
 </launch>

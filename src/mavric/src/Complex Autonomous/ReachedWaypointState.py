@@ -3,7 +3,7 @@ import time
 
 from StateMachine import State
 
-class ReachedWaypoint(State):
+class ReachedWayPoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
     
@@ -11,7 +11,7 @@ class ReachedWaypoint(State):
         g.drive_pub.publish(0, 0, 0, 0, 0, 0)
         g.steer_pub.publish(0, 0, 0, 0)
         self.blink = True
-        g.indicator_pub(self.blink, 255, "Green")
+        g.indicator_pub.publish(self.blink, 255, "Green")
         self.stop_time = time.time()
         self.blink_time = time.time()
 
@@ -19,13 +19,13 @@ class ReachedWaypoint(State):
     def run(self):
         if time.time() - self.blink_time > 500:
             self.blink = abs(self.blink-1)
-            g.indicator_pub(self.blink, 255, "Green")
+            g.indicator_pub.publish(self.blink, 255, "Green")
             self.blink_time = time.time()
 
     def next(self):
 	    #eventually go into CV state
         if time.time() - self.stop_time > 3000:
-            g.indicator_pub(False, 255, "Green")
+            g.indicator_pub.publish(False, 255, "Green")
             if(len(auto_globals.waypoints) > 1):
                 g.pathpoint_num = 0
                 g.waypoints.pop(0)

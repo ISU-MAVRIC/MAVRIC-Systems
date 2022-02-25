@@ -11,9 +11,11 @@ class NextPathPoint(State):
         g.steer_pub.publish(0, 0, 0, 0)
 
         g.pathpoint_num += 1
+        g.debug_pub.publish("# of pathpoints, index")
+        g.debug_pub.publish(str(len(g.pathpoints["linear"]))+ ", "+str(g.pathpoint_num))
 
     def run(self):
-        self.type = g.pathpoints["linear"][g.pathpoint_num]
+        self.linear = g.pathpoints["linear"][g.pathpoint_num]
     
     def next(self):
         if not g.enabled or not g.good_fix or g.fix_timeout:

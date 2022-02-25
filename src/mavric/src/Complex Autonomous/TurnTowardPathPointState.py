@@ -83,7 +83,7 @@ class TurnTowardPathPoint(State):
             return self._stateMachine.nextPathPoint
 
         if(abs(self.get_angular_error()) < g.ANG_ERROR_THRESHOLD):
-            return self._stateMachine.driveTowardWaypoint
+            return self._stateMachine.driveTowardPathPoint
 
-        return self._stateMachine.turnTowardWaypoint
+        return self._stateMachine.turnTowardPathPoint
 
