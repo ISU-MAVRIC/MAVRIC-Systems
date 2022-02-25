@@ -105,6 +105,7 @@ class Pathing():
                 # get cords of post
                 geod = Geodesic.WGS84.Direct(g.position[1], g.position[0], g.posts['heading'][i], g.posts['distance'][i])
                 self.end_point = [geod['lon2'], geod['lat2']]
+                g.waypoints[0] = self.end_point
         
         
         # get end point r and theta
@@ -143,8 +144,9 @@ class Pathing():
                 g.pathpoints["speed"].append(100, 80, 80, 80, 80)
     
         # add endpoint to path points
-        g.pathpoints["position"].append(self.end_point)
-        g.pathpoints["linear"].append(True)
-        g.pathpoints["heading"].append(ep_theta)
-        g.pathpoints["radius"].append(None)
-        g.pathpoints["speed"].append(100)
+        if self.end_point != None:
+            g.pathpoints["position"].append(self.end_point)
+            g.pathpoints["linear"].append(True)
+            g.pathpoints["heading"].append(ep_theta)
+            g.pathpoints["radius"].append(None)
+            g.pathpoints["speed"].append(100)

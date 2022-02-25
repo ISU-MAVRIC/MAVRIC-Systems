@@ -11,7 +11,7 @@ from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS, LED
 
 # import pathing, and detection classes
 from pathing import Pathing
-
+import ArucoDetectionThread as aruco
 
 # state machine class
 class AutonomousStateMachine(StateMachine):
@@ -20,9 +20,11 @@ class AutonomousStateMachine(StateMachine):
 
 
 AutonomousStateMachine.idle = Idle(AutonomousStateMachine)
-AutonomousStateMachine.turnTowardpathpoint = TurnTowardPathpoint(AutonomousStateMachine)
-AutonomousStateMachine.driveTowardpathpoint = DriveTowardPathpoint(AutonomousStateMachine)
-AutonomousStateMachine.reachedWaypoint = ReachedPathpoint(AutonomousStateMachine)
+AutonomousStateMachine.nextPathPoint = NextPathPoint(AutonomousStateMachine)
+AutonomousStateMachine.turnTowardPathPoint = TurnTowardPathPoint(AutonomousStateMachine)
+AutonomousStateMachine.driveTowardPathPoint = DriveTowardPathPoint(AutonomousStateMachine)
+AutonomousStateMachine.bankTowardPathPoint = BankTowardPathPoint(AutonomousStateMachine)
+AutonomousStateMachine.reachedWaypoint = ReachedWayPoint(AutonomousStateMachine)
 
 # define functions
 
@@ -35,41 +37,44 @@ def hms_to_s(h, m, s):
 def cmd_cb(data):
     # enable/disable autonomous, forget current waypoints
     if data.command == 'E':
-        auto_globals.enabled = True
-        #auto_globals.indicator_pub(True, 255, "RED")
+        g.enabled = True
+        g.indicator_pub(True, 255, "RED")
+        g.indicator_pub(False, 255, "BLUE")
 
     elif data.command == 'D':
-        auto_globals.enabled = False
-        #auto_globals.indicator_pub(True, 255, "BLUE")
+        g.enabled = False
+        g.indicator_pub(True, 255, "BLUE")
+        g.indicator_pub(False, 255, "RED")
 
     elif data.command == 'F':
-        auto_globals.waypoints = []
+        g.waypoints = []
 
 
 def waypoint_cb(data):
     # add new waypoint to list
-    auto_globals.waypoints.append([data.latitude, data.longitude])
+    g.waypoints.append([data.latitude, data.longitude])
+    g.waypoint_id.append(data.id)
 
 def gps_fix_cb(data):
-    auto_globals.good_fix = data.data
+    g.good_fix = True #data.data
 
 
 def gps_cb(data):
     # how often does the gps publish? do we have to compare values here?
 
-    auto_globals.prev_position = auto_globals.position
-    auto_globals.position = [data.longitude, data.latitude]
-    auto_globals.fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
+    g.prev_position = g.position
+    g.position = [data.longitude, data.latitude]
+    g.fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
     #auto_globals.heading = data.heading
 
 
 def imu_cb(data):
-    if auto_globals.good_imu:
-        auto_globals.heading = data.z
+    if g.good_imu:
+        g.heading = data.z
 
 
 def imu_cal_cb(data):
-    auto_globals.good_imu = True
+    g.good_imu = True
 
     # if data.z > 0:
     #    auto_globals.good_imu = True
@@ -78,7 +83,8 @@ def imu_cal_cb(data):
 
 # main loop
 auto = AutonomousStateMachine()
-path = Pathing(0.81, 1.20)
+g.path = Pathing(0.81, 1.20)
+
 
 def main():
     # setup ROS node
@@ -103,7 +109,7 @@ def main():
 
     while not rospy.is_shutdown():
         auto.run()
-        path.run()
+        g.path.run()
         rate.sleep()
 
 

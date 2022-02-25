@@ -38,7 +38,9 @@ prev_linear_error = LIN_ERROR_THRESHOLD * 2
 # speed: speed when traveling towards waypoint
 pathpoints  = {"position": [], "linear": [], "radius": [], "heading": [], "speed": []}
 
-pathpoint_num = 0 # pathpoint rover has passed
+pathpoint_num = -1 # pathpoint rover has passed
+
+path = None # object for pathing class
 
 #post data
 #PARAMS for post
