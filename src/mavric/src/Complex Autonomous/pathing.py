@@ -103,7 +103,7 @@ class Pathing():
                     g.posts["distance"][i] = 20
                 
                 # get cords of post
-                geod = Geodesic.WGS84.Direct(g.position[1], g.position[0], g.posts['heading'][i], g.posts['distance'][i])
+                geod = Geodesic.WGS84.Direct(g.position[1], g.position[0], g.heading + g.posts['heading'][i], g.posts['distance'][i])
                 self.end_point = [geod['lon2'], geod['lat2']]
                 g.waypoints[0] = self.end_point
         
