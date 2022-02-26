@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #import modules
-import complex_globals
+import complex_globals as g
 import rospy
 
 from std_msgs.msg import String
@@ -12,6 +12,14 @@ from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS, LED
 # import pathing, and detection classes
 from pathing import Pathing
 import ArucoDetectionThread as aruco
+
+from StateMachine import StateMachine, State
+from IdleState import Idle
+from NextPathPointState import NextPathPoint
+from TurnTowardPathPointState import TurnTowardPathPoint
+from DriveTowardPathPointState import DriveTowardPathPoint
+from BankTowardPathPointState import BankTowardPathPoint
+from ReachedWaypointState import ReachedWayPoint
 
 # state machine class
 class AutonomousStateMachine(StateMachine):
@@ -38,13 +46,13 @@ def cmd_cb(data):
     # enable/disable autonomous, forget current waypoints
     if data.command == 'E':
         g.enabled = True
-        g.indicator_pub(True, 255, "RED")
-        g.indicator_pub(False, 255, "BLUE")
+        g.indicator_pub.publish(True, 255, "RED")
+        g.indicator_pub.publish(False, 255, "BLUE")
 
     elif data.command == 'D':
         g.enabled = False
-        g.indicator_pub(True, 255, "BLUE")
-        g.indicator_pub(False, 255, "RED")
+        g.indicator_pub.publish(True, 255, "BLUE")
+        g.indicator_pub.publish(False, 255, "RED")
 
     elif data.command == 'F':
         g.waypoints = []
@@ -91,10 +99,10 @@ def main():
     rospy.init_node("ANS")
 
     #init publishers
-    auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
-    auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
-    auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
-    auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
+    g.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
+    g.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
+    g.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
+    g.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
@@ -108,8 +116,10 @@ def main():
     rate = rospy.Rate(2)  # 2 Hz
 
     while not rospy.is_shutdown():
+        if len(g.waypoints) != 0:
+            #g.debug_pub.publish("Running Pathing")
+            g.path.run()
         auto.run()
-        g.path.run()
         rate.sleep()
 
 

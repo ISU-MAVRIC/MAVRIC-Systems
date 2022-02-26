@@ -40,7 +40,7 @@ def talker():
     rospy.Subscriber('Drive_Train', Drivetrain, drive_cb, queue_size=10)
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
     pub = rospy.Publisher('GPS_Data', GPS, queue_size=10, latch=True)
-    rate = rospy.Rate(5)
+    r = rospy.Rate(5)
 
     prev_time = time.time()
     #start main loop
@@ -54,9 +54,11 @@ def talker():
 
         # calculate new lon and lat
         geod = Geodesic.WGS84.Direct(lat, lon, theta, d)
+        lat = geod["lat2"]
+        lon = geod["lon2"]
 
         # publish GPS data
-        pub.publish(lat, lon, 0, 0, 0, 0, 0, 0, 0)
+        pub.publish(geod["lat2"], geod["lon2"], 0, 0, 0, 0, 0, 0, 0)
 
 # main loop
 if __name__ == '__main__':

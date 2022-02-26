@@ -3,7 +3,7 @@ import imutils
 import time
 import cv2
 import threading
-import auto_globals
+import complex_globals as g
 
 
 arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
@@ -40,16 +40,20 @@ def aruco_detection():
     while True:
         frame = vs.read()
         frame2 = vs2.read()
-        time.sleep(1)
+        time.sleep(.01)
         markers1 = get_markers_from_frame(frame)
         markers2 = get_markers_from_frame(frame2)
+        for index, ID in enumerate(markers1[0]):
+            markers1[1][index] = (float(markers1[1][index][0] - 320) / 320) * 34.5
         for index, ID in enumerate(markers2[0]):
             if ID not in markers1[0]:
                 markers1[0].append(markers2[0][index])
-                markers1[1].append(markers2[1][index])
-        auto_globals.markers = markers1
-        if len(auto_globals.markers) > 0:
-            print(auto_globals.markers)
+                print(markers2[1][index][0])
+                markers1[1].append((float(markers2[1][index][0] - 620) / 620) * 54.5) 
+        g.posts["id"] = markers1[0]
+        g.posts["heading"] = markers1[1]
+        if len(g.posts["id"]) > 0:
+            print(g.posts)
     vs.stop()
     vs2.stop()
 

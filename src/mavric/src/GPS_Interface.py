@@ -30,7 +30,7 @@ def send_socket_message(message):
                         clients.remove(client)
 
 def data_callback(data):
-        message = '%s,%.10f,%.10f,%.3f,%.2f,%1f,%d\r\n' % (str(False if has_fix is None else has_fix), data.latitude, data.longitude, data.altitude, data.speed, data.heading, data.num_satellites)
+        message = '%.10f,%.10f,%.3f,%.2f,%1f,%d\r\n' % (data.latitude, data.longitude, data.altitude, data.speed, data.heading, data.num_satellites)
         send_socket_message(message)
 
 def fix_callback(data):

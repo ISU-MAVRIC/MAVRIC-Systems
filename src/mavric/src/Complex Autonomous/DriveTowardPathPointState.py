@@ -6,7 +6,7 @@ import math as m
 from StateMachine import State
 from driver import Driver
 
-class DriveTowardWaypoint(State):
+class DriveTowardPathPoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
         self.DriveLib = Driver()
@@ -62,7 +62,7 @@ class DriveTowardWaypoint(State):
         r = 0.75
         
         #do speed input based on remaining distance, use r to adjust when the algo kicks in
-        if rem_dist < 10:
+        if self.linear_error < 10:
             velocity = (b * m.exp(r * self.linear_error)) / ( m.exp(c * r) + m.exp(r * self.linear_error))
         else:
             velocity = b
@@ -70,7 +70,7 @@ class DriveTowardWaypoint(State):
         #Calculate wheel angle
         #Based on angular offset, turning angle based severity of offset
         
-        wheel_angle = turn_error
+        wheel_angle = self.angular_error
         
         
         #given some steering data, return vector of motor data
@@ -86,8 +86,8 @@ class DriveTowardWaypoint(State):
         #remember linear error for the next cycle
         g.prev_linear_error = self.linear_error
 
-	#auto_globals.debug_pub.publish("lin error, left power, right power")
-	#auto_globals.debug_pub.publish("%d, %d, %d" % (self.linear_error, left_power, right_power))
+        g.debug_pub.publish("lin error, angular error")
+        g.debug_pub.publish("%d, %d" % (self.linear_error, self.angular_error))
 
     def next(self):
         if(not g.enabled or not g.good_fix or g.fix_timeout):
@@ -99,4 +99,8 @@ class DriveTowardWaypoint(State):
             else:
                 return self._stateMachine.nextPathPoint
         
-        return self._stateMachine.driveTowardWaypoint
+        if self.tgt != g.pathpoints["position"][g.pathpoint_num]:
+            g.pathpoint_num += -1
+            return self._stateMachine.nextPathPoint
+        
+        return self._stateMachine.driveTowardPathPoint
