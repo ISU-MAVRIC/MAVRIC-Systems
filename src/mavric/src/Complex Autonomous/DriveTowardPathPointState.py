@@ -17,6 +17,8 @@ class DriveTowardPathPoint(State):
         self.tgt = [0, 0]
         self.tgt[0] = g.pathpoints["position"][g.pathpoint_num][0]
         self.tgt[1] = g.pathpoints["position"][g.pathpoint_num][1]
+        g.steer_pub.publish(0,0,0,0)
+        time.sleep(1)
 
     def run(self):
         g.prev_fix_time = g.fix_time
