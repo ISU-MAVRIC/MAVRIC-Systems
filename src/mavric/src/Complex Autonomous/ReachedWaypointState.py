@@ -17,15 +17,15 @@ class ReachedWayPoint(State):
 
 
     def run(self):
-        if time.time() - self.blink_time > 500:
+        if time.time() - self.blink_time > 0.75:
             self.blink = abs(self.blink-1)
             g.indicator_pub.publish(self.blink, 255, "Green")
             self.blink_time = time.time()
 
     def next(self):
 	    #eventually go into CV state
-        if time.time() - self.stop_time > 3000:
-            g.indicator_pub.publish(False, 255, "Green")
+        if time.time() - self.stop_time > 5:
+            g.indicator_pub(False, 255, "Green")
             if(len(auto_globals.waypoints) > 1):
                 g.pathpoint_num = 0
                 g.waypoints.pop(0)
