@@ -34,7 +34,7 @@ def talker():
     global lon
     global lat
     rospy.init_node('GPS_Simulator')
-    dc_to_mps = rospy.get_param('~dc_mps', 2.5)/100
+    dc_to_mps = rospy.get_param('~dc_mps', 2.4)/100
 
     #subscibers to drive and imu
     rospy.Subscriber('Drive_Train', Drivetrain, drive_cb, queue_size=10)

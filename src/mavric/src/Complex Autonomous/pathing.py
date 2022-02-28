@@ -100,6 +100,7 @@ class Pathing():
         if len(g.posts["id"]) == 0:
             self.end_point = g.waypoints[0]
         else:
+            self.end_point = g.waypoints[0]
             for i in range(0, len(g.posts["id"])):
                 g.debug_pub.publish("Waypoint data")
                 g.debug_pub.publish("%f, %f, %d" % (g.waypoints[0][0], g.waypoints[0][1], g.waypoint_id[0]))
@@ -107,7 +108,7 @@ class Pathing():
                 if g.posts["id"][i] == g.waypoint_id[0]:
                     # set approximate distance if distance is not yet found
                     if len(g.posts["distance"]) != len(g.posts["id"]):
-                        g.posts["distance"].append(20)
+                        g.posts["distance"].append(4)
                     
                     # get cords of post
                     geod = Geodesic.WGS84.Direct(g.position[1], g.position[0], g.heading + g.posts['heading'][i], g.posts['distance'][i])

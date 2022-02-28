@@ -25,14 +25,14 @@ class ReachedWayPoint(State):
     def next(self):
 	    #eventually go into CV state
         if time.time() - self.stop_time > 5:
-            g.indicator_pub(False, 255, "Green")
-            if(len(auto_globals.waypoints) > 1):
-                g.pathpoint_num = 0
+            g.indicator_pub.publish(False, 255, "Green")
+            if(len(g.waypoints) > 1):
+                g.pathpoint_num = -1
                 g.waypoints.pop(0)
                 g.path.set_end_point(g.waypoints[0])
                 return self._stateMachine.nextPathPoint
 
-            if(len(auto_globals.waypoints) > 0):
+            if(len(g.waypoints) > 0):
                 g.pathpoint_num = 0
                 g.waypoints.pop(0)
                 return self._stateMachine.idle

@@ -38,7 +38,7 @@ class Driver():
     def v_car_steer(self, drive, steer):
         if drive < self.threshold:
             drive = math.copysign(self.threshold, drive)
-        in_angle = math.radians(abs(steer))*0.9
+        in_angle = math.radians(abs(steer))
         if in_angle != 0:
             out_angle = math.pi/2 - math.atan(1/math.tan(in_angle)+2*self.W/self.L)
             in_r = self.L / (2 * math.sin(in_angle))
