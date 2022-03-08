@@ -16,7 +16,7 @@ class Scarab:
     _auto_fix = False
 
     def __init__(self, ip, test):
-        self._gps = GPS(ip, 8001)
+       # self._gps = GPS(ip, 8001)
         self._ip = ip
         self._test = test
         self._temperature_getter = ValueGetter(ip, 8002, float)
@@ -25,11 +25,12 @@ class Scarab:
         self._steer_getter = ValueGetter(ip, 9005, int)
 
     def open(self):
-        self._temperature_getter.start()
-        self._arm_getter.start()
-        self._voltage_getter.start()
-        self._steer_getter.start()
-        self._gps.start()
+       # self._temperature_getter.start()
+       # self._arm_getter.start()
+       # self._voltage_getter.start()
+       # self._steer_getter.start()
+       # self._gps.start()
+       pass
 
     def close(self):
         if self._gps is not None:

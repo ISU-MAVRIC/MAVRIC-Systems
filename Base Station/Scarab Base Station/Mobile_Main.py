@@ -15,7 +15,7 @@ import scarab
 
 # initial values
 joysticks = []
-drive_stick_name = "Mad Catz V.1 Stick"
+drive_stick_name = "Madcatz Mad Catz V.1 Stick"
 drive_joy_name = "Controller (Xbox One For Windows)"
 arm_stick_name = "Xbox 360 Controller"
 joy = True
@@ -193,6 +193,7 @@ gpsfont = py.font.SysFont(None, 12)
 for i in range(0, joystick.get_count()):
     joysticks.append(joystick.Joystick(i))
     joysticks[-1].init()
+    joysticks[-1].get_name()
 
     # select drive stick based on name
     #   this means using a different stick will require the hardcoded name to change
@@ -521,7 +522,7 @@ while run:
 
     # set wheel drive and position
     if joy is True:
-        d_lf, d_lm, d_lb, d_rf, d_rm, d_rb, str_lf, str_lb, str_rf, str_rb = calc_drive(steer_option.buttons[0], steer_option.buttons[1], steer_option.buttons[2], steer_option.buttons[3], drive_xy.axis[1], drive_xy.axis[0], drive_xy.axis[1], drive_rot.axis[0], drive_rot.axis[0], manual_control.buttons, drive_manual_xy.axis[1], drive_manual_xy.axis[0], drive_sens.axis[0], -.5)
+        d_lf, d_lm, d_lb, d_rf, d_rm, d_rb, str_lf, str_lb, str_rf, str_rb = calc_drive(steer_option.buttons[0], steer_option.buttons[1], steer_option.buttons[2], steer_option.buttons[3], drive_xy.axis[1], drive_xy.axis[0], drive_xy.axis[1], drive_rot.axis[0], drive_rot.axis[0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 0, 0, drive_sens.axis[0], -.5)
     else:
         #set_drive(steer_option.buttons[0], steer_option.buttons[1], steer_option.buttons[2], drive_cont_xy.axis[1],
                   #drive_xy.axis[0], drive_cont_throttle.axis[0], cont_str, cont_str, 0)
@@ -531,8 +532,8 @@ while run:
     rover.set_drive(d_lf, d_lm, d_lb, d_rf, d_rm, d_rb, str_lf, str_lb, str_rf, str_rb)
 
     # set calibration
-    if steer_option.buttons[3] == 1:
-        rover.set_cal(steer_cal.buttons[0], steer_cal.buttons[1], steer_cal.buttons[2], steer_cal.buttons[3])
+   # if steer_option.buttons[3] == 1:
+       # rover.set_cal(steer_cal.buttons[0], steer_cal.buttons[1], steer_cal.buttons[2], steer_cal.buttons[3])
 
     if arm_enable.buttons[1] == 1:
         # set arm velocities
@@ -545,31 +546,31 @@ while run:
 
     # draw axes in center of screen
     # draw axes for drive joystick
-    if joy is True:
-        drive_xy.draw(win, infofont, (255, 255, 255), (0, 255, 0))
-        drive_sens.draw(win, infofont, (255, 255, 255), (255, 255, 255))
-        drive_rot.draw(win, infofont, (255, 255, 255), (0, 0, 255))
+   # if joy is True:
+       # drive_xy.draw(win, infofont, (255, 255, 255), (0, 255, 0))
+       # drive_sens.draw(win, infofont, (255, 255, 255), (255, 255, 255))
+       # drive_rot.draw(win, infofont, (255, 255, 255), (0, 0, 255))
     # draw axes for drive controller
-    else:
-        drive_cont_xy.draw(win, infofont, (255, 255, 255), (0, 255, 0))
-        drive_cont_throttle.draw(win, infofont, (255, 255, 255), (255, 255, 255))
-        drive_cont_left.draw(win, infofont, (255, 255, 255), (0, 0, 255))
-        drive_cont_right.draw(win, infofont, (255, 255, 255), (0, 0, 255))
+   # else:
+       # drive_cont_xy.draw(win, infofont, (255, 255, 255), (0, 255, 0))
+       # drive_cont_throttle.draw(win, infofont, (255, 255, 255), (255, 255, 255))
+       # drive_cont_left.draw(win, infofont, (255, 255, 255), (0, 0, 255))
+       # drive_cont_right.draw(win, infofont, (255, 255, 255), (0, 0, 255))
 
-    arm_xyl.draw(win, infofont, (255, 255, 255), (255, 0, 0))
-    arm_xyr.draw(win, infofont, (255, 255, 255), (255, 0, 0))
-    arm_trigl.draw(win, infofont, (255, 255, 255), (255, 255, 0))
-    arm_trigr.draw(win, infofont, (255, 255, 255), (255, 255, 0))
-    arm_bumper.draw(win, infofont, (255, 255, 255), (255, 255, 0))
+    #arm_xyl.draw(win, infofont, (255, 255, 255), (255, 0, 0))
+    #arm_xyr.draw(win, infofont, (255, 255, 255), (255, 0, 0))
+    #arm_trigl.draw(win, infofont, (255, 255, 255), (255, 255, 0))
+    #arm_trigr.draw(win, infofont, (255, 255, 255), (255, 255, 0))
+    #arm_bumper.draw(win, infofont, (255, 255, 255), (255, 255, 0))
     #point_steer.draw(win, infofont, (255, 255, 255), (21, 25, 101))
-    steer_option.draw(win, infofont, (255, 255, 255), (145, 199, 136))
-    drive_manual_xy.draw(win, infofont, (255, 255, 255), (21, 25, 101))
-    arm_cross.draw(win, infofont, (255, 255, 255), (240, 89, 69))
-    arm_ab.draw(win, infofont, (255, 255, 255), (240, 89, 69))
-    arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
-    temp_data.draw(win, rover.temperature, infofont, (255, 255, 255), (200, 0, 200))
-    bat1_data.draw(win, rover.voltage[0], infofont, (255, 255, 255), (232, 69, 69))
-    bat2_data.draw(win, rover.voltage[1], infofont, (255, 255, 255), (232, 69, 69))
+    #steer_option.draw(win, infofont, (255, 255, 255), (145, 199, 136))
+    #drive_manual_xy.draw(win, infofont, (255, 255, 255), (21, 25, 101))
+    #arm_cross.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    #arm_ab.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    #arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
+    #temp_data.draw(win, rover.temperature, infofont, (255, 255, 255), (200, 0, 200))
+    #bat1_data.draw(win, rover.voltage[0], infofont, (255, 255, 255), (232, 69, 69))
+    #bat2_data.draw(win, rover.voltage[1], infofont, (255, 255, 255), (232, 69, 69))
 
     display.flip()
     win.fill((0, 0, 0))
