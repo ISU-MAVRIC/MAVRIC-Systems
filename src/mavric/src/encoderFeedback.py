@@ -2,14 +2,14 @@
 import rospy
 import RPi.GPIO as GPIO
 from time import time
-from std_msgs.msg import Int32
+from std_msgs.msg import Float64
 
 GPIO.setmode(GPIO.BOARD) 
 GPIO.setup(38, GPIO.IN) #pin 38
 GPIO.setup(40, GPIO.IN) #pin 40
 
 def talker():
-	pub = rospy.Publisher('Motor_Feedback', Int32, queue_size=10)
+	pub = rospy.Publisher('Motor_Feedback', Float64, queue_size=10)
 	rospy.init_node('encoderFB')
 	atime = None
 	btime = None
