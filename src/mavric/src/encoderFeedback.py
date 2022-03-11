@@ -3,32 +3,36 @@ import rospy
 import RPi.GPIO as GPIO
 from time import time
 from std_msgs.msg import Float64
+from threading import Thread
 
 GPIO.setmode(GPIO.BOARD) 
-GPIO.setup(38, GPIO.IN) #pin 38
-GPIO.setup(40, GPIO.IN) #pin 40
+
+count = 0
+
+def detect():
+	global count
+	if GPIO.event_detected(38):
+			if GPIO.input(40) == 0:
+				count += 1
+			else:
+				count -=1
 
 def talker():
 	pub = rospy.Publisher('Motor_Feedback', Float64, queue_size=10)
 	rospy.init_node('encoderFB')
-	atime = None
-	btime = None
-	counter = 0
-	high = 0
-	GPIO.add_event_detect(38, GPIO.RISING)
-	GPIO.add_event_detect(40, GPIO.RISING)
+	pin1 = rospy.get_param("ch1", 38)
+	pin2 = rospy.get_param("ch2", 40)
+	global count
+	GPIO.add_event_detect(pin1, GPIO.RISING)
+	count = Thread(target=detect)
+	count.start()
 	while not rospy.is_shutdown():
-		if GPIO.event_detected(38):
-			if GPIO.input(40) == 0:
-				counter += 1
-			else:
-				counter -=1
-
-		pub.publish(counter)
+		pub.publish(count)
 		    
 if __name__ == '__main__':
-    try:
-        talker()
-    except rospy.ROSInterruptException:
-        pass
+	try:
+		talker()
+	except rospy.ROSInterruptException:
+		count.join()
+
 
