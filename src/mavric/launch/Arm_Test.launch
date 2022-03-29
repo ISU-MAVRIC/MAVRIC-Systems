@@ -1,0 +1,81 @@
+<launch>
+
+    <arg name="complex" default="false" />
+
+    <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
+    <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
+    <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH2" />
+    <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH3" />
+    <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH4" />
+  
+    <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
+      <param name="container" value="SlowPWM/" />
+      <param name="control_mode" value="DutyCycle" />
+      <param name="frequency" value="250" />
+      
+      <!-- addresses start at 0x40 (64) and can be configured on the board -->
+      <param name="address" value="64" />
+      
+      <!-- we want to run as fast as possible here -->
+      <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+      <param name="clk_error" value="1.04166667" />
+    </node>
+
+    <group ns="Arm" unless="$(arg noarm)">
+        <arg name="ShoulderRot_Scale" value="-0.4" />
+        <arg name="ShoulderPitch_Scale" value="0.9" />
+        <arg name="ElbowPitch_Scale" value="1.0" />
+        <arg name="WristRot_Scale" value="0.3" />
+        <arg name="WristPitch_Scale" value="0.3" />
+        <arg name="ClawActuation_Scale" value="1.0" />
+
+        <node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
+            <param name="port" value="10001" />
+        </node>
+
+        <!-- Each scaling node takes one channel and scales it from +- 100 to the PWM control range--> 
+        <node name="ShoulderRot_Scale" pkg="mavric" type="L298N_Controller.py">
+            <param name="input"  value="ShoulderRot" />
+            <param name="output" value="$(arg ShoulderRotPWM_CH)" />
+            <param name="slope"      value="$(eval ShoulderRot_Scale)" />
+            <param name="intercept"  value="0" />
+            <param name="forward"  value="0" />
+            <param name="backward"  value="0" />
+        </node>
+        <node name="ShoulderPitch_Scale" pkg="mavric" type="L298N_Controller.py">
+            <param name="input"  value="Shoulder" />
+            <param name="output" value="$(arg ShoulderPitchPWM_CH)" />
+            <param name="slope"      value="$(eval ShoulderPitch_Scale)" />
+            <param name="intercept"  value="0" />
+            <param name="forward"  value="0" />
+            <param name="backward"  value="0" />
+        </node>
+        <node name="ElbowPitch_Scale" pkg="mavric" type="L298N_Controller.py">
+            <param name="input"  value="ElbowPitch" />
+            <param name="output" value="$(arg ElbowPitchPWM_CH)" />
+            <param name="slope"      value="$(eval ElbowPitch_Scale)" />
+            <param name="intercept"  value="0" />
+            <param name="forward"  value="0" />
+            <param name="backward"  value="0" />
+        </node>
+        <node name="WristRot_Scale" pkg="mavric" type="L298N_Controller.py">
+            <param name="inputs"  value="WristRot" />
+            <param name="outputs" value="$(arg WristRotPWM_CH)" />
+            <param name="slope"      value="$(eval WristRot_Scale)" />
+            <param name="intercepts"  value="0" />
+            <param name="forward"  value="0" />
+            <param name="backward"  value="0" />
+        </node>
+        <node name="WristPitch_Scale" pkg="mavric" type="L298N_Controller.py">
+            <param name="input"  value="WristPitch" />
+            <param name="output" value="$(arg WristPitchPWM_CH)" />
+            <param name="slope"      value="$(eval WristPitch_Scale)" />
+            <param name="intercept"  value="0" />
+            <param name="forward"  value="0" />
+            <param name="backward"  value="0" />
+        </node>
+    </group>
+
+    <group ns="Complex" unless="$(arg complex)">
+    </group>
+    

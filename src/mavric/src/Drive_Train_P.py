@@ -73,7 +73,7 @@ def talker():
                 steer.publish(strlf, strlb, strrf, strrb)
 
         elif (data[0] == 'C'):
-            # Steer Command
+            # Cal Command
             parameters = data[1:].strip().split(',')
             # rospy.loginfo(parameters)
 
