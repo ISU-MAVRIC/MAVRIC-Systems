@@ -1,0 +1,36 @@
+<launch>
+    <node name="PWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
+      <param name="container" value="PWM/" />
+      <param name="control_mode" value="PulseTime" />
+      <param name="frequency" value="250" />
+      
+      <!-- addresses start at 0x40 (64) and can be configured on the board -->
+      <param name="address" value="96" />
+      
+      <!-- we want to run as fast as possible here -->
+      <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+      <param name="clk_error" value="1.04166667" />
+     </node>
+      
+     <node name="Rot_Scale" pkg="mavric" type="LinearMapping.py">
+      <param name="inputs"  value="/Duty" />
+      <param name="outputs" value="/PWM/CH0" />
+      <param name="slopes"      value="$(eval 1*0.0005/100)" />
+      <param name="intercepts"  value="0.0015" />
+    </node> 
+    
+    <node name="PIDController" pkg="pid" type="controller" respawn="true" >
+      <param name="Kp" value="-1"/>
+      <param name="Ki" value="-0.25"/>
+      <param name="Kd" value="0"/>
+      <param name="upper_limit" value="100"/>
+      <param name="lower_limit" value="-100"/>
+      <param name="windup_limit" value="100"/>
+      <param name="min_loop_frequency" value="5"/>
+      <remap from="setpoint" to="/DesiredPos" />
+      <remap from="control_effort" to="/Duty" />
+      <remap from="state" to="/Motor_Feedback" />
+    </node>
+
+    <node name="Encoder" pkg="mavric" type="encoderFeedback.py" respawn="true"/>
+</launch>
