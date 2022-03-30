@@ -77,5 +77,10 @@
     </group>
 
     <group ns="Complex" unless="$(arg complex)">
+        <node name="Complex_Controller" pkg="mavric" type="Arm_Controller.py">
+        </node>
+
+        <include file="$(find mavric)/launch/ArmPID.launch">
+        </include>
     </group>
     

@@ -6,9 +6,9 @@ from geometry_msgs.msg import Twist
 import math as m
 
 delta_linear = [0, 0, 0]
-delta_angular = [0, 0]
+delta_angular = [0, 0, 0]
 pos_linear = [0, 0, 0]
-pos_angular = [0, 0]
+pos_angular = [0, 0, 0]
 
 def callback(data):
     global delta_linear, delta_angular
@@ -32,6 +32,7 @@ def talker():
     pub_wr = rospy.Publisher('ShoulderRotPos', Float64, queue_size=10)
 
     while not rospy.is_shutdown():
+        global delta_linear, delta_angular
         alpha = pos_angular[0] + delta_angular[0]
         beta = pos_angular[1] + delta_angular[1]
         x = pos_linear[0] + delta_linear[0]
@@ -56,6 +57,8 @@ def talker():
             pos_linear[0] = x
             pos_linear[1] = y
             pos_linear[2] = z
+            pos_angular[0] = alpha
+            pos_angular[1] = beta
             delta_linear = [0, 0, 0]
             delta_angular = [0, 0, 0]
         else:
