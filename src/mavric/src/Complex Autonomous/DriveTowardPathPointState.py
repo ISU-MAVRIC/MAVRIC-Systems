@@ -19,7 +19,7 @@ class DriveTowardPathPoint(State):
         self.tgt[0] = g.pathpoints["position"][g.pathpoint_num][0]
         self.tgt[1] = g.pathpoints["position"][g.pathpoint_num][1]
         g.steer_pub.publish(0,0,0,0)
-        time.sleep(1)
+        time.sleep(3)
 
     def run(self):
         g.prev_fix_time = g.fix_time
@@ -57,7 +57,10 @@ class DriveTowardPathPoint(State):
         
         #controls the top end of the curve. top velocity, presumably 0 -> 100
         #TODO check range, starting with 40 percent power, if 100 is max velocity
-        b = g.pathpoints["speed"][g.pathpoint_num]
+        if g.pathpoints["speed"][g.pathpoint_num] > g.LIN_DRIVE_MAX:
+            b = g.LIN_DRIVE_MAX
+        else:
+            b = g.pathpoints["speed"][g.pathpoint_num]
         
         #r controls when the deccel starts, 0.75 is around 10 - 15m
         #0.3 is around 20m
@@ -103,6 +106,8 @@ class DriveTowardPathPoint(State):
                 return self._stateMachine.nextPathPoint
         
         if self.tgt != g.pathpoints["position"][g.pathpoint_num]:
+            g.debug_pub.publish("target, new")
+            g.debug_pub.publish("%f, %f, %f, %f" % (self.tgt[0], self.tgt[1], g.pathpoints["position"][g.pathpoint_num][0], g.pathpoints["position"][g.pathpoint_num][1]))
             g.pathpoint_num += -1
             return self._stateMachine.nextPathPoint
         

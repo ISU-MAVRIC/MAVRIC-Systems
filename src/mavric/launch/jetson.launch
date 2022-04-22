@@ -41,10 +41,10 @@
       <param name="clk_error" value="1.04166667" />
     </node>
 	
-
+    
     <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)" >
     </node>
-
+    
 	
     <node name="ADC_Monitor" pkg="mavric" type="Voltage_Monitor.py" respawn="true">
       <param name="frequency" value="100" />
@@ -180,13 +180,13 @@
       <remap from="Steer_Cal" to="Cal_Command" />
 
       <param name="Left_Front/Scale" value="-1" />
-      <param name="Left_Back/Scale" value="-1" />
+      <param name="Left_Back/Scale" value="1" />
       <param name="Right_Back/Scale" value="-1" />
 
       <param name="ramp_rate_up" value="2.0" />
       <param name="ramp_rate_down" value="4.0" />
-      <param name="str_ramp_rate_up" value="1" />
-      <param name="str_ramp_rate_down" value="1" />
+      <param name="str_ramp_rate_up" value="0.5" />
+      <param name="str_ramp_rate_down" value="0.5" />
     </node>
 
     <node name="Steer_Feedback" pkg="mavric" type="Drive_Feedback_Interface.py" respawn="true" >

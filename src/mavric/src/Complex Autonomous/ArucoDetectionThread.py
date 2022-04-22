@@ -44,12 +44,16 @@ def aruco_detection():
         markers1 = get_markers_from_frame(frame)
         markers2 = get_markers_from_frame(frame2)
         for index, ID in enumerate(markers1[0]):
-            markers1[1][index] = (float(markers1[1][index][0] - 320) / 320) * 34.5
-        # for index, ID in enumerate(markers2[0]):
-        #     if ID not in markers1[0]:
-        #         markers1[0].append(markers2[0][index])
-        #         print(markers2[1][index][0])
-        #         markers1[1].append((float(markers2[1][index][0] - 620) / 620) * 54.5) 
+            markers1[1][index] = (float(markers1[1][index][0] - 390) / 390) * 25.32
+            #g.debug_pub.publish("Realsense: %f" %(markers1[1][index]))
+            #g.debug_pub.publish("ID: %d" %(markers1[0][index]))
+        for index, ID in enumerate(markers2[0]):
+            if ID not in markers1[0]:
+                markers1[0].append(markers2[0][index])
+                #print(markers2[1][index][0])
+                markers1[1].append((float(markers2[1][index][0] - 973) / 973) * 48.9 )
+                #g.debug_pub.publish("Dome: %f" %(markers1[1][-1]))
+                #g.debug_pub.publish("ID: %f" %(markers1[0][-1]))
         g.posts["id"] = markers1[0]
         g.posts["heading"] = markers1[1]
         if len(g.posts["id"]) > 0:

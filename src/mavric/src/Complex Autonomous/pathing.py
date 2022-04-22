@@ -96,6 +96,7 @@ class Pathing():
                 if Enter > g.pathpoint_num >= Exit:
                     self.referance_point = g.position
         
+        g.debug_pub.publish(str(len(g.posts["id"])))
         # set endpoint if post is found
         if len(g.posts["id"]) == 0:
             self.end_point = g.waypoints[0]
@@ -108,12 +109,14 @@ class Pathing():
                 if g.posts["id"][i] == g.waypoint_id[0]:
                     # set approximate distance if distance is not yet found
                     if len(g.posts["distance"]) != len(g.posts["id"]):
-                        g.posts["distance"].append(4)
+                        g.posts["distance"].append(14)
                     
                     # get cords of post
                     geod = Geodesic.WGS84.Direct(g.position[1], g.position[0], g.heading + g.posts['heading'][i], g.posts['distance'][i])
-                    self.end_point = [geod['lon2'], geod['lat2']]
-                    g.waypoints[0] = self.end_point
+                    if g.detected is False:
+                        self.end_point = [geod['lon2'], geod['lat2']]
+                        g.waypoints[0] = self.end_point
+                        g.detected = True
         
         
         # get end point r and theta
@@ -157,6 +160,6 @@ class Pathing():
             g.pathpoints["linear"].append(True)
             g.pathpoints["heading"].append(ep_theta)
             g.pathpoints["radius"].append(None)
-            g.pathpoints["speed"].append(80)
+            g.pathpoints["speed"].append(70)
 
         g.debug_pub.publish("Running Pathing")

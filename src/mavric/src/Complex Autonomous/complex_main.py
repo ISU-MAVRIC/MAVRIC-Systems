@@ -64,7 +64,7 @@ def waypoint_cb(data):
     g.waypoint_id.append(data.id)
 
 def gps_fix_cb(data):
-    g.good_fix = True #data.data
+    g.good_fix = data.data #data.data
 
 
 def gps_cb(data):
