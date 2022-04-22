@@ -56,6 +56,9 @@ def aruco_detection():
                 #g.debug_pub.publish("ID: %f" %(markers1[0][-1]))
         g.posts["id"] = markers1[0]
         g.posts["heading"] = markers1[1]
+        #TEMP: For SAR overlay
+        g.posts["dome_coords"] = markers2[1]
+        #TEMP: For SAR overlay
         if len(g.posts["id"]) > 0:
             print(g.posts)
     vs.stop()
