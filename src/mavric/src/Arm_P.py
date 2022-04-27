@@ -12,7 +12,7 @@
 # The ranges for the signals is -100,100 coresponding to the motor controllers' extremum.
 
 import rospy
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Bool
 from mavric.msg import Arm
 from geometry_msgs.msg import Twist
 
@@ -28,6 +28,7 @@ serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 def talker():
     global enabled
     enabled = 0
+    timer = time.time()
     #Arm commands update one joint at a time, so we need one topic per joint
     pub_shoulder_r = rospy.Publisher("ShoulderRot", Float64, queue_size=10)
     pub_shoulder_p = rospy.Publisher("ShoulderPitch", Float64, queue_size=10)
@@ -39,6 +40,8 @@ def talker():
     
     pub_claw_a = rospy.Publisher("ClawActuation", Float64, queue_size=10)
     pub_claw_pos = rospy.Publisher("ClawPosition", Twist, queue_size=10)
+
+    pub_arm_enable = rospy.Publisher("ArmEnable", Bool, queue_size=10)
     
     rospy.init_node('ARP')
     port = rospy.get_param("port", 10001)
@@ -88,10 +91,19 @@ def talker():
         
         elif(data[0] == 'P') and enabled is True:
             # Claw Pos
-            parameters = data[1:].strip().split(',')
-            cmd = float(parameters)
-            pub_claw_pos.publish([cmd[0], cmd[1], cmd[2]], [cmd[3], cmd[4], 0])
-            pub_claw_a.publish(cmd[5])
+            if time.time()-timer >= 0.5:
+                parameters = data[1:].strip().split(',')
+                cmd = list(map(float, parameters))
+                values = Twist()
+                values.linear.x = cmd[0]
+                values.linear.y = cmd[1]
+                values.linear.z = cmd[2]
+                values.angular.x = cmd[3]
+                values.angular.y = cmd[4]
+                values.angular.z = cmd[5]
+                pub_claw_pos.publish(values)
+                pub_claw_a.publish(cmd[5])
+                timer = time.time()
 
 
         elif (data[0] == 'N'):
@@ -99,10 +111,12 @@ def talker():
             if data[1] == 'E':
                 # enable complex, disable manual
                 enabled = True
+                pub_arm_enable.publish(True)
 
             elif data[1] == 'D':
                 # disable complex, enable manual
                 enabled = False
+                pub_arm_enable.publish(False)
     
 
         connection.close()

@@ -9,6 +9,7 @@ add_definitions(-std=c++11)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(wiringPi_INCLUDE "/usr/local/include")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -121,7 +122,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES mavric
-  CATKIN_DEPENDS rospy std_msgs message_runtime
+  CATKIN_DEPENDS rospy roscpp std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -134,7 +135,10 @@ catkin_package(
 include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  $(wiringPi_INCLUDE)
 )
+
+LINK_DIRECTORIES("usr/local/lib")
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -151,6 +155,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 #add_executable(${PROJECT_NAME}_example src/example.cpp)
 add_executable(${PROJECT_NAME}_CAN_Drive_Train_S src/CAN_Drive_Train_S.cpp)
+add_executable(${PROJECT_NAME}_Encoder_Feedback src/Encoder_FB.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -168,6 +173,7 @@ target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PR
 target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCCI.a)
 target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
 target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
+target_link_libraries(${PROJECT_NAME}_Encoder_Feedback ${catkin_LIBRARIES} wiringPi)
 
 #############
 ## Install ##

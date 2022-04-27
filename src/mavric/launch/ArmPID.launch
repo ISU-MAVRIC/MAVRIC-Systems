@@ -1,23 +1,24 @@
 <launch>
     <node name="controller" pkg="pid" type="controller" ns="shoulder_rotation" >
       <param name="node_name" value="shoulder_rotation_pid" />
-      <param name="Kp" value="-4.0" />
-      <param name="Ki" value="-0.0" />
-      <param name="Kd" value="-0.3" />
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.25" />
+      <param name="Kd" value="-0.0" />
       <param name="upper_limit" value="100" />
       <param name="lower_limit" value="-100" />
       <param name="windup_limit" value="10" />
       <param name="max_loop_frequency" value="100.0" />
       <param name="min_loop_frequency" value="100.0" />
-      <remap from="control_effort" to="/Arm/ShoulderRotRamped" /> 
+      <remap from="control_effort" to="/Arm/ShoulderRot" /> 
       <remap from="setpoint" to="/Arm/ShoulderRotPos" />
       <remap from="state" to="/Arm/ShoulderRotFB" />
+      <remap from="pid_enable" to="/Arm/ArmEnable" />
      </node>
      <node name="controller" pkg="pid" type="controller" ns="shoulder_pitch" >
       <param name="node_name" value="shoulder_pitch_pid" />
-      <param name="Kp" value="-4.0" />
-      <param name="Ki" value="-0.0" />
-      <param name="Kd" value="-0.3" />
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.25" />
+      <param name="Kd" value="-0.0" />
       <param name="upper_limit" value="100" />
       <param name="lower_limit" value="-100" />
       <param name="windup_limit" value="10" />
@@ -26,12 +27,13 @@
       <remap from="control_effort" to="/Arm/ShoulderPitch" /> 
       <remap from="setpoint" to="/Arm/ShoulderPitchPos" />
       <remap from="state" to="/Arm/ShoulderPitchFB" />
+      <remap from="pid_enable" to="/Arm/ArmEnable" />
      </node>
      <node name="controller" pkg="pid" type="controller" ns="elbow_pitch" >
       <param name="node_name" value="elbow_pitch_pid" />
-      <param name="Kp" value="-4.0" />
-      <param name="Ki" value="-0.0" />
-      <param name="Kd" value="-0.3" />
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.25" />
+      <param name="Kd" value="-0.0" />
       <param name="upper_limit" value="100" />
       <param name="lower_limit" value="-100" />
       <param name="windup_limit" value="10" />
@@ -40,12 +42,13 @@
       <remap from="control_effort" to="/Arm/ElbowPitch" /> 
       <remap from="setpoint" to="/Arm/ElbowPitchPos" />
       <remap from="state" to="/Arm/ElbowPitchFB" />
+      <remap from="pid_enable" to="/Arm/ArmEnable" />
      </node>
      <node name="controller" pkg="pid" type="controller" ns="wrist_rotation" >
       <param name="node_name" value="wrist_rotation_pid" />
-      <param name="Kp" value="-4.0" />
-      <param name="Ki" value="-0.0" />
-      <param name="Kd" value="-0.3" />
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.25" />
+      <param name="Kd" value="-0.0" />
       <param name="upper_limit" value="100" />
       <param name="lower_limit" value="-100" />
       <param name="windup_limit" value="10" />
@@ -54,12 +57,13 @@
       <remap from="control_effort" to="/Arm/WristRot" /> 
       <remap from="setpoint" to="/Arm/WristRotPos" />
       <remap from="state" to="/Arm/WristRotFB" />
+      <remap from="pid_enable" to="/Arm/ArmEnable" />
      </node>
      <node name="controller" pkg="pid" type="controller" ns="wrist_pitch" >
       <param name="node_name" value="wrist_pitch_pid" />
-      <param name="Kp" value="-4.0" />
-      <param name="Ki" value="-0.0" />
-      <param name="Kd" value="-0.3" />
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.25" />
+      <param name="Kd" value="-0.0" />
       <param name="upper_limit" value="100" />
       <param name="lower_limit" value="-100" />
       <param name="windup_limit" value="10" />
@@ -68,5 +72,6 @@
       <remap from="control_effort" to="/Arm/WristPitch" /> 
       <remap from="setpoint" to="/Arm/WristPitchPos" />
       <remap from="state" to="/Arm/WristPitchFB" />
+      <remap from="pid_enable" to="/Arm/ArmEnable" />
      </node>
 </launch>

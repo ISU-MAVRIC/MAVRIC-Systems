@@ -11,6 +11,8 @@ GPIO.setmode(GPIO.BOARD)
 
 
 def callback(data, args):
+    global forward_pin
+    global backward_pin
     if data.data < 0:
         GPIO.output(backward_pin, True)
         GPIO.output(forward_pin, False)
@@ -27,14 +29,16 @@ def talker():
     global low_limit
     global slope
     global intercept
+    global forward_pin
+    global backward_pin
     
     rospy.init_node('LinearMapping')
     slope = rospy.get_param('~slope', 0)
     intercept = rospy.get_param('~intercept', 0)
     inputs = rospy.get_param('~input', 'in')
     outputs = rospy.get_param('~output', 'out')
-    forward_pin = rospy.get_param('~forward')
-    backward_pin = rospy.get_param('~backward')
+    forward_pin = rospy.get_param('~forward', 26)
+    backward_pin = rospy.get_param('~backward', 23)
 
     GPIO.setup(forward_pin, GPIO.OUT)
     GPIO.setup(backward_pin, GPIO.OUT)
