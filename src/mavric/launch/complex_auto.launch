@@ -18,12 +18,12 @@
         <remap from="Drive_Train" to="/Drive/Drive_Command" />
         <remap from="GPS_Data" to="/GPS_Data" />
     </node>
-
+<!--
     <node name="LightPole_Control" pkg="mavric" type="LED_Control.py" respawn="true">
     </node>
 
     <node name="Relay_Control" pkg="mavric" type="Relay_Switcher.py" respawn="true">
     </node>
-
+-->
     
 </launch>
