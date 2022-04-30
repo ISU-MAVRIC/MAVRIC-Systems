@@ -58,10 +58,9 @@ class TurnTowardPathPoint(State):
     def run(self):
         g.prev_fix_time = g.fix_time  #update in gps_cb
 
-        #auto_globals.debug_pub.publish(str(tgt))
-        #auto_globals.debug_pub.publish(str(pos))
-        #auto_globals.debug_pub.publish(str(geod))
+        g.debug_pub.publish("a"+str(self.desired_heading))
 
+        g.debug_pub.publish(str(self.get_angular_error()))
         if abs(self.get_angular_error()) > g.ANG_ERROR_THRESHOLD and time.time() < (self.start_time + g.ANG_POINT_STEER_TIMEOUT):
             g.debug_pub.publish(str(self.get_ramped_turn_speed()))
             lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())

@@ -163,3 +163,5 @@ class Pathing():
             g.pathpoints["speed"].append(70)
 
         g.debug_pub.publish("Running Pathing")
+        g.debug_pub.publish("Waypoint data")
+        g.debug_pub.publish("%f, %f, %d" % (g.waypoints[0][0], g.waypoints[0][1], g.waypoint_id[0]))

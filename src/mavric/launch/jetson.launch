@@ -41,10 +41,10 @@
       <param name="clk_error" value="1.04166667" />
     </node>
 	
-    
+
     <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)" >
     </node>
-    
+
 	
     <node name="ADC_Monitor" pkg="mavric" type="Voltage_Monitor.py" respawn="true">
       <param name="frequency" value="100" />

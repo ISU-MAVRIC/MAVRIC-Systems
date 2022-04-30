@@ -1,8 +1,8 @@
 #global constants
 LIN_ERROR_THRESHOLD = 2     #arbitrary, meters
 ANG_ERROR_THRESHOLD = 5    #arbitrary, degrees
-ANG_POINT_STEER_MAX = 60    #between 1-100 (inclusive)
-ANG_POINT_STEER_MIN = 20    #between 1-100 (inclusive)
+ANG_POINT_STEER_MAX = 40    #between 1-100 (inclusive)
+ANG_POINT_STEER_MIN = 10    #between 1-100 (inclusive)
 LIN_DRIVE_MAX = 5          #between 1-100 (inclusive)
 LIN_DRIVE_MIN = 1          #between 1-100 (inclusive)
 LIN_DRIVE_STEER_MAX = 80    #between 1-100 (inclusive)
@@ -15,7 +15,7 @@ PATH_BREAK_THRESHOLD = LIN_ERROR_THRESHOLD*3
 #control flags
 enabled = False
 good_fix = False
-good_imu = False
+good_imu = True
 fix_timeout = False   #unnecessary?
 
 #location data

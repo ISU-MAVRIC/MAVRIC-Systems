@@ -7,23 +7,31 @@
         <remap from="GPS_Fix" to="/GPS_Fix" />
         <remap from="GPS" to="/GPS_Data" />
         <remap from="SensorCalibrations" to="/HW/IMU/SensorCalibrations" />
-        <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
+        <remap from="FusedAngle" to="/IMU/FusedAngle" />
         <remap from="Drive_Train" to="/Drive/Drive_Command" />
         <remap from="Steer_Train" to="/Drive/Steer_Command" />
     </node>
 
+    <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" >
+    </node>
 
+    <node name="IMU_Streamer" pkg="mavric" type="BNO055_IMU.py" respawn="true" >
+      <remap from="IMU_Cal_Servo" to="IMUServoPWM_CH" />
+    </node>
+
+    <!--
     <node name="GPS_Sim" pkg="mavric" type="GPS_Sim.py" respawn="true">
         <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
         <remap from="Drive_Train" to="/Drive/Drive_Command" />
         <remap from="GPS_Data" to="/GPS_Data" />
     </node>
-<!--
+    -->
+
     <node name="LightPole_Control" pkg="mavric" type="LED_Control.py" respawn="true">
     </node>
 
     <node name="Relay_Control" pkg="mavric" type="Relay_Switcher.py" respawn="true">
     </node>
--->
+
     
 </launch>
