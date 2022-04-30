@@ -1,16 +1,16 @@
 <launch>
 
-    <arg name="no_complex" default="true" />
+    <arg name="no_complex" default="false" />
 
-    <arg name="ShoulderRotPWM_CH"   value="/SlowPWM/CH0" />
-    <arg name="ShoulderPitchPWM_CH" value="/SlowPWM/CH2" />
-    <arg name="ElbowPitchPWM_CH"    value="/SlowPWM/CH4" />
+    <arg name="ShoulderRotPWM_CH"   value="/SlowPWM/CH5" />
+    <arg name="ShoulderPitchPWM_CH" value="/SlowPWM/CH1" />
+    <arg name="ElbowPitchPWM_CH"    value="/SlowPWM/CH0" />
     <arg name="WristRotPWM_CH"      value="/SlowPWM/CH6" />
-    <arg name="WristPitchPWM_CH"    value="/SlowPWM/CH8" />
+    <arg name="WristPitchPWM_CH"    value="/SlowPWM/CH2" />
   
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="container" value="SlowPWM/" />
-      <param name="control_mode" value="PulseTime" />
+      <param name="control_mode" value="DutyCycle" />
       <param name="frequency" value="25" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
@@ -22,18 +22,26 @@
     </node>
 
     <group ns="Arm">
+        <!--
         <arg name="ShoulderRot_Scale" value="-1.0" />
         <arg name="ShoulderPitch_Scale" value="1.0" />
         <arg name="ElbowPitch_Scale" value="1.0" />
         <arg name="WristRot_Scale" value="1.0" />
         <arg name="WristPitch_Scale" value="1.0" />
         <arg name="ClawActuation_Scale" value="1.0" />
+        -->
+        <arg name="ShoulderRot_Scale" value="0.01" />
+        <arg name="ShoulderPitch_Scale" value="0.01" />
+        <arg name="ElbowPitch_Scale" value="0.01" />
+        <arg name="WristRot_Scale" value="0.01" />
+        <arg name="WristPitch_Scale" value="0.01" />
+        <arg name="ClawActuation_Scale" value="0.01" />
 
         <node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
             <param name="port" value="10001" />
         </node>
 
-        <!-- Each scaling node takes one channel and scales it from +- 100 to the PWM control range
+        <!-- Each scaling node takes one channel and scales it from +- 100 to the PWM control range -->
         <node name="ShoulderRot_Scale" pkg="mavric" type="L298N_Controller.py">
             <param name="input"  value="ShoulderRot" />
             <param name="output" value="$(arg ShoulderRotPWM_CH)" />
@@ -47,16 +55,16 @@
             <param name="output" value="$(arg ShoulderPitchPWM_CH)" />
             <param name="slope"      value="$(eval ShoulderPitch_Scale)" />
             <param name="intercept"  value="0" />
-            <param name="forward"  value="18" />
-            <param name="backward"  value="16" />
+            <param name="forward"  value="7" />
+            <param name="backward"  value="11" />
         </node>
         <node name="ElbowPitch_Scale" pkg="mavric" type="L298N_Controller.py">
             <param name="input"  value="ElbowPitch" />
             <param name="output" value="$(arg ElbowPitchPWM_CH)" />
             <param name="slope"      value="$(eval ElbowPitch_Scale)" />
             <param name="intercept"  value="0" />
-            <param name="forward"  value="22" />
-            <param name="backward"  value="24" />
+            <param name="forward"  value="35" />
+            <param name="backward"  value="37" />
         </node>
         <node name="WristRot_Scale" pkg="mavric" type="L298N_Controller.py">
             <param name="input"  value="WristRot" />
@@ -71,11 +79,11 @@
             <param name="output" value="$(arg WristPitchPWM_CH)" />
             <param name="slope"      value="$(eval WristPitch_Scale)" />
             <param name="intercept"  value="0" />
-            <param name="forward"  value="15" />
-            <param name="backward"  value="19" />
+            <param name="forward"  value="31" />
+            <param name="backward"  value="33" />
         </node>
-        -->
-        <!-- Each scaling node takes one channel and scales it from +- 100 to the PWM control range--> 
+
+        <!-- Each scaling node takes one channel and scales it from +- 100 to the PWM control range
         <node name="ShoulderRot_Scale" pkg="mavric" type="LinearMapping.py">
         <param name="inputs"  value="ShoulderRot" />
         <param name="outputs" value="$(arg ShoulderRotPWM_CH)" />
@@ -132,41 +140,49 @@
         <param name="value" value="0" />     
         <remap from="topic" to="WristRot" />
         </node>
+        -->
         </group>
 
     <group ns="Arm" unless="$(arg no_complex)">
 
         <node name="Complex_Controller" pkg="mavric" type="Arm_Controller.py">
+            <!--
             <param name="ShoulderRotRad2Pulse"  value="209.4479" />
             <param name="ShoulderPitchRad2Pulse"  value="1001316.3216" />
             <param name="ElbowPitchRad2Pulse"  value="2660.434" />
             <param name="WristRotRad2Pulse"  value="217.3348" />
             <param name="WristPitchRad2Pulse"  value="217.3348" />
+            -->
+            <param name="ShoulderRotRad2Pulse"  value="350.1409" />
+            <param name="ShoulderPitchRad2Pulse"  value="350.1409" />
+            <param name="ElbowPitchRad2Pulse"  value="350.1409" />
+            <param name="WristRotRad2Pulse"  value="350.1409" />
+            <param name="WristPitchRad2Pulse"  value="350.1409" />
         </node>
         
-        <node name="ShoulderRot_FB" pkg="mavric" type="encoderFeedback.py">
-        	<param name="ch1"  value="35" />
-        	<param name="ch2"  value="37" />
+        <node name="ShoulderRot_FB" pkg="mavric" type="mavric_Encoder_Feedback">
+        	<param name="ch1"  value="6" />
+        	<param name="ch2"  value="21" />
             <remap from="Motor_Feedback" to="ShoulderRotFB" />
         </node>
-        <node name="ShoulderPitch_FB" pkg="mavric" type="encoderFeedback.py">
-        	<param name="ch1"  value="40" />
-        	<param name="ch2"  value="38" />
+        <node name="ShoulderPitch_FB" pkg="mavric" type="mavric_Encoder_Feedback">
+        	<param name="ch1"  value="5" />
+        	<param name="ch2"  value="4" />
             <remap from="Motor_Feedback" to="ShoulderPitchFB" />
         </node>
-        <node name="ElbowPitch_FB" pkg="mavric" type="encoderFeedback.py">
-        	<param name="ch1"  value="33" />
-        	<param name="ch2"  value="31" />
+        <node name="ElbowPitch_FB" pkg="mavric" type="mavric_Encoder_Feedback">
+        	<param name="ch1"  value="27" />
+        	<param name="ch2"  value="26" />
             <remap from="Motor_Feedback" to="ElbowPitchFB" />
         </node>
-        <node name="WristRot_FB" pkg="mavric" type="encoderFeedback.py">
-        	<param name="ch1"  value="32" />
-        	<param name="ch2"  value="36" />
+        <node name="WristRot_FB" pkg="mavric" type="mavric_Encoder_Feedback">
+        	<param name="ch1"  value="2" />
+        	<param name="ch2"  value="3" />
             <remap from="Motor_Feedback" to="WristRotFB" />
         </node>
-        <node name="WristPitch_FB" pkg="mavric" type="encoderFeedback.py">
-        	<param name="ch1"  value="11" />
-        	<param name="ch2"  value="13" />
+        <node name="WristPitch_FB" pkg="mavric" type="mavric_Encoder_Feedback">
+        	<param name="ch1"  value="28" />
+        	<param name="ch2"  value="29" />
             <remap from="Motor_Feedback" to="WristPitchFB" />
         </node>
 

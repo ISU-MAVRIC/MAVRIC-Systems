@@ -1,7 +1,7 @@
 #include <iostream>		
 #include <wiringPi.h>
 #include "ros/ros.h"
-#include "std_msgs/Int32.h"
+#include "std_msgs/Float64.h"
 #include <algorithm>
 
 using namespace ros;
@@ -10,8 +10,8 @@ using namespace std;
 
 double counter = 0;
 double dir = 1;
-int ch1 = 23;
-int ch2 = 22;
+int ch1 = 28;
+int ch2 = 29;
 
 void addCount(){
     if(digitalRead(ch2) == 0) {
@@ -38,10 +38,11 @@ int main(int argc, char **argv)
 
 	ros::init(argc, argv, "Encoder_FB");
     ros::NodeHandle n;
-    ros::Publisher pub = n.advertise<std_msgs::Int32>("Steer_Feedback", 10);
+    ros::Publisher pub = n.advertise<std_msgs::Float64>("Motor_Feedback", 10);
     ros::param::get("~ch1", ch1);
     ros::param::get("~ch2", ch2);
-    std_msgs::Int32 pub_data;
+    std_msgs::Float64 pub_data;
+    ros::Rate loop_rate(30);
 
     wiringPiSetup();
     pinMode(ch1, INPUT);
@@ -53,6 +54,7 @@ int main(int argc, char **argv)
 	while (ros::ok()){
         pub_data.data = counter;
         pub.publish(pub_data);
+        loop_rate.sleep();
     }
 
     return 0;
