@@ -22,6 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Threads REQUIRED)
+find_package(JetsonGPIO)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -173,7 +174,7 @@ target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PR
 target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCCI.a)
 target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
 target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
-target_link_libraries(${PROJECT_NAME}_Encoder_Feedback ${catkin_LIBRARIES} wiringPi)
+target_link_libraries(${PROJECT_NAME}_Encoder_Feedback ${catkin_LIBRARIES} JetsonGPIO::JetsonGPIO)
 
 #############
 ## Install ##
