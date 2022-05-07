@@ -56,6 +56,7 @@ def aruco_detection():
                 #g.debug_pub.publish("ID: %f" %(markers1[0][-1]))
         g.posts["id"] = markers1[0]
         g.posts["heading"] = markers1[1]
+        g.posts["distance"] = [-1]*len(markers1[1])
         #TEMP: For SAR overlay
         g.posts["dome_coords"] = markers2[1]
         #TEMP: For SAR overlay
