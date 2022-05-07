@@ -2,7 +2,7 @@
 import rospy
 
 from mavric.msg import LED
-from mavric.src.LED import LightPole
+from LED import LightPole
 
 light_pole = LightPole()
 

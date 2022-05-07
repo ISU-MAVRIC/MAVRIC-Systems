@@ -42,13 +42,20 @@ def talker():
     pub_claw_pos = rospy.Publisher("ClawPosition", Twist, queue_size=10)
 
     pub_arm_enable = rospy.Publisher("ArmEnable", Bool, queue_size=10)
+
+    pub_hook_a = rospy.Publisher("HookActuation", Float64, queue_size=10)
+
+    pub_cam_rot = rospy.Publisher("ArmCamRot", Float64, queue_size=10)
+    pub_cam_Pitch = rospy.Publisher("ArmCamPitch", Float64, queue_size=10)
+
+    
     
     rospy.init_node('ARP')
     port = rospy.get_param("port", 10001)
     serversocket.bind(('', port))
     serversocket.listen(1)
 
-    rospy.loginfo('server started')
+    #rospy.loginfo('server started')
 
     while not rospy.is_shutdown():
         connection, address = serversocket.accept()
@@ -60,7 +67,7 @@ def talker():
         elif(data[0] == 'A') and enabled is not True:
             # Arm Command
             parameters = data[2:].strip().split(',')
-            rospy.loginfo(parameters)
+            #rospy.loginfo(parameters)
             cmd = float(parameters[0])
             
             if data[1] == 'R':
@@ -76,7 +83,7 @@ def talker():
         elif(data[0] == 'C') and enabled is not True:
             # Claw Command
             parameters = data[2:].strip().split(',')
-            rospy.loginfo(parameters)
+            #rospy.loginfo(parameters)
             cmd = float(parameters[0])
             
             if data[1] == 'R':
@@ -105,6 +112,28 @@ def talker():
                 pub_claw_a.publish(cmd[5])
                 timer = time.time()
 
+        elif (data[0] == 'E'):
+            if data[1] == 'V':
+                parameters = data[2:].strip().split(',')
+                cmd = list(map(float, parameters))
+                pub_cam_rot.publish(cmd[0])
+                pub_cam_Pitch.publish(cmd[1])
+            
+            elif data[1] == 'H':
+                parameters = data[2:].strip().split(',')
+                cmd = float(parameters[0])
+                pub_hook_a.publish(cmd)
+
+        elif (data[0] == 'S'):
+            # all arm data
+            parameters = data[1:].strip().split(',')
+            cmd = list(map(float, parameters))
+
+            pub_shoulder_r.publish(cmd[0])
+            pub_shoulder_p.publish(cmd[1])
+            pub_elbow_p.publish(cmd[2])
+            pub_wrist_r.publish(cmd[3])
+            pub_wrist_p.publish(cmd[4])
 
         elif (data[0] == 'N'):
             # Complex Control Command
@@ -127,3 +156,5 @@ if __name__ == '__main__':
         talker()
     except rospy.ROSInterruptException:
         pass
+    finally:
+        serversocket.close()

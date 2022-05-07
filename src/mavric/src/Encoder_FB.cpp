@@ -11,8 +11,8 @@ using namespace GPIO;
 
 double counter = 0;
 double dir = 1;
-int ch1 = 28;
-int ch2 = 29;
+int ch1 = 38;
+int ch2 = 40;
 
 void addCount(){
     if(input(ch2) == 0) {
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     ros::param::get("~ch1", ch1);
     ros::param::get("~ch2", ch2);
     std_msgs::Float64 pub_data;
-    ros::Rate loop_rate(30);
+    ros::Rate loop_rate(10);
 
     setmode(GPIO::BOARD);
 

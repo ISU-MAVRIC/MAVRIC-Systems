@@ -5,14 +5,17 @@
   <arg name="nogps" default="false" />
 
   <arg name="ShoulderRotPWM_CH"   value="/HW/SlowPWM/CH0" />
-  <arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />
-  <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH2" />
-  <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH4" />
-  <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH7" />
-  <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH9" />
+  <!--<arg name="ShoulderPitchPWM_CH" value="/HW/SlowPWM/CH1" />-->
+  <arg name="ElbowPitchPWM_CH"    value="/HW/SlowPWM/CH1" />
+  <arg name="WristRotPWM_CH"      value="/HW/SlowPWM/CH2" />
+  <arg name="WristPitchPWM_CH"    value="/HW/SlowPWM/CH3" />
+  <arg name="ClawActuationPWM_CH" value="/HW/SlowPWM/CH4" />
+  <arg name="HookActuationPWM_CH" value="/HW/SlowPWM/CH5" />
+  <arg name="CamRotPWM_CH" value="/HW/SlowPWM/CH6" />
+  <arg name="CamPitchPWM_CH" value="/HW/SlowPWM/CH7" />
 
 
-  <arg name="IMUServoPWM_CH" value="/HW/SlowPWM/CH6" />
+  <arg name="IMUServoPWM_CH" value="/HW/SlowPWM/CH13" />
 
   <group ns="HW" unless="$(arg simulated)">
 <?ignore
@@ -183,8 +186,10 @@
       <param name="ramp_rate_down" value="4.0" />
       <param name="str_ramp_rate_up" value="1" />
       <param name="str_ramp_rate_down" value="1" />
+      <param name="pitch_ramp_rate_up" value="5" />
+      <param name="pitch_ramp_rate_down" value="5" />
     </node>
-
+    
     <node name="Steer_Feedback" pkg="mavric" type="Drive_Feedback_Interface.py" respawn="true" >
       <param name="port" value="9004" />
     </node>

@@ -36,7 +36,7 @@ double c_str_lfDir = 1;
 double c_str_lbDir = -1;
 double c_str_rfDir = 1;
 double c_str_rbDir = -1;
-double c_pitch = 1;
+double c_pitch = 0.2;
 
 double lfTarget = 0;
 double lmTarget = 0;
@@ -66,6 +66,8 @@ double rampRateUp = 0.5;
 double rampRateDown = 0.5;
 double strRateUp = 100;
 double strRateDown = 100;
+double pRateUp = 100;
+double pRateDown = 100;
 
 TalonSRX talon_lf(1);
 TalonSRX talon_lm(2);
@@ -85,6 +87,7 @@ ErrorCode sen1 = talon_str_lf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen2 = talon_str_lb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen3 = talon_str_rf.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 ErrorCode sen4 = talon_str_rb.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
+ErrorCode sen5 = talon_pitch.ConfigSelectedFeedbackSensor(QuadEncoder, 0, 0);
 
 //ErrorCode cur1 = talon_str_lf.ConfigPeakCurrentLimit(7, 0);
 //ErrorCode cur2 = talon_str_lb.ConfigPeakCurrentLimit(7, 0);
@@ -95,11 +98,13 @@ SensorCollection lf_FB = talon_str_lf.GetSensorCollection();
 SensorCollection lb_FB = talon_str_lb.GetSensorCollection();
 SensorCollection rf_FB = talon_str_rf.GetSensorCollection();
 SensorCollection rb_FB = talon_str_rb.GetSensorCollection();
+SensorCollection sp_FB = talon_pitch.GetSensorCollection();
 
 ErrorCode cal1 = lf_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal2 = lb_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal3 = rf_FB.SetQuadraturePosition(0, 0);
 ErrorCode cal4 = rb_FB.SetQuadraturePosition(0, 0);
+ErrorCode cal5 = sp_FB.SetQuadraturePosition(0, 0);
 
 void strpub(const ros::Publisher pub)
 {
@@ -110,6 +115,14 @@ void strpub(const ros::Publisher pub)
 	value.rb = rb_FB.GetQuadraturePosition();
 	pub.publish(value);
 }
+
+void sppub(const ros::Publisher pub)
+{
+	std_msgs::Float64 value;
+	value.data = -sp_FB.GetQuadraturePosition();
+	pub.publish(value);
+}
+
 
 void CalCallback(const mavric::Steercal::ConstPtr &data)
 {
@@ -230,7 +243,7 @@ void pitchCallback(const std_msgs::Float64::ConstPtr &data)
 	if (pitch < -100)
 		pitch = -100;
 
-	pitchTarget = pitch;
+	pitchTarget = pitch/100;
 }
 
 void setOutputs(double lf, double lm, double lb, double rf, double rm, double rb, double str_lf, double str_lb, double str_rf, double str_rb)
@@ -306,6 +319,7 @@ int main(int argc, char **argv)
 	ros::Subscriber cal_sub = n.subscribe("Steer_Cal", 1000, CalCallback);
 	ros::Subscriber pitch_sub = n.subscribe("Pitch_Train", 1000, pitchCallback);
 	ros::Publisher str_pub = n.advertise<mavric::Steer>("Steer_Feedback", 1000);
+	ros::Publisher sp_pub = n.advertise<std_msgs::Float64>("ShoulderPitchFB", 1000);
 
 	//ros::Service("SetProtection", SetBool, changeProtection);
 
@@ -322,10 +336,12 @@ int main(int argc, char **argv)
 	ros::param::get("~ramp_rate_down", rampRateDown);
 	ros::param::get("~str_ramp_rate_up", strRateUp);
 	ros::param::get("~str_ramp_rate_down", strRateDown);
+	ros::param::get("~pitch_ramp_rate_up", pRateUp);
+	ros::param::get("~pitch_ramp_rate_down", pRateDown);
 
 	setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-	ros::Rate r(100);
+	ros::Rate r(30);
 	while (ros::ok())
 	{
 		ctre::phoenix::unmanaged::FeedEnable(200);
@@ -348,10 +364,11 @@ int main(int argc, char **argv)
 
 		if (pitch != pitchTarget)
 		{
-			pitch = rampVal(pitch, pitchTarget, 0.1*rampRateUp, 0.1*rampRateDown);
+			pitch = rampVal(pitch, pitchTarget, pRateUp, pRateDown);
 			talon_pitch.Set(ControlMode::PercentOutput, pitch * c_pitch);
 		}
 
+		sppub(sp_pub);
 		strpub(str_pub);
 		r.sleep();
 	}
