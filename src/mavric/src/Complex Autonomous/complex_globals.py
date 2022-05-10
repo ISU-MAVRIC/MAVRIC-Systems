@@ -1,12 +1,12 @@
 #global constants
-LIN_ERROR_THRESHOLD = 2     #arbitrary, meters
+LIN_ERROR_THRESHOLD = 1     #arbitrary, meters
 ANG_ERROR_THRESHOLD = 5    #arbitrary, degrees
-ANG_POINT_STEER_MAX = 40    #between 1-100 (inclusive)
-ANG_POINT_STEER_MIN = 10    #between 1-100 (inclusive)
+ANG_POINT_STEER_MAX = 22    #between 1-100 (inclusive)
+ANG_POINT_STEER_MIN = 5    #between 1-100 (inclusive)
 LIN_DRIVE_MAX = 5          #between 1-100 (inclusive)
 LIN_DRIVE_MIN = 1          #between 1-100 (inclusive)
-LIN_DRIVE_STEER_MAX = 80    #between 1-100 (inclusive)
-LIN_DRIVE_STEER_MIN = 20    #between 1-100 (inclusive)
+LIN_DRIVE_STEER_MAX = 100    #between 1-100 (inclusive)
+LIN_DRIVE_STEER_MIN = 35    #between 1-100 (inclusive)
 ANG_POINT_STEER_TIMEOUT = 10000 #max ms until Turn state exit
 UPDATE_INTERVAL = 1
 FIX_TIMEOUT_THRESHOLD = UPDATE_INTERVAL * 5

@@ -160,7 +160,7 @@ class Pathing():
             g.pathpoints["linear"].append(True)
             g.pathpoints["heading"].append(ep_theta)
             g.pathpoints["radius"].append(None)
-            g.pathpoints["speed"].append(70)
+            g.pathpoints["speed"].append(100)
 
         g.debug_pub.publish("Running Pathing")
         g.debug_pub.publish("Waypoint data")
