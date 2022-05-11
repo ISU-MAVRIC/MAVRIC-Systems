@@ -17,8 +17,8 @@
      <node name="controller" pkg="pid" type="controller" ns="shoulder_pitch" >
       <param name="node_name" value="shoulder_pitch_pid" />
       <param name="Kp" value="$(eval 4.0*0.0004)"/>
-      <param name="Ki" value="$(eval 3.5*0.0004)"/>
-      <param name="Kd" value="$(eval 0.25*0.0004)"/>
+      <param name="Ki" value="$(eval 3.0*0.0004)"/>
+      <param name="Kd" value="$(eval 0.1*0.0004)"/>
       <param name="upper_limit" value="100" />
       <param name="lower_limit" value="-100" />
       <param name="windup_limit" value="10" />

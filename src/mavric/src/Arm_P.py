@@ -98,7 +98,7 @@ def talker():
         
         elif(data[0] == 'P') and enabled is True:
             # Claw Pos
-            if time.time()-timer >= 0.5:
+            if time.time()-timer >= 0.1:
                 parameters = data[1:].strip().split(',')
                 cmd = list(map(float, parameters))
                 values = Twist()

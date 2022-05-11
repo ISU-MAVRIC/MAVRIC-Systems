@@ -12,7 +12,7 @@
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="container" value="SlowPWM/" />
       <param name="control_mode" value="PulseTime" />
-      <param name="frequency" value="25" />
+      <param name="frequency" value="50" />
       
       <!-- addresses start at 0x40 (64) and can be configured on the board -->
       <param name="address" value="64" />
@@ -156,7 +156,7 @@ E
             <rosparam param="start_linear">[0.739, 0, 0.541]</rosparam>
 
             <param name="ShoulderRotRad2Pulse"  value="209.4479" />
-            <param name="ShoulderPitchRad2Pulse"  value="1001316.3216" />
+            <param name="ShoulderPitchRad2Pulse"  value="3348467.2139" />
             <param name="ElbowPitchRad2Pulse"  value="2660.434" />
             <param name="WristRotRad2Pulse"  value="217.3348" />
             <param name="WristPitchRad2Pulse"  value="217.3348" />
@@ -188,7 +188,7 @@ E
         </node>
         <node name="WristRot_FB" pkg="mavric" type="mavric_Encoder_Feedback">
         	<param name="ch1"  value="33" />
-        	<param name="ch2"  value="35" />
+        	<param name="ch2"  value="29" />
             <remap from="Motor_Feedback" to="WristRotFB" />
         </node>
         <node name="WristPitch_FB" pkg="mavric" type="mavric_Encoder_Feedback">

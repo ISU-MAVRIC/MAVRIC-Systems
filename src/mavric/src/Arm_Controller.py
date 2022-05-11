@@ -60,7 +60,7 @@ def talker():
             pub_sr.publish(mu*sr_r2p)
             pub_sp.publish(theta*sp_r2p)
             pub_ep.publish(phi*ep_r2p)
-            pub_wp.publish(gamma*wp_r2p)
+            pub_wp.publish(-gamma*wp_r2p)
             pub_wr.publish(beta*wr_r2p)
             pos_linear[0] = x
             pos_linear[1] = y
