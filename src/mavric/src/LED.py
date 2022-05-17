@@ -32,7 +32,8 @@ class LightPole(LED):
 
     def toggle(self):
         super().toggle()
-        self.prevColorPub.publish(self.toggled)
+        if self.prevColorPub != None:
+            self.prevColorPub.publish(self.toggled)
 
     def setColor(self, color):
         if self.prevColorPub is not None:   

@@ -27,11 +27,11 @@ def talker():
         rospy.Subscriber('topic', Float64, callback, queue_size=10)
         pub = rospy.Publisher('topic', Float64, queue_size=10)
         frame = 0
-        r = rospy.Rate(100/timeout)
+        r = rospy.Rate(10/timeout)
         while not rospy.is_shutdown():
                 r.sleep()
                 frame = frame + 1
-                if (frame > 100):
+                if (frame > 10):
                         print('timeout')
                         pub.publish(reset_val)
                         frame = 0
