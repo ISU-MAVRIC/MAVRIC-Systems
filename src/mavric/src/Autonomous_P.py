@@ -57,9 +57,9 @@ def talker():
                 #send waypoint to autonomous logic
                 if enabled:
                     parameters = data[2:].strip().split(',')
-                    rospy.loginfo(parameters)
+                    #rospy.loginfo(parameters)
 
-                    way_pub.publish(float(parameters[0]), float(parameters[1]))
+                    way_pub.publish(float(parameters[0]), float(parameters[1]), int(parameters[2]))
 
         connection.close()
     serversocket.close()
