@@ -1,5 +1,5 @@
 #Light toggled on or off
-bool toggled
+bool toggle
 
 #Brightness of light between 0 and 255 (For LED strips and display)
 uint8 brightness

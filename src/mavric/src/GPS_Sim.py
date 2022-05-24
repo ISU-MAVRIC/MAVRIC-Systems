@@ -4,13 +4,14 @@ import time
 
 from mavric.msg import GPS, Drivetrain
 from geometry_msgs.msg import Vector3
+from std_msgs.msg import Bool as BOOL_MSG
 
 from geographiclib.geodesic import Geodesic
 
 vel = 0
 theta = 0
-lon = 0
-lat = 0
+lon = -93.646558
+lat = 42.026272
 
 def drive_cb(data):
         global vel
@@ -40,6 +41,7 @@ def talker():
     rospy.Subscriber('Drive_Train', Drivetrain, drive_cb, queue_size=10)
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
     pub = rospy.Publisher('GPS_Data', GPS, queue_size=10, latch=True)
+    pub_gps_fix = rospy.Publisher('GPS_Fix', BOOL_MSG, queue_size=10, latch=True)
     r = rospy.Rate(5)
 
     prev_time = time.time()
@@ -58,6 +60,7 @@ def talker():
         lon = geod["lon2"]
 
         # publish GPS data
+        pub_gps_fix.publish(True)
         pub.publish(geod["lat2"], geod["lon2"], 0, 0, 0, 0, 0, 0, 0)
 
 # main loop

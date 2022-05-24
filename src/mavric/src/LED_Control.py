@@ -2,7 +2,7 @@
 import rospy
 
 from mavric.msg import LED
-from mavric.src.LED import LightPole
+from LED import LightPole
 
 light_pole = LightPole()
 
@@ -18,4 +18,7 @@ def listener():
     rospy.spin()
 
 if __name__ == '__main__':
-    listener()
+    try:
+        listener()
+    except rospy.ROSInterruptException:
+        pass

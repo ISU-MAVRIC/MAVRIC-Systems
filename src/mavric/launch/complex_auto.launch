@@ -1,21 +1,75 @@
 <launch>
 
-    <node name="Auto_Interface" pkg="mavric" type="Autonomous_P.py" respawn="true">
-    </node>
+    <arg name="nosim" default="true" />
+    <arg name="nogps" default="false" />
+    <arg name="noauto" default="false" />
 
-    <node name="Auto_System" pkg="mavric" type="complex_main.py" respawn="true">
-        <remap from="GPS_Fix" to="/HW/GPS_Fix" />
-        <remap from="GPS" to="/HW/GPS_Data" />
-        <remap from="SensorCalibrations" to="/HW/IMU/SensorCalibrations" />
-        <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
-        <remap from="Drive_Train" to="/Drive/Drive_Command" />
-        <remap from="Steer_Train" to="/Drive/Steer_Command" />
-    </node>
 
-    <node name="GPS_Sim" pkg="mavric" type="GPS_Sim.py" respawn="true">
-        <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
-        <remap from="Drive_Train" to="/Drive/Drive_Command" />
-        <remap from="GPS_Data" to="/HW/GPS_Data" />
-    </node>
-    
+    <group ns="Auto" unless="$(arg noauto)">
+        
+        <node name="Auto_Interface" pkg="mavric" type="Autonomous_P.py" respawn="true">
+        </node>
+
+        <node name="Auto_System" pkg="mavric" type="complex_main.py" respawn="true">
+            <remap from="GPS_Fix" to="/HW/GPS_Fix" />
+            <remap from="GPS" to="/HW/GPS_Data" />
+            <remap from="SensorCalibrations" to="/HW/IMU/SensorCalibrations" />
+            <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
+            <remap from="Drive_Train" to="/Drive/Drive_Command" />
+            <remap from="Steer_Train" to="/Drive/Steer_Command" />
+        </node>
+
+        <node name="LightPole_Control" pkg="mavric" type="LED_Control.py" respawn="true">
+        </node>
+
+        <node name="Relay_Control" pkg="mavric" type="Relay_Switcher.py" respawn="true">
+        </node>
+    </group>
+
+    <group ns="HW">
+        <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)">
+        </node>
+
+        <node name="IMU_Streamer" pkg="mavric" type="BNO055_IMU.py" respawn="true" >
+        <remap from="IMU_Cal_Servo" to="IMUServoPWM_CH" />
+        </node>
+
+        <node name="GPS_Sim" pkg="mavric" type="GPS_Sim.py" respawn="true" unless="$(arg nosim)">
+            <remap from="FusedAngle" to="/IMU/FusedAngle" />
+            <remap from="Drive_Train" to="/Drive/Drive_Command" />
+            <remap from="GPS_Data" to="GPS_Data" />
+        </node>
+    </group>
+
+    <group ns="Drive">
+        <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" >
+        <remap from="Drive_Train" to="Drive_Command" />
+        <remap from="Steer_Train" to="Steer_Command" />
+        <remap from="Steer_Cal" to="Cal_Command" />
+        <param name="port" value="9002" />
+        </node>
+
+        <node name="Drivetrain_Heartbeat" pkg="mavric" type="DrivetrainHeartbeat.py" respawn="true" >
+        <param name="timeout" value="1" />
+        <remap from="Drive_Train" to="Drive_Command" />
+        </node>
+        
+        <node name="Drivetrain_Control" pkg="mavric" type="mavric_CAN_Drive_Train_S" >
+        <param name="Range" value="0.42" />
+        <remap from="Drive_Train" to="Drive_Command" />
+        <remap from="Steer_Train" to="Steer_Command" />
+        <remap from="Steer_Cal" to="Cal_Command" />
+
+        <param name="Left_Front/Scale" value="-1" />
+        <param name="Left_Back/Scale" value="1" />
+        <param name="Right_Back/Scale" value="-1" />
+
+        <param name="ramp_rate_up" value="2.0" />
+        <param name="ramp_rate_down" value="4.0" />
+        <param name="str_ramp_rate_up" value="0.5" />
+        <param name="str_ramp_rate_down" value="0.5" />
+        </node>
+
+    </group>
+
 </launch>

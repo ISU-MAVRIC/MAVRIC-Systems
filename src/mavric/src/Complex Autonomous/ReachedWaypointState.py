@@ -29,12 +29,14 @@ class ReachedWayPoint(State):
             if(len(g.waypoints) > 1):
                 g.pathpoint_num = -1
                 g.waypoints.pop(0)
+                g.waypoint_id.pop(0)
                 g.path.set_end_point(g.waypoints[0])
                 return self._stateMachine.nextPathPoint
 
             if(len(g.waypoints) > 0):
                 g.pathpoint_num = 0
                 g.waypoints.pop(0)
+                g.waypoint_id.pop(0)
                 return self._stateMachine.idle
         
         return self._stateMachine.reachedWaypoint

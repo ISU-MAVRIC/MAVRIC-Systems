@@ -60,11 +60,11 @@ def cmd_cb(data):
 
 def waypoint_cb(data):
     # add new waypoint to list
-    g.waypoints.append([data.latitude, data.longitude])
+    g.waypoints.append([data.longitude, data.latitude])
     g.waypoint_id.append(data.id)
 
 def gps_fix_cb(data):
-    g.good_fix = True #data.data
+    g.good_fix = data.data #data.data
 
 
 def gps_cb(data):

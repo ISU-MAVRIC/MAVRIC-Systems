@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import time
 import serial
 import adafruit_gps
@@ -35,4 +35,7 @@ def talker():
 
 # main loop
 if __name__ == '__main__':
-    talker()
+    try:
+        talker()
+    except rospy.ROSInterruptException:
+        pass

@@ -16,6 +16,8 @@ class NextPathPoint(State):
 
     def run(self):
         self.linear = g.pathpoints["linear"][g.pathpoint_num]
+        g.debug_pub.publish("en, waypoints>0, gps, imu, gps timeout")
+        g.debug_pub.publish("%d, %d, %d, %d, %d" % (g.enabled, len(g.waypoints) > 0, g.good_fix, g.good_imu, g.fix_timeout))
     
     def next(self):
         if not g.enabled or not g.good_fix or g.fix_timeout:
