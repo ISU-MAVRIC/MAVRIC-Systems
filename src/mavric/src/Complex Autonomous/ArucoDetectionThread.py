@@ -43,20 +43,24 @@ def aruco_detection():
         time.sleep(.01)
         markers1 = get_markers_from_frame(frame)
         markers2 = get_markers_from_frame(frame2)
+        camera_type = []
+        pixel_location = []
         for index, ID in enumerate(markers1[0]):
+            pixel_location.append(markers1[1][index])
             markers1[1][index] = (float(markers1[1][index][0] - 320) / 320) * 34.5
+            camera_type.append('realsense')
         for index, ID in enumerate(markers2[0]):
             if ID not in markers1[0]:
+                pixel_location.append(markers2[1][index])
                 markers1[0].append(markers2[0][index])
-                print(markers2[1][index][0])
                 markers1[1].append((float(markers2[1][index][0] - 620) / 620) * 54.5) 
+                camera_type.append('dome')
         g.posts["id"] = markers1[0]
         g.posts["heading"] = markers1[1]
-        #TEMP: For SAR overlay
-        g.posts["dome_coords"] = markers2[1]
-        #TEMP: For SAR overlay
-        if len(g.posts["id"]) > 0:
-            print(g.posts)
+        g.posts["type"] = camera_type
+        g.posts["pixel_location"] = pixel_location
+
+
     vs.stop()
     vs2.stop()
 

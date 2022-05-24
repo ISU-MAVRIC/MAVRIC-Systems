@@ -47,7 +47,9 @@ path = None # object for pathing class
 # id: aruco tag number
 # heading: angle from camera center
 # distance: actual or approximate distance to post
-posts = {"id": [], "heading": [], "distance": []}
+# type: "realsense"  || "dome"
+# pixel_location: Pixel location from camera
+posts = {"id": [], "heading": [], "distance": [], "type": [], "pixel_location": []}
 
 #object data
 objects = {"position": [], "size": [], "height": []}
