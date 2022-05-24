@@ -46,42 +46,23 @@ def aruco_detection():
         camera_type = []
         pixel_location = []
         for index, ID in enumerate(markers1[0]):
-<<<<<<< HEAD
             pixel_location.append(markers1[1][index])
-            markers1[1][index] = (float(markers1[1][index][0] - 320) / 320) * 34.5
             camera_type.append('realsense')
-=======
             markers1[1][index] = (float(markers1[1][index][0] - 390) / 390) * 25.32
             #g.debug_pub.publish("Realsense: %f" %(markers1[1][index]))
             #g.debug_pub.publish("ID: %d" %(markers1[0][index]))
->>>>>>> a95b6d81206367b322d36bbdad42a0e9744367d7
         for index, ID in enumerate(markers2[0]):
             if ID not in markers1[0]:
                 pixel_location.append(markers2[1][index])
                 markers1[0].append(markers2[0][index])
-<<<<<<< HEAD
-                markers1[1].append((float(markers2[1][index][0] - 620) / 620) * 54.5) 
+                markers1[1].append((float(markers2[1][index][0] - 973) / 973) * 48.9 ) 
                 camera_type.append('dome')
-        g.posts["id"] = markers1[0]
-        g.posts["heading"] = markers1[1]
-        g.posts["type"] = camera_type
-        g.posts["pixel_location"] = pixel_location
-
-
-=======
-                #print(markers2[1][index][0])
-                markers1[1].append((float(markers2[1][index][0] - 973) / 973) * 48.9 )
                 #g.debug_pub.publish("Dome: %f" %(markers1[1][-1]))
                 #g.debug_pub.publish("ID: %f" %(markers1[0][-1]))
         g.posts["id"] = markers1[0]
         g.posts["heading"] = markers1[1]
-        g.posts["distance"] = [-1]*len(markers1[1])
-        #TEMP: For SAR overlay
-        g.posts["dome_coords"] = markers2[1]
-        #TEMP: For SAR overlay
-        if len(g.posts["id"]) > 0:
-            print(g.posts)
->>>>>>> a95b6d81206367b322d36bbdad42a0e9744367d7
+        g.posts["type"] = camera_type
+        g.posts["pixel_location"] = pixel_location
     vs.stop()
     vs2.stop()
 
