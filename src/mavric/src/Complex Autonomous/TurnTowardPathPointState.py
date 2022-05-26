@@ -18,7 +18,7 @@ class TurnTowardPathPoint(State):
     
 
     def get_angular_error(self):
-        return (((self.desired_heading - g.heading) + 360) % 360) if (((self.desired_heading - g.heading) + 360) % 360) < 180 else -(((g.heading - self.desired_heading) + 360) % 360)
+        return (((g.desired_heading - g.heading) + 360) % 360) if (((g.desired_heading - g.heading) + 360) % 360) < 180 else -(((g.heading - g.desired_heading) + 360) % 360)
 
 
 
@@ -49,7 +49,8 @@ class TurnTowardPathPoint(State):
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
         geod = Geodesic.WGS84.Inverse(pos[1], pos[0], self.tgt[1], self.tgt[0])
-        self.desired_heading = geod['azi1']
+        g.desired_heading = geod['azi1']
+        g.state = "TurnTowardPathPoint"
 
         self.start_time = time.time()
 
@@ -58,14 +59,14 @@ class TurnTowardPathPoint(State):
     def run(self):
         g.prev_fix_time = g.fix_time  #update in gps_cb
 
-        g.debug_pub.publish("a"+str(self.desired_heading))
+        g.debug_pub.publish("a"+str(g.desired_heading))
 
         g.debug_pub.publish(str(self.get_angular_error()))
         if abs(self.get_angular_error()) > g.ANG_ERROR_THRESHOLD and time.time() < (self.start_time + g.ANG_POINT_STEER_TIMEOUT):
             g.debug_pub.publish(str(self.get_ramped_turn_speed()))
             lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())
             g.debug_pub.publish(str(self.get_angular_error()))
-            g.debug_pub.publish("a"+str(self.desired_heading))
+            g.debug_pub.publish("a"+str(g.desired_heading))
             g.drive_pub.publish(lf, lm, lb, rf, rm, rb)
             g.steer_pub.publish(lfs, lbs, rfs, rbs)
         else:

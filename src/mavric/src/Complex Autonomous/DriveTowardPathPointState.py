@@ -19,6 +19,7 @@ class DriveTowardPathPoint(State):
         self.tgt[0] = g.pathpoints["position"][g.pathpoint_num][0]
         self.tgt[1] = g.pathpoints["position"][g.pathpoint_num][1]
         g.steer_pub.publish(0,0,0,0)
+        g.state = "DriveTowardPathPoint"
         time.sleep(5)
 
     def run(self):
@@ -32,6 +33,7 @@ class DriveTowardPathPoint(State):
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
         geod = Geodesic.WGS84.Inverse(pos[1], pos[0], self.tgt[1], self.tgt[0])
+        g.desired_heading = geod['azi1']
 
         #get linear error in meters
         self.linear_error = geod['s12']

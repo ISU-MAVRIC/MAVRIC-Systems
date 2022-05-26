@@ -15,7 +15,7 @@ Input parameters:
 
 
 class Driver():
-    def __init__(self, wheelLength=37.5, wheelWidth=28.4, threshold=25):
+    def __init__(self, wheelLength=37.5/39.37, wheelWidth=28.4/39.37, threshold=25):
         self.L = wheelLength
         self.W = wheelWidth
         self.threshold = threshold

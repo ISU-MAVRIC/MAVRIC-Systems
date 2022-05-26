@@ -18,6 +18,9 @@ good_fix = False
 good_imu = True
 fix_timeout = False   #unnecessary?
 
+#state
+state = "Off"
+
 #location data
 position = [0, 0]
 prev_position = [0, 0]
@@ -25,7 +28,9 @@ waypoints = []
 waypoint_id = []
 detected = False
 
+# rover heading and position
 heading = 0
+desired_heading = 0
 
 prev_angular_error = ANG_ERROR_THRESHOLD * 2
 prev_linear_error = LIN_ERROR_THRESHOLD * 2
@@ -66,4 +71,5 @@ Rover_MinTurnRadius = 0
 drive_pub = None
 steer_pub = None
 debug_pub = None
+status_pub = None
 indicator_pub = None

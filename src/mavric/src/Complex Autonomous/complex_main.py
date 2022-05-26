@@ -7,7 +7,7 @@ import rospy
 from std_msgs.msg import String
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Vector3
-from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS, LED
+from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS, LED, Auto_Status
 
 # import pathing, and detection classes
 from pathing import Pathing
@@ -101,7 +101,8 @@ def main():
     #init publishers
     g.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     g.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
-    g.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
+    g.debug_pub = rospy.Publisher("Debug", String, queue_size=10)
+    g.status_pub = rospy.Publisher("Status", Auto_Status, queue_size=10)
     g.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
@@ -120,6 +121,8 @@ def main():
             #g.debug_pub.publish("Running Pathing")
             g.path.run()
         auto.run()
+        g.status_pub.publish(g.enabled, g.good_fix, g.good_imu, len(g.waypoints), g.waypoints[0][0], g.waypoints[0][1], g.desired_heading, g.prev_angular_error, g.prev_linear_error)
+
         rate.sleep()
 
 
