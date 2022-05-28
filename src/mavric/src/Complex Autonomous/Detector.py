@@ -146,3 +146,11 @@ def talker():
                     object_data.append([d, x_fov*(x+w/2-x_res/2)/x_res, size])
         
         object_pub.publish(object_data)
+    
+    frame.running = False
+    frame.join()
+
+
+# main loop
+if __name__ == '__main__':
+    talker()
