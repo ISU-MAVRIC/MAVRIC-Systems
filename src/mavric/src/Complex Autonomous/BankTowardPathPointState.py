@@ -13,8 +13,10 @@ class BankTowardPathPoint(State):
         self.tgt = [0, 0]
         self.tgt[0] = g.pathpoints["position"][g.pathpoint_num][0]
         self.tgt[1] = g.pathpoints["position"][g.pathpoint_num][1]
-        self.desired_heading = g.pathpoints["heading"][g.pathpoint_num]
+        g.desired_heading = g.pathpoints["heading"][g.pathpoint_num]
         self.turn_radius = g.pathpoints["radius"][g.pathpoint_num]
+        g.state = "BankTowardPathPoint"
+        
     
     def run(self):
         g.prev_fix_time = g.fix_time
@@ -33,7 +35,7 @@ class BankTowardPathPoint(State):
 
         #todo, investigate what needs to happen here if we are messing with the heading this early
         #get angular error in CW degrees (account for 360 rollover)
-        self.angular_error = (((self.desired_heading - g.heading) + 360) % 360) if (((self.desired_heading - g.heading) + 360) % 360) < 180 else -(((self.desired_heading - geod['azi1']) + 360) % 360)
+        self.angular_error = (((g.desired_heading - g.heading) + 360) % 360) if (((g.desired_heading - g.heading) + 360) % 360) < 180 else -(((g.desired_heading - geod['azi1']) + 360) % 360)
 
         #given some steering data, return vector of motor data
         driveVals = self.DriveLib.r_car_steer(velocity, self.turn_radius)
