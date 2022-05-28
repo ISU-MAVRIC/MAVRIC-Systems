@@ -1,6 +1,6 @@
 <launch>
 
-    <arg name="no_complex" default="false" />
+    <arg name="no_complex" default="true" />
     <arg name="no_arm" default="false" />
 
     <arg name="ShoulderRotPWM_CH"   value="/SlowPWM/CH0" />
@@ -8,6 +8,12 @@
     <arg name="ElbowPitchPWM_CH"    value="/SlowPWM/CH1" />
     <arg name="WristRotPWM_CH"      value="/SlowPWM/CH2" />
     <arg name="WristPitchPWM_CH"    value="/SlowPWM/CH3" />
+    <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH4" />
+    <arg name="HookActuationPWM_CH" value="/SlowPWM/CH5" />
+    <arg name="CamRotPWM_CH" value="/SlowPWM/CH6" />
+    <arg name="CamPitchPWM_CH" value="/SlowPWM/CH7" />
+    <arg name="UtilPWM_CH" value="/SlowPWM/CH8" />
+    <arg name="SciPWM_CH" value="/SlowPWM/CH9" />
   
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
       <param name="container" value="SlowPWM/" />
@@ -30,6 +36,12 @@
         <arg name="WristRot_Scale" value="0.5" />
         <arg name="WristPitch_Scale" value="0.5" />
         <arg name="ClawActuation_Scale" value="1.0" />
+        <arg name="HookActuation_Scale" value="1.0" />
+        <arg name="CamRot_Scale" value="1.0" />
+        <arg name="CamPitch_Scale" value="1.0" />
+        <arg name="Util_Scale" value="1.0" />
+        <arg name="Sci_Scale" value="1.0" />
+
         <!--
         <arg name="ShoulderRot_Scale" value="0.01" />
         <arg name="ShoulderPitch_Scale" value="0.01" />
@@ -119,6 +131,43 @@
         <param name="slopes"      value="$(eval WristPitch_Scale*0.0005/100)" />
         <param name="intercepts"  value="0.0014" />
         </node>
+        <node name="ClawActuation_Scale" pkg="mavric" type="LinearMapping.py">
+        <param name="inputs"  value="ClawActuation" />
+        <param name="outputs" value="$(arg ClawActuationPWM_CH)" />
+        <param name="slopes"      value="$(eval ClawActuation_Scale*0.001/100)" />
+        <param name="intercepts"  value="0.0015" />
+        </node>
+        <node name="HookActuation_Scale" pkg="mavric" type="LinearMapping.py">
+        <param name="inputs"  value="HookActuation" />
+        <param name="outputs" value="$(arg HookActuationPWM_CH)" />
+        <param name="slopes"      value="$(eval ClawActuation_Scale*0.001/100)" />
+        <param name="intercepts"  value="0.0015" />
+        </node>
+        <node name="CamRot_Scale" pkg="mavric" type="LinearMapping.py">
+        <param name="inputs"  value="CamRot" />
+        <param name="outputs" value="$(arg CamRotPWM_CH)" />
+        <param name="slopes"      value="$(eval CamRot_Scale*0.001/100)" />
+        <param name="intercepts"  value="0.0015" />
+        </node>
+        <node name="CamPitch_Scale" pkg="mavric" type="LinearMapping.py">
+        <param name="inputs"  value="CamPitch" />
+        <param name="outputs" value="$(arg CamPitchPWM_CH)" />
+        <param name="slopes"      value="$(eval CamPitch_Scale*0.001/100)" />
+        <param name="intercepts"  value="0.0015" />
+        </node>
+        <node name="Util_Scale" pkg="mavric" type="LinearMapping.py">
+        <param name="inputs"  value="Util" />
+        <param name="outputs" value="$(arg UtilPWM_CH)" />
+        <param name="slopes"      value="$(eval Util_Scale*0.0005/100)" />
+        <param name="intercepts"  value="0.0014" />
+        </node>
+        <node name="Sci_Scale" pkg="mavric" type="LinearMapping.py">
+        <param name="inputs"  value="Sci" />
+        <param name="outputs" value="$(arg SciPWM_CH)" />
+        <param name="slopes"      value="$(eval Sci_Scale*0.00075/100)" />
+        <param name="intercepts"  value="0.0015" />
+        </node>
+        
 
         <node name="ShoulderRotHeartbeat" pkg="mavric" type="Float64_Heartbeat.py" >
         <param name="timeout" value="1" />
@@ -145,7 +194,7 @@
         <param name="value" value="0" />     
         <remap from="topic" to="WristRot" />
         </node>
-E
+
         </group>
 
     <group ns="Arm" unless="$(arg no_complex)">
@@ -213,6 +262,15 @@ E
             <remap from="Steer_Train" to="Steer_Command" />
             <remap from="Pitch_Train" to="/Arm/ShoulderPitch" />
             <remap from="Steer_Cal" to="Cal_Command" />
+
+            <param name="Left_Front/Scale" value="-1" />
+            <param name="Left_Back/Scale" value="1" />
+            <param name="Right_Back/Scale" value="-1" />
+
+            <param name="ramp_rate_up" value="2.0" />
+            <param name="ramp_rate_down" value="4.0" />
+            <param name="str_ramp_rate_up" value="0.5" />
+            <param name="str_ramp_rate_down" value="0.5" />
         </node>
     </group>
 </launch>

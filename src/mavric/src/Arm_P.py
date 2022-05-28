@@ -45,8 +45,11 @@ def talker():
 
     pub_hook_a = rospy.Publisher("HookActuation", Float64, queue_size=10)
 
-    pub_cam_rot = rospy.Publisher("ArmCamRot", Float64, queue_size=10)
-    pub_cam_Pitch = rospy.Publisher("ArmCamPitch", Float64, queue_size=10)
+    pub_cam_rot = rospy.Publisher("CamRot", Float64, queue_size=10)
+    pub_cam_Pitch = rospy.Publisher("CamPitch", Float64, queue_size=10)
+
+    pub_util = rospy.Publisher("Util", Float64, queue_size=10)
+    pub_sci = rospy.Publisher("Sci", Float64, queue_size=10)
 
     
     
@@ -123,6 +126,16 @@ def talker():
                 parameters = data[2:].strip().split(',')
                 cmd = float(parameters[0])
                 pub_hook_a.publish(cmd)
+            
+            elif data[1] == 'U':
+                parameters = data[2:].strip().split(',')
+                cmd = float(parameters[0])
+                pub_util.publish(cmd)
+            
+            elif data[1] == 'L':
+                parameters = data[2:].strip().split(',')
+                cmd = float(parameters[0])
+                pub_sci.publish(cmd)
 
         elif (data[0] == 'S'):
             # all arm data
