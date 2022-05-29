@@ -1,7 +1,7 @@
 <launch>
 
-    <arg name="nosim" default="true" />
-    <arg name="nogps" default="false" />
+    <arg name="nosim" default="false" />
+    <arg name="nogps" default="true" />
     <arg name="noauto" default="false" />
 
 
@@ -10,6 +10,7 @@
         <node name="Auto_Interface" pkg="mavric" type="Autonomous_P.py" respawn="true">
         </node>
 
+
         <node name="Auto_System" pkg="mavric" type="complex_main.py" respawn="true">
             <remap from="GPS_Fix" to="/HW/GPS_Fix" />
             <remap from="GPS" to="/HW/GPS_Data" />
@@ -17,6 +18,9 @@
             <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
             <remap from="Drive_Train" to="/Drive/Drive_Command" />
             <remap from="Steer_Train" to="/Drive/Steer_Command" />
+        </node>
+
+        <node name="Object_Detector" pkg="mavric" type="Detector.py" respawn="true">
         </node>
 
         <node name="LightPole_Control" pkg="mavric" type="LED_Control.py" respawn="true">
@@ -55,7 +59,7 @@
         </node>
         
         <node name="Drivetrain_Control" pkg="mavric" type="mavric_CAN_Drive_Train_S" >
-        <param name="Range" value="0.42" />
+        <param name="Range" value="0.3" />
         <remap from="Drive_Train" to="Drive_Command" />
         <remap from="Steer_Train" to="Steer_Command" />
         <remap from="Steer_Cal" to="Cal_Command" />
@@ -66,8 +70,8 @@
 
         <param name="ramp_rate_up" value="2.0" />
         <param name="ramp_rate_down" value="4.0" />
-        <param name="str_ramp_rate_up" value="0.5" />
-        <param name="str_ramp_rate_down" value="0.5" />
+        <param name="str_ramp_rate_up" value="1" />
+        <param name="str_ramp_rate_down" value="1" />
         </node>
 
     </group>

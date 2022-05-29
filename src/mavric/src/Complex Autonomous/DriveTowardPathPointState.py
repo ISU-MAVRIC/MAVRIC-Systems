@@ -110,7 +110,17 @@ class DriveTowardPathPoint(State):
         if self.tgt != g.pathpoints["position"][g.pathpoint_num]:
             g.debug_pub.publish("target, new")
             g.debug_pub.publish("%f, %f, %f, %f" % (self.tgt[0], self.tgt[1], g.pathpoints["position"][g.pathpoint_num][0], g.pathpoints["position"][g.pathpoint_num][1]))
-            g.pathpoint_num += -1
-            return self._stateMachine.nextPathPoint
+            if abs(self.tgt[0] - g.pathpoints["position"][g.pathpoint_num][0]) < 0.000015 and abs(self.tgt[0] - g.pathpoints["position"][g.pathpoint_num][0]) < 0.000015:
+                geod = Geodesic.WGS84.Inverse(g.position[1], g.position[0], self.tgt[1], self.tgt[0])
+                g.desired_heading = geod['azi1']
+                self.angular_error = (((geod['azi1'] - g.heading) + 360) % 360) if (((geod['azi1'] - g.heading) + 360) % 360) < 180 else -(((g.heading - geod['azi1']) + 360) % 360)
+                if self.angular_error < 10:
+                    return self._stateMachine.driveTowardPathPoint
+                else:
+                    g.pathpoint_num += -1
+                    return self._stateMachine.nextPathPoint
+            else:
+                g.pathpoint_num += -1
+                return self._stateMachine.nextPathPoint
         
         return self._stateMachine.driveTowardPathPoint

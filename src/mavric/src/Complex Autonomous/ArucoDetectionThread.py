@@ -61,14 +61,21 @@ def aruco_detection():
                 #g.debug_pub.publish("ID: %f" %(markers1[0][-1]))
         g.posts["id"] = markers1[0]
         g.posts["heading"] = markers1[1]
+        #if len(g.posts["distance"]) == 0:
+        g.posts["distance"] = [-1]*len(markers1[0])
         g.posts["type"] = camera_type
         g.posts["pixel_location"] = pixel_location
+
+        for i in range(len(markers1[0])):
+            #g.debug_pub.publish("%d, %d" %(pixel_location[i][0], pixel_location[i][1]))
+            if camera_type[i] == 'realsense':
+                g.aruco_pub.publish(pixel_location[i][0], pixel_location[i][1], 0, markers1[0][i])
+
     vs.stop()
     vs2.stop()
 
 thread = threading.Thread(target=aruco_detection)
+thread.daemon = True
 
 def start_aruco_detection():
     thread.start()
-
-start_aruco_detection()

@@ -58,7 +58,7 @@ path = None # object for pathing class
 posts = {"id": [], "heading": [], "distance": [], "type": [], "pixel_location": []}
 
 #object data
-objects = {"position": [], "size": [], "height": []}
+objects = {"distance": [], "heading": [], "size": [], "height": []}
 
 #GPS timeout data
 fix_time = 0
@@ -75,3 +75,4 @@ steer_pub = None
 debug_pub = None
 status_pub = None
 indicator_pub = None
+aruco_pub = None
