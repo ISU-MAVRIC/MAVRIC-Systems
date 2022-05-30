@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import Float64
+from mavric.msg import Voltage
 from i2c import I2C
 
 vref = 5
@@ -12,10 +13,10 @@ voltage_divider = 8.718  # R1=68k, R2=10k
 
 def talker():
     rospy.init_node('ADC_Monitor', anonymous=True)
-    publishers = []
-    for i in range(0, 2):
-        pub = rospy.Publisher("ADC_Channels/CH" + str(i), Float64, queue_size=10)
-        publishers.append(pub)
+    #publishers = []
+    #for i in range(0, 2):
+    pub = rospy.Publisher("Volatage_Monitor", Voltage, queue_size=10)
+        #publishers.append(pub)
 
     frequency = rospy.get_param("frequency", 100)
     i2c_address = rospy.get_param("address", 0x18)
@@ -23,12 +24,14 @@ def talker():
     adc = 1 #I2C(i2c_address, 1)
 
     while not rospy.is_shutdown():
+        result = [0, 0]
         for i in range(0, 2):
             voltage = read_from_adc(adc, i)
-            result = ((reference * voltage_divider) / bits) * voltage  # in mV
-            rospy.loginfo(result)
-            publishers[i].publish(result)
-            rate.sleep()
+            result[i] = ((reference * voltage_divider) / bits) * voltage  # in mV
+            #rospy.loginfo(result)
+            #publishers[i].publish(result)
+        pub.publish(result[0], result[1]) 
+        rate.sleep()
 
 
 def read_from_adc(adc, channel):

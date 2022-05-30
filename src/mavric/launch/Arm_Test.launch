@@ -254,6 +254,18 @@
     </group>
 
     <group ns="Drive">
+
+        <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" >
+        <remap from="Drive_Train" to="Drive_Command" />
+        <remap from="Steer_Train" to="Steer_Command" />
+        <remap from="Steer_Cal" to="Cal_Command" />
+        <param name="port" value="9002" />
+        </node>
+        <node name="Drivetrain_Heartbeat" pkg="mavric" type="DrivetrainHeartbeat.py" respawn="true" >
+        <param name="timeout" value="1" />
+        <remap from="Drive_Train" to="Drive_Command" />
+        </node>
+
         <node name="Drivetrain_Control" pkg="mavric" type="mavric_CAN_Drive_Train_S" >
             <param name="Range" value="0.35" />
             <param name="pitch_ramp_rate_up" value="1.0" />
