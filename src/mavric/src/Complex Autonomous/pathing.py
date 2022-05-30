@@ -169,3 +169,6 @@ class Pathing():
         g.debug_pub.publish("Running Pathing")
         g.debug_pub.publish("Waypoint data")
         g.debug_pub.publish("%f, %f, %d" % (g.waypoints[0][0], g.waypoints[0][1], g.waypoint_id[0]))
+        if len(g.posts["id"]) != 0:
+            g.debug_pub.publish("Post Properties")
+            g.debug_pub.publish("%d, %d, %f" % (g.posts["id"][0], g.posts["heading"][0], g.posts["distance"][0]))

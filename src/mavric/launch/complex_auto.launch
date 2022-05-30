@@ -1,7 +1,7 @@
 <launch>
 
-    <arg name="nosim" default="false" />
-    <arg name="nogps" default="true" />
+    <arg name="nosim" default="true" />
+    <arg name="nogps" default="false" />
     <arg name="noauto" default="false" />
 
 
@@ -59,7 +59,7 @@
         </node>
         
         <node name="Drivetrain_Control" pkg="mavric" type="mavric_CAN_Drive_Train_S" >
-        <param name="Range" value="0.3" />
+        <param name="Range" value="0.45" />
         <remap from="Drive_Train" to="Drive_Command" />
         <remap from="Steer_Train" to="Steer_Command" />
         <remap from="Steer_Cal" to="Cal_Command" />

@@ -94,8 +94,8 @@ class DriveTowardPathPoint(State):
         #remember linear error for the next cycle
         g.prev_linear_error = self.linear_error
 
-        g.debug_pub.publish("lin error, angular error")
-        g.debug_pub.publish("%d, %d" % (self.linear_error, self.angular_error))
+        #g.debug_pub.publish("lin error, angular error")
+        #g.debug_pub.publish("%d, %d" % (self.linear_error, self.angular_error))
 
     def next(self):
         if(not g.enabled or not g.good_fix or g.fix_timeout):
@@ -108,8 +108,8 @@ class DriveTowardPathPoint(State):
                 return self._stateMachine.nextPathPoint
         
         if self.tgt != g.pathpoints["position"][g.pathpoint_num]:
-            g.debug_pub.publish("target, new")
-            g.debug_pub.publish("%f, %f, %f, %f" % (self.tgt[0], self.tgt[1], g.pathpoints["position"][g.pathpoint_num][0], g.pathpoints["position"][g.pathpoint_num][1]))
+            #g.debug_pub.publish("target, new")
+            #g.debug_pub.publish("%f, %f, %f, %f" % (self.tgt[0], self.tgt[1], g.pathpoints["position"][g.pathpoint_num][0], g.pathpoints["position"][g.pathpoint_num][1]))
             if abs(self.tgt[0] - g.pathpoints["position"][g.pathpoint_num][0]) < 0.000015 and abs(self.tgt[0] - g.pathpoints["position"][g.pathpoint_num][0]) < 0.000015:
                 geod = Geodesic.WGS84.Inverse(g.position[1], g.position[0], self.tgt[1], self.tgt[0])
                 g.desired_heading = geod['azi1']

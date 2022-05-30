@@ -36,7 +36,7 @@ class TurnTowardPathPoint(State):
         g.drive_pub.publish(0,0,0,0,0,0)
         g.steer_pub.publish(lfs, lbs, rfs, rbs)
 
-        time.sleep(1)
+        time.sleep(3)
 
         #set first waypoint in array as target
         self.tgt = [0, 0]
@@ -59,14 +59,14 @@ class TurnTowardPathPoint(State):
     def run(self):
         g.prev_fix_time = g.fix_time  #update in gps_cb
 
-        g.debug_pub.publish("a"+str(g.desired_heading))
+        #g.debug_pub.publish("a"+str(g.desired_heading))
 
         g.debug_pub.publish(str(self.get_angular_error()))
         if abs(self.get_angular_error()) > g.ANG_ERROR_THRESHOLD and time.time() < (self.start_time + g.ANG_POINT_STEER_TIMEOUT):
-            g.debug_pub.publish(str(self.get_ramped_turn_speed()))
+            #g.debug_pub.publish(str(self.get_ramped_turn_speed()))
             lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())
-            g.debug_pub.publish(str(self.get_angular_error()))
-            g.debug_pub.publish("a"+str(g.desired_heading))
+            #g.debug_pub.publish(str(self.get_angular_error()))
+            #g.debug_pub.publish("a"+str(g.desired_heading))
             g.drive_pub.publish(lf, lm, lb, rf, rm, rb)
             g.steer_pub.publish(lfs, lbs, rfs, rbs)
         else:

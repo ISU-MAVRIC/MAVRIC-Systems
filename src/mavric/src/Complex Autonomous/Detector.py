@@ -53,7 +53,7 @@ class Frames(Thread):
             depth = frames.get_depth_frame()
         
             for y in range(0, y_res):
-                for x in range(150, x_res-150):
+                for x in range(100, x_res-100):
                     d = depth.get_distance(x, y)
                     if 0.3 < d < d_threshold:
                         temp_frame[x, y] = d
@@ -110,7 +110,7 @@ def aruco_cb(data, args):
     d1 = z[data.x, data.y]
     pos = [d1*c_phi[data.x, data.y]*s_theta[data.x, data.y], d1*c_phi[data.x, data.y]*c_theta[data.x, data.y], d1*s_phi[data.x, data.y]]
     
-    args[0].publish(int(pos[0]), int(pos[1]), pos[2], data.id)
+    args[0].publish(int(pos[0]), int(pos[1]), d1, data.id)
 
 # talker function
 def talker():

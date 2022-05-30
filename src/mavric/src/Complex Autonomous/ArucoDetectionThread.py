@@ -69,6 +69,7 @@ def aruco_detection():
         for i in range(len(markers1[0])):
             #g.debug_pub.publish("%d, %d" %(pixel_location[i][0], pixel_location[i][1]))
             if camera_type[i] == 'realsense':
+                pixel_location[i] = [int((pixel_location[i][0]/640)*480), int((pixel_location[i][1]/480)*270)]
                 g.aruco_pub.publish(pixel_location[i][0], pixel_location[i][1], 0, markers1[0][i])
 
     vs.stop()
