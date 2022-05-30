@@ -15,7 +15,7 @@ def talker():
     rospy.init_node('ADC_Monitor', anonymous=True)
     #publishers = []
     #for i in range(0, 2):
-    pub = rospy.Publisher("Volatage_Monitor", Voltage, queue_size=10)
+    pub = rospy.Publisher("Voltage_Monitor", Voltage, queue_size=10)
         #publishers.append(pub)
 
     frequency = rospy.get_param("frequency", 100)

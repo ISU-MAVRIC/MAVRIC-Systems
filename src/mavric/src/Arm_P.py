@@ -50,6 +50,7 @@ def talker():
 
     pub_util = rospy.Publisher("Util", Float64, queue_size=10)
     pub_sci = rospy.Publisher("Sci", Float64, queue_size=10)
+    pub_Button = rospy.Publisher("Button", Float64, queue_size=10)
 
     
     
@@ -136,6 +137,11 @@ def talker():
                 parameters = data[2:].strip().split(',')
                 cmd = float(parameters[0])
                 pub_sci.publish(cmd)
+            
+            elif data[1] == 'B':
+                parameters = data[2:].strip().split(',')
+                cmd = float(parameters[0])
+                pub_Button.publish(cmd)
 
         elif (data[0] == 'S'):
             # all arm data
@@ -147,6 +153,8 @@ def talker():
             pub_elbow_p.publish(cmd[2])
             pub_wrist_r.publish(cmd[3])
             pub_wrist_p.publish(cmd[4])
+        
+
 
         elif (data[0] == 'N'):
             # Complex Control Command
