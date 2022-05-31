@@ -27,6 +27,7 @@ prev_position = [0, 0]
 waypoints = []
 waypoint_id = []
 detected = False
+angular_velocity = 0
 
 # rover heading and position
 heading = 0

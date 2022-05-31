@@ -1,6 +1,6 @@
 import complex_globals as g
 from geographiclib.geodesic import Geodesic
-from math import copysign
+from math import copysign, abs
 import time
 
 from driver import Driver
@@ -26,6 +26,13 @@ class TurnTowardPathPoint(State):
         turn_speed = ((g.ANG_POINT_STEER_MAX - g.ANG_POINT_STEER_MIN) / 90) * abs(self.get_angular_error()) + g.ANG_POINT_STEER_MIN
         turn_speed = turn_speed if turn_speed < g.ANG_POINT_STEER_MAX else g.ANG_POINT_STEER_MAX
         return copysign(turn_speed, self.get_angular_error())
+
+    def get_gps_ramped_turn_speed(self):
+        ramped = get_ramped_turn_speed()
+        if abs(g.angular_velocity) < .3:
+            multiplier = ((g.angular_velocity)/(.3))*(.2)
+            return ramped * (1 + multiplier)
+        return ramped
     
 
     def enter(self):
@@ -64,7 +71,7 @@ class TurnTowardPathPoint(State):
         g.debug_pub.publish(str(self.get_angular_error()))
         if abs(self.get_angular_error()) > g.ANG_ERROR_THRESHOLD and time.time() < (self.start_time + g.ANG_POINT_STEER_TIMEOUT):
             #g.debug_pub.publish(str(self.get_ramped_turn_speed()))
-            lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())
+            lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_gps_ramped_turn_speed())
             #g.debug_pub.publish(str(self.get_angular_error()))
             #g.debug_pub.publish("a"+str(g.desired_heading))
             g.drive_pub.publish(lf, lm, lb, rf, rm, rb)
