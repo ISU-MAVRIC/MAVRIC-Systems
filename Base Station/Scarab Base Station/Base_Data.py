@@ -7,6 +7,11 @@ import pygame.draw as draw
 import pygame.mouse as mouse
 import pygame.image as image
 from geographiclib.geodesic import Geodesic
+import math as m
+from csv import reader
+
+waypoints = {"lat": [], "lon": [], "tag_ids": [], "color": []}
+selected = 0
 
 
 # data and functions for joysticks
@@ -208,7 +213,7 @@ class Data:
         draw.rect(screen, color, (self.x-self.base/2, self.y-self.theight, self.base, self.theight), 2)
         draw.rect(screen, color, (self.x-self.base/2, self.y, self.base, self.dheight), 2)
 
-
+"""
 class Map:
     def __init__(self, x, y, map_image, cord):
         self.height = 400
@@ -353,4 +358,150 @@ class Map:
         self.waypoints_pos = []
         self.waypoints = []
         rover.forget_waypoints()
+"""
 
+
+class Map:
+    def __init__(self, x, y, base, height, label, font, fontcolor, screen, color):
+        self.x = x + base/2
+        self.y = y + height/2
+        self.b = base
+        self.h = height
+        #self.wp_id = wp_id
+        self.screen = screen
+        self.font = font
+        self.fontcolor = fontcolor
+        self.screen = screen
+        self.color = color
+        self.clat = 0
+        self.clon = 0
+        self.deltalat = 0.00005
+        self.deltalon = 0.00005
+        self.max_out = 0.00005
+        self.max_in = 0.00001
+
+        self.tlabel = font.render(label, True, self.fontcolor, None)
+        self.trect = self.tlabel.get_rect()
+        self.trect.center = (self.x, self.y - self.h / 2)
+
+        self.rect = (x, y, base, height)
+        self.icon = py.image.load('rover_icon.png')
+        self.rpos = self.icon.get_rect()
+        self.rpos.center = (self.x, self.y)
+
+    def calc_point(self, plat, plon):
+        dlat = (plat-self.clat)/(self.deltalat)*self.h/2
+        dlon = (plon - self.clon) / (self.deltalon) * self.b / 2
+        if abs(dlat) > self.h/2:
+            dlon = dlon/dlat*m.copysign(self.h/2, dlat)
+            dlat = m.copysign(self.h/2,dlat)
+        if abs(dlon) > self.b/2:
+            dlat = dlat/dlon*m.copysign(self.b/2, dlon)
+            dlon = m.copysign(self.b/2, dlon)
+
+        return dlon, dlat
+
+    def draw(self, lat, lon):
+        global waypoints, selected
+        draw.rect(self.screen, self.color, self.rect, 5)
+        self.screen.blit(self.icon, self.rpos)
+
+        if isinstance(lat, str) or isinstance(lon, str):
+            self.clat = 0
+            self.clon = 0
+        else:
+            self.clat = lat
+            self.clon = lon
+        x_last = 0
+        y_last = 0
+        for i in range(len(waypoints["lat"])):
+            x, y = self.calc_point(waypoints["lat"][i], waypoints["lon"][i])
+            draw.rect(self.screen, waypoints["color"][i], (self.x + x, self.y - y, 6, 6), 0)
+            if i == selected:
+                draw.line(self.screen, self.fontcolor, (self.x, self.y), (self.x + x, self.y - y), 2)
+            #elif abs(x_last) != self.b/2 and abs(x) != self.b/2 and abs(y_last) != self.h/2 and abs(y) != self.h/2:
+                #draw.line(self.screen, self.fontcolor, (x_last, y_last), (self.x + x, self.y - y), 2)
+
+
+class Waypoint:
+    def __init__(self, x, y, base, height, font, fontcolor, fontcolor_highlight, screen, color, wp_colors, highlight_color):
+        self.x = x
+        self.y = y
+        self.b = base
+        self.h = height
+        self.font = font
+        self.fontcolor = fontcolor
+        self.fonthighlight = fontcolor_highlight
+        self.screen = screen
+        self.color = color
+        self.wp_colors = wp_colors
+        self.highlight = highlight_color
+        self.selected = 0
+        self.add = False
+        self.remove = False
+        self.down = False
+        self.up = False
+
+        self.latlabel = font.render("lat", True, self.fontcolor, None)
+        self.latrect = self.latlabel.get_rect()
+        self.latrect.center = (self.x+ self.b/4, self.y + 10)
+        self.lonlabel = font.render("lon", True, self.fontcolor, None)
+        self.lonrect = self.lonlabel.get_rect()
+        self.lonrect.center = (self.x + self.b*3/4, self.y + 10)
+
+        self.latsiderect = (x, y, base/2, height)
+        self.lonsiderect = (x + base/2, y, base / 2, height)
+
+    def add_waypoints(self):
+        global waypoints
+        with open('WP.csv', 'r') as way:
+            waypoint_list = reader(way)
+            i = 0
+            for wp in waypoint_list:
+                waypoints["lat"].append(float(wp[0]))
+                waypoints["lon"].append(float(wp[1]))
+                waypoints["tag_ids"].append(wp[2:3])
+                waypoints["color"].append(self.wp_colors[i])
+                if i+1 >= len(self.wp_colors):
+                    i = 0
+                else:
+                    i += 1
+
+    def draw(self):
+        global waypoints, selected
+        self.screen.blit(self.latlabel, self.latrect)
+        self.screen.blit(self.lonlabel, self.lonrect)
+
+        if self.add:
+            self.add_waypoints()
+            self.add = False
+        if self.remove:
+            waypoints = {"lat": [], "lon": [], "tag_ids": [], "color": []}
+            self.remove = False
+
+        if self.down and self.selected != 0:
+            self.selected -= 1
+            self.down = False
+        if self.up and self.selected != len(waypoints["lat"])-1:
+            self.selected += 1
+            self.up = False
+
+        for i in range(len(waypoints["lat"])):
+            if i == self.selected:
+                draw.rect(self.screen, self.highlight, (self.x, self.y+20*i+20, self.b, 20), 0)
+                color = self.fonthighlight
+            else:
+                color = self.fontcolor
+
+            label = self.font.render(str(waypoints["lat"][i]), True, color, None)
+            rect = label.get_rect()
+            rect.center = (self.x + self.b/4, self.y+20*i+30)
+            self.screen.blit(label, rect)
+            label = self.font.render(str(waypoints["lon"][i]), True, color, None)
+            rect = label.get_rect()
+            rect.center = (self.x + self.b*3/4, self.y+20*i+30)
+            self.screen.blit(label, rect)
+
+        draw.rect(self.screen, self.color, self.latsiderect, 5)
+        draw.rect(self.screen, self.color, self.lonsiderect, 5)
+        selected = self.selected

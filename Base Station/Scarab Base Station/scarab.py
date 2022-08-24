@@ -16,7 +16,7 @@ class Scarab:
     _auto_fix = False
 
     def __init__(self, ip, test):
-       # self._gps = GPS(ip, 8001)
+        self._gps = GPS(ip, 8001)
         self._ip = ip
         self._test = test
         self._temperature_getter = ValueGetter(ip, 8002, float)
@@ -25,12 +25,11 @@ class Scarab:
         self._steer_getter = ValueGetter(ip, 9005, int)
 
     def open(self):
-       # self._temperature_getter.start()
-       # self._arm_getter.start()
-       # self._voltage_getter.start()
-       # self._steer_getter.start()
-       # self._gps.start()
-       pass
+        self._temperature_getter.start()
+        #self._arm_getter.start()
+        self._voltage_getter.start()
+        #self._steer_getter.start()
+        self._gps.start()
 
     def close(self):
         if self._gps is not None:
@@ -64,7 +63,7 @@ class Scarab:
         try:
             if self._test is False:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(0.5)
+                s.settimeout(1.5)
                 s.connect((self._ip, 9002))
                 s.sendall(data_str.encode())
                 s.close()
@@ -98,7 +97,7 @@ class Scarab:
             if self._test is False:
                 rate_str = str(int(rate))
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(0.5)
+                s.settimeout(0.25)
                 s.connect((self._ip, 10001))
                 s.sendall((motor_str + rate_str).encode())
                 s.close()
@@ -126,18 +125,63 @@ class Scarab:
     def set_arm_claw_actuation(self, rate):
         self.set_arm('CC', rate)
 
+    def set_arm_all(self, sr, sp, ep, wr, wp):
+        try:
+            if self._test is False:
+                value_str = "S"+str(sr)+","+str(sp)+","+str(ep)+","+str(wr)+","+str(wp)
+                #print(value_str)
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(1)
+                s.connect((self._ip, 10001))
+                s.sendall(value_str.encode())
+                s.close()
+                self._arm_fix = True
+        except socket.error as e:
+            self._arm_fix = False
+            print("set arm")
+            print(e)
+
+    def set_arm_cam(self, hor, vert):
+        try:
+            if self._test is False:
+                value_str = "EV"+str(hor)+","+str(vert)
+                #print(value_str)
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(1)
+                s.connect((self._ip, 10001))
+                s.sendall(value_str.encode())
+                s.close()
+                self._arm_fix = True
+        except socket.error as e:
+            self._arm_fix = False
+            print("set arm")
+            print(e)
+
+    def set_util(self, rate):
+        self.set_arm('EU', rate)
+
+    def set_hook(self, rate):
+        self.set_arm('EH', rate)
+
+    def set_sci(self, rate):
+        self.set_arm('EL', rate)
+
     def set_arm_enable(self):
-        self.set_arm('NE', 0)
+        self.set_arm('NE', 1)
 
     def set_arm_disable(self):
         self.set_arm('ND', 0)
 
+    def set_button(self, rate):
+        self.set_arm('EB', rate)
+
     def set_arm_pos(self, x, y, z, alpha, beta, cl_pos):
         try:
             if self._test is False:
-                value_str = "P"+str(x)+str(y)+str(z)+str(alpha)+str(beta)+str(cl_pos)
+                value_str = "P"+str(x)+","+str(y)+","+str(z)+","+str(alpha)+","+str(beta)+","+str(cl_pos)
+                #print(value_str)
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(0.5)
+                s.settimeout(1)
                 s.connect((self._ip, 10001))
                 s.sendall(value_str.encode())
                 s.close()
@@ -189,18 +233,20 @@ class Scarab:
             print("disable autonomous")
             print(e)
 
-    def add_waypoint(self, latitude, longitude):
+    def add_waypoint(self, latitude, longitude, post_id):
         try:
             if self._test is False:
+                print("Aaaaaaaaaaaaaaaaaaaa")
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.settimeout(0.5)
                 s.connect((self._ip, 9003))
-                s.sendall(('NW' + str(latitude) + ',' + str(longitude)).encode())
+                s.sendall(('NW' + str(latitude) + ',' + str(longitude) + ',' + str(post_id)).encode())
                 s.close()
                 self._auto_fix = True
 
         except socket.error as e:
             self._auto_fix = False
+            print("Aaaaaaaaaaaaaaaaaaaa")
             print("add waypoint")
             print(e)
 

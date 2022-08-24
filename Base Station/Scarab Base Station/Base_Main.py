@@ -8,6 +8,7 @@ import pygame.mouse as mouse
 import pygame.joystick as joystick
 import socket
 import math
+from csv import reader
 
 # install classes
 import Base_Data as Base
@@ -16,9 +17,9 @@ import scarab
 
 # initial values
 joysticks = []
-drive_stick_name = "Mad Catz V.1 Stick"
-drive_joy_name = "Controller (Xbox One For Windows)"
-arm_stick_name = "Xbox 360 Controller"
+drive_stick_name =  "Mad Catz V.1 Stick" #"Logitech Extreme 3D"
+drive_joy_name = " " #"Controller (Xbox One For Windows)"
+arm_stick_name =  "Controller (Xbox One For Windows)" #'Xbox One S Controller' #Xbox 360 Controller" # 'Xbox One S Controller'"PDP Xbox 360 Afterglow"
 joy = True
 master_ip = "192.168.1.10"
 cal = [0, 0, 0, 0]
@@ -35,6 +36,7 @@ str_lf = 0
 str_lb = 0
 str_rf = 0
 str_rb = 0
+lumin_no = 0
 arm_cl_open = False
 arm_cl_close = False
 sr_vel = 0
@@ -51,6 +53,32 @@ wheel_width = 28.5
 temp = None
 voltage = [None, None]
 mouse_pos = [0, 0]
+ac_hor = 0
+ac_vert = 0
+hook = 1
+
+# colors
+grey = (82, 82, 82)
+light_grey = (126, 116, 116)
+dark_grey = (34, 40, 49)
+blue = (51, 47, 208)
+dark_blue = (14, 24, 95)
+red = (218, 0, 55)
+light_red = (255, 0, 0)
+dark_red = (132, 20, 45)
+white = (255, 255, 255)
+black = (0, 0, 0)
+green = (119, 217, 112)
+light_green = (78, 159, 61)
+yellow = (255, 211, 105)
+gold = (216, 146, 22)
+orange = (249, 178, 8)
+light_orange = (255, 159, 69)
+cyan = (110, 220, 217)
+light_blue = (125, 237, 255)
+purple = (146, 84, 200)
+magenta = (225, 95, 237)
+pink = (250, 88, 182)
 
 
 # function for calculating drive, and steer motor speed values
@@ -161,11 +189,18 @@ def set_arm(sr, sp, ep, wr, wp, open, close, cl_pos):
         ep = 0
     if -0.1 < sp < 0.1:
         sp = 0
-    rover.set_arm_base_rot(sr*100)
-    rover.set_arm_base_pitch(sp*10)
-    rover.set_arm_elbow_pitch(ep*100)
-    rover.set_arm_claw_rot(wr*100)
-    rover.set_arm_claw_pitch(wp*100)
+    if -0.1 < sr < 0.1:
+        sr = 0
+    if -0.2 < wr < 0.2:
+        wr = 0
+    if -0.1 < wp < 0.1:
+        wp = 0
+    #rover.set_arm_base_rot(sr*100)
+    #rover.set_arm_base_pitch(-sp*100)
+    #rover.set_arm_elbow_pitch(ep*100)
+    #rover.set_arm_claw_rot(-wr*100)
+    #rover.set_arm_claw_pitch(wp*100)
+    rover.set_arm_all(sr*100, -sp*100, ep*100, -wr*100, wp*100)
     if open is True:
         cl_pos = cl_pos + 5
     elif close is True:
@@ -180,17 +215,27 @@ def set_arm(sr, sp, ep, wr, wp, open, close, cl_pos):
 
 # function for calculating arm motor positions
 def calc_arm(x, y, z, alpha, beta, open, close, cl_pos):
-    scale = 0.001
-    delta_x = x*100*scale
-    delta_y = y*100*scale
-    delta_z = z*100*scale
-    delta_alpha = alpha*100*scale
-    delta_beta = beta*100*scale
+    if -0.5 < x < 0.5:
+        x = 0
+    if -0.5 < y < 0.5:
+        y = 0
+    if -0.5 < z < 0.5:
+        z = 0
+    if -0.5 < alpha < 0.5:
+        alpha = 0
+    if -0.5 < beta < 0.5:
+        beta = 0
+    scale = 0.003
+    delta_x = x*scale
+    delta_y = y*-scale
+    delta_z = z*-scale
+    delta_alpha = alpha*scale
+    delta_beta = beta*scale
     if open is True:
         cl_pos = cl_pos + 1
     elif close is True:
         cl_pos = cl_pos - 1
-    rover.set_arm_pos(delta_x, delta_y, delta_z, delta_alpha, delta_beta, cl_pos)
+    rover.set_arm_pos(round(delta_x, 4), round(delta_y, 4), round(delta_z, 4), round(delta_alpha, 4), round(delta_beta, 4), round(cl_pos, 4))
     return cl_pos
 
 
@@ -206,13 +251,24 @@ arm_xyl = Base.Axis([0, 0], 350, 100, "rectangle", "Shoulder Vel")
 arm_xyr = Base.Axis([0, 0], 450, 100, "rectangle", "Wrist Vel")
 arm_trigl = Base.Axis([1], 333, 250, "vertical", "Elbow Retract Vel")
 arm_trigr = Base.Axis([1], 450, 250, "vertical", "Elbow Extend Vel")
+arm_sr_scale = Base.Axis([-1], 1050, 625, "vertical", "SR Scale")
+arm_sp_scale = Base.Axis([-1], 1150, 625, "vertical", "SP Scale")
+arm_ep_scale = Base.Axis([-1], 1250, 625, "vertical", "EP Scale")
+arm_wr_scale = Base.Axis([-1], 1350, 625, "vertical", "WR Scale")
+arm_wp_scale = Base.Axis([-1], 1450, 625, "vertical", "WP Scale")
+arm_scale_control = Base.Button([0, 0, 0, 0, 0], 1150, 750, "row", ["SR S", "SP S", "EP S", "WR S", "WP S"])
 arm_bumper = Base.Button([0, 0], 225, 75, "column", ["Claw Open", "Claw Close"])
 point_steer = Base.Button([0, 0, 0, 0], 150, 450, "cross", ["Str 0", "Dri 0", "Rot Neg", "Rot Pos", "P Str"])
 steer_option = Base.Button([0, 0, 0, 0], 100, 375, "column", ["Tank Drive", "Car Drive", "Point Steer", "Calibration"])
 arm_cross = Base.Button([0, 0, 0, 0], 400, 450, "cross", ["+X Pos", "-X Pos", "+Y Pos", "-Y Pos", "Arm P"])
+arm_cam_control = Base.Axis([0, 0], 400, 450, "rectangle", "Arm Cam")
+util_control = Base.Button([0, 0], 300, 600, "column", ["Util Pos", "Util Neg"])
+hook_control = Base.Button([0, 0], 400, 600, "column", ["Hook Pos", "Hook Neg"])
+sci_control = Base.Button([0, 0], 500, 600, "column", ["Sci Pos", "Sci Neg"])
+lumin_control = Base.Button([0], 200, 600, "column", ["L Button"])
 arm_ab = Base.Button([0, 0], 363, 625, "row", ["-Z Pos", "+Z Pos"])
-steer_cal = Base.Button([0, 0, 0, 0], 900, 750, "row", ["Lf Cal", "Lb Cal", "Rf Cal", "Rb Cal"])
-manual_control = Base.Button([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 100, 750, "row", ["Lf D", "Lm D", "Lb D", "Rf D", "Rm D"
+steer_cal = Base.Button([0, 0, 0, 0], 825, 750, "row", ["Lf Cal", "Lb Cal", "Rf Cal", "Rb Cal"])
+manual_control = Base.Button([0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 50, 750, "row", ["Lf D", "Lm D", "Lb D", "Rf D", "Rm D"
                              , "Rb D", "Lf S", "Lb S", "Rf S", "Rb S"])
 drive_manual_xy = Base.Axis([0, 0], 100, 625, "rectangle", "Manual")
 arm_enable = Base.Button([0, 1], 225, 525, "column", ["Arm Enable", "Arm Disable"])
@@ -223,8 +279,8 @@ bat2_data = Base.Data("Bat 2 Voltage", 918, 625, 100, "V", 2)
 long_data = Base.Data("Longitude", 618, 525, 125, "deg", 6)
 lat_data = Base.Data("Latitude", 768, 525, 125, "deg", 6)
 head_data = Base.Data("Heading", 918, 525, 100, "deg", 2)
-gps_map = Base.Map(1536/2, 250, "maps/ISU_42.0358_-93.6558_42.0226_-93.6331.png",
-                   [-93.6558, 42.0358, -93.6331, 42.0226])
+#gps_map = Base.Map(1536/2, 250, "maps/ISU_42.0358_-93.6558_42.0226_-93.6331.png", [-93.6558, 42.0358, -93.6331, 42.0226]) #"maps/ISU_42.0358_-93.6558_42.0226_-93.6331.png"
+
 
 # py initialization
 py.init()
@@ -234,12 +290,17 @@ display.set_caption('MAVRIC Base Station')
 infofont = py.font.SysFont("Arial", 15)
 titlefont = py.font.SysFont("Arial", 15)
 northfont = py.font.SysFont("Arial", 18)
-gpsfont = py.font.SysFont("Arial", 12)
+gpsfont = py.font.SysFont("Arial", 14)
+
+wp_map = Base.Map(600, 50, 400, 400, "map", infofont, white, win, dark_red)
+wp_list = Base.Waypoint(1050, 50, 240, 400, gpsfont, white, black, win, white, [red, green, blue, yellow, orange, pink], light_blue)
+
 
 # find and init controllers
 for i in range(0, joystick.get_count()):
     joysticks.append(joystick.Joystick(i))
     joysticks[-1].init()
+    print(joysticks[-1].get_name())
 
     # select drive stick based on name
     #   this means using a different stick will require the hardcoded name to change
@@ -299,11 +360,35 @@ while run:
                 auto_en.buttons[0] = 0
                 auto_en.buttons[1] = 1
             elif event.key == py.K_DELETE:
-                gps_map.forget_waypoints(rover)
+                wp_list.remove = True
+                #gps_map.forget_waypoints(rover)
+
+            elif event.key == py.K_o:
+                rover.set_arm_enable()
+                arm_enable.buttons[0] = 1
+                arm_enable.buttons[1] = 0
+
+            elif event.key == py.K_l:
+                rover.set_arm_disable()
+                arm_enable.buttons[0] = 0
+                arm_enable.buttons[1] = 1
 
             # software emergency stop reset
             elif event.key == py.K_RETURN:
                 emergency_stop = False
+
+            # add waypoints from csv
+            elif event.key == py.K_w:
+                #wp_list.add = True
+                with open('WP.csv', 'r') as waypoints:
+                    waypoint_list = reader(waypoints)
+                    for wp in waypoint_list:
+                        rover.add_waypoint(wp[0], wp[1], wp[2])
+
+            elif event.key == py.K_q:
+                wp_list.down = True
+            elif event.key == py.K_a:
+                wp_list.up = True
 
             # steer cal
             elif event.key == py.K_1:
@@ -318,6 +403,62 @@ while run:
             elif event.key == py.K_4:
                 steer_cal.buttons[3] = 1
                 drive_manual_xy.axis[0] = 0
+
+            # arm scale options
+            elif event.key == py.K_6:
+                if arm_scale_control.buttons[0] == 0:
+                    arm_scale_control.buttons[0] = 1
+                else:
+                    arm_scale_control.buttons[0] = 0
+            elif event.key == py.K_7:
+                if arm_scale_control.buttons[1] == 0:
+                    arm_scale_control.buttons[1] = 1
+                else:
+                    arm_scale_control.buttons[1] = 0
+            elif event.key == py.K_8:
+                if arm_scale_control.buttons[2] == 0:
+                    arm_scale_control.buttons[2] = 1
+                else:
+                    arm_scale_control.buttons[2] = 0
+            elif event.key == py.K_9:
+                if arm_scale_control.buttons[3] == 0:
+                    arm_scale_control.buttons[3] = 1
+                else:
+                    arm_scale_control.buttons[3] = 0
+            elif event.key == py.K_0:
+                if arm_scale_control.buttons[4] == 0:
+                    arm_scale_control.buttons[4] = 1
+                else:
+                    arm_scale_control.buttons[4] = 0
+
+            # util control
+            elif event.key == py.K_PAGEUP:
+                util_control.buttons[0] = 1
+                #hook_control.buttons[0] = 1
+
+            elif event.key == py.K_PAGEDOWN:
+                util_control.buttons[1] = 1
+                #hook_control.buttons[1] = 1
+
+            # hook control
+            elif event.key == py.K_F10:
+                hook_control.buttons[0] = 1
+
+            elif event.key == py.K_F11:
+                hook_control.buttons[1] = 1
+
+            # sci control
+            elif event.key == py.K_F8:
+                sci_control.buttons[0] = 1
+
+            elif event.key == py.K_F9:
+                sci_control.buttons[1] = 1
+
+            elif event.key == py.K_i:
+                lumin_control.buttons[0] = 1
+
+            elif event.key == py.K_i:
+                lumin_no = 1
 
             # manual drive select
             elif event.key == py.K_KP_0:
@@ -407,8 +548,40 @@ while run:
             elif event.key == py.K_RIGHT:
                 m_steer = 0
 
+            # util control
+            elif event.key == py.K_PAGEUP:
+                util_control.buttons[0] = 0
+                #hook_control.buttons[0] = 0
+
+            # hook control
+            elif event.key == py.K_PAGEDOWN:
+                util_control.buttons[1] = 0
+                #hook_control.buttons[1] = 0
+
+            # hook control
+            elif event.key == py.K_F10:
+                hook_control.buttons[0] = 0
+
+            elif event.key == py.K_F11:
+                hook_control.buttons[1] = 0
+
+            # sci control
+            elif event.key == py.K_F8:
+                sci_control.buttons[0] = 0
+
+            elif event.key == py.K_F9:
+                sci_control.buttons[1] = 0
+
+            elif event.key == py.K_i:
+                lumin_control.buttons[0] = 0
+
+            elif event.key == py.K_i:
+                lumin_no = 0
+
+
         if event.type == py.MOUSEBUTTONDOWN:
             # map controls
+            """
             if gps_map.x < event.pos[0] < gps_map.x+gps_map.base and gps_map.y < event.pos[1] < gps_map.y+gps_map.height:
                 if event.button == 4:
                     gps_map.change_map(event.pos, -1)
@@ -418,6 +591,7 @@ while run:
                     gps_map.change_map(event.pos, 0)
                 elif event.button == 3:
                     gps_map.add_waypoint(rover, event.pos)
+            """
 
         if event.type == py.MOUSEMOTION:
             # get mouse position
@@ -432,7 +606,19 @@ while run:
                     elif event.axis == 1:
                         drive_xy.axis[1] = round(event.value, 2)
                     elif event.axis == 2:
-                        drive_sens.axis[0] = round(event.value, 2)
+                        if arm_scale_control.buttons[0] == 1:
+                            arm_sr_scale.axis[0] = round(event.value, 2)
+                            print(event.value)
+                        elif arm_scale_control.buttons[1] == 1:
+                            arm_sp_scale.axis[0] = round(event.value, 2)
+                        elif arm_scale_control.buttons[2] == 1:
+                            arm_ep_scale.axis[0] = round(event.value, 2)
+                        elif arm_scale_control.buttons[3] == 1:
+                            arm_wr_scale.axis[0] = round(event.value, 2)
+                        elif arm_scale_control.buttons[4] == 1:
+                            arm_wp_scale.axis[0] = round(event.value, 2)
+                        else:
+                            drive_sens.axis[0] = round(event.value, 2)
                     elif event.axis == 3:
                         drive_rot.axis[0] = round(event.value, 2)
             except:
@@ -457,27 +643,27 @@ while run:
             except:
                 print("No arm joy")
                 pass
-            try:
-                if drive_cont.check_stick(joystick.Joystick(event.joy)):
-                    if event.axis == 0:
-                        drive_cont_xy.axis[0] = round(event.value, 2)
-                    elif event.axis == 1:
-                        drive_cont_xy.axis[1] = round(event.value, 2)
-                    elif event.axis == 3:
-                        drive_cont_throttle.axis[0] = round(event.value, 2)
-                    elif event.axis == 4:
-                        drive_cont_left.axis[0] = -round(event.value, 2)
-                        cont_str = -(round(event.value, 2)+1)/2
-                    elif event.axis == 5:
-                        drive_cont_right.axis[0] = -round(event.value, 2)
-                        cont_str = (round(event.value, 2)+1)*2
-            except:
-                print("No drive cont")
-                pass
+            #try:
+            #    if drive_cont.check_stick(joystick.Joystick(event.joy)):
+            #        if event.axis == 0:
+           #             drive_cont_xy.axis[0] = round(event.value, 2)
+            #        elif event.axis == 1:
+            #            drive_cont_xy.axis[1] = round(event.value, 2)
+            #        elif event.axis == 3:
+            #            drive_cont_throttle.axis[0] = round(event.value, 2)
+            #        elif event.axis == 4:
+            #            drive_cont_left.axis[0] = -round(event.value, 2)
+            #            cont_str = -(round(event.value, 2)+1)/2
+            #        elif event.axis == 5:
+             #           drive_cont_right.axis[0] = -round(event.value, 2)
+            #            cont_str = (round(event.value, 2)+1)*2
+            #except:
+            #    print("No drive cont")
+            #    pass
         # joy hat buttons
         if event.type == py.JOYHATMOTION:
             try:
-                if event.hat == 0:
+                if drive_joy.check_stick(joystick.Joystick(event.joy)):
                     if event.value[1] == 1:
                         point_steer.buttons[0] = 1
                         point_steer.buttons[1] = 0
@@ -501,6 +687,24 @@ while run:
                         point_steer.buttons[2] = 1
                         point_steer.buttons[3] = 0
                         steer = -100
+            except:
+                print("no hat")
+                pass
+
+            try:
+                if arm_joy.check_stick(joystick.Joystick(event.joy)):
+                    if event.value[1] == 1:
+                        ac_hor = 1
+                    if event.value[1] == -1:
+                        ac_hor = -1
+                    if event.value[0] == 1:
+                        ac_vert = 1
+                    if event.value[0] == -1:
+                        ac_vert = -1
+                    if event.value[1] == 0:
+                        ac_hor = 0
+                    if event.value[0] == 0:
+                        ac_vert = 0
             except:
                 print("no hat")
                 pass
@@ -535,34 +739,34 @@ while run:
             except:
                 print("no drive joy")
                 pass
-            try:
-                if drive_cont.check_stick(joystick.Joystick(event.joy)):
-                    if event.button == 0:
-                        steer_option.buttons[0] = 1
-                        steer_option.buttons[1] = 0
-                        steer_option.buttons[2] = 0
-                    if event.button == 3:
-                        steer_option.buttons[0] = 0
-                        steer_option.buttons[1] = 1
-                        steer_option.buttons[2] = 0
-                    if event.button == 2:
-                        steer_option.buttons[0] = 0
-                        steer_option.buttons[1] = 0
-                        steer_option.buttons[2] = 1
-                    if event.button == 1:
-                        rover.kill_all()
-                    if event.button == 6:
-                        rover.enable_autonomous()
-                        auto_en.buttons[0] = 1
-                        auto_en.buttons[1] = 0
-                    if event.button == 7:
-                        rover.disable_autonomous()
-                        auto_en.buttons[0] = 0
-                        auto_en.buttons[1] = 1
+            #try:
+             #   if drive_cont.check_stick(joystick.Joystick(event.joy)):
+             #       if event.button == 0:
+             #           steer_option.buttons[0] = 1
+             #           steer_option.buttons[1] = 0
+             #           steer_option.buttons[2] = 0
+            #        if event.button == 3:
+             #           steer_option.buttons[0] = 0
+             #           steer_option.buttons[1] = 1
+              #          steer_option.buttons[2] = 0
+              #      if event.button == 2:
+             #           steer_option.buttons[0] = 0
+             #           steer_option.buttons[1] = 0
+             #           steer_option.buttons[2] = 1
+             #       if event.button == 1:
+              #          rover.kill_all()
+              #      if event.button == 6:
+             #           rover.enable_autonomous()
+              #          auto_en.buttons[0] = 1
+             #           auto_en.buttons[1] = 0
+             #       if event.button == 7:
+             #           rover.disable_autonomous()
+             #           auto_en.buttons[0] = 0
+              #          auto_en.buttons[1] = 1
 
-            except:
-                print("no drive cont")
-                pass
+            #except:
+            #    print("no drive cont")
+            #    pass
             try:
                 if arm_joy.check_stick(joystick.Joystick(event.joy)):
                     if event.button == 4:
@@ -598,6 +802,22 @@ while run:
     elif m_steer == -1 and drive_manual_xy.axis[0] >= -1:
         drive_manual_xy.axis[0] -= 0.1
 
+    # set position for manual axis
+    if ac_hor == -1 and arm_cam_control.axis[1] <= 1:
+        arm_cam_control.axis[1] += 0.05
+    elif ac_hor == 1 and arm_cam_control.axis[1] >= -1:
+        arm_cam_control.axis[1] -= 0.05
+    if ac_vert == 1 and arm_cam_control.axis[0] <= 1:
+        arm_cam_control.axis[0] += 0.05
+    elif ac_vert == -1 and arm_cam_control.axis[0] >= -1:
+        arm_cam_control.axis[0] -= 0.05
+
+    # set position for hook
+    if hook_control.buttons[0] == 1 and hook <= 1:
+        hook += 0.05
+    elif hook_control.buttons[1] == 1 and hook >= -1:
+        hook -= 0.05
+
     # set wheel drive and position
     if joy is True:
         d_lf, d_lm, d_lb, d_rf, d_rm, d_rb, str_lf, str_lb, str_rf, str_rb = calc_drive(steer_option.buttons[0], steer_option.buttons[1], steer_option.buttons[2], steer_option.buttons[3], drive_xy.axis[1], drive_xy.axis[0], drive_xy.axis[1], drive_rot.axis[0], drive_rot.axis[0], manual_control.buttons, drive_manual_xy.axis[1], drive_manual_xy.axis[0], drive_sens.axis[0], -.5)
@@ -609,6 +829,38 @@ while run:
     # set wheel velocities and positions
     rover.set_drive(d_lf, d_lm, d_lb, d_rf, d_rm, d_rb, str_lf, str_lb, str_rf, str_rb)
 
+    # set cam
+    rover.set_arm_cam(arm_cam_control.axis[0]*100, arm_cam_control.axis[1]*100)
+
+    # set util
+    if util_control.buttons[0] == 1:
+        rover.set_util(100)
+    elif util_control.buttons[1] == 1:
+        rover.set_util(-100)
+    else:
+        rover.set_util(0)
+
+    # set hook
+    rover.set_hook(hook*100)
+
+    # set sci
+    if sci_control.buttons[0] == 1:
+        rover.set_sci(0)
+    elif sci_control.buttons[1] == 1:
+        rover.set_sci(-44)
+    else:
+        pass
+        #rover.set_sci(0)
+
+    if lumin_control.buttons[0] == 0:
+        rover.set_button(95)
+    elif lumin_no == 1:
+        rover.set_button(-200)
+    else:
+        rover.set_button(-45)
+
+
+
     # set calibration
     if steer_option.buttons[3] == 1:
         rover.set_cal(steer_cal.buttons[0], steer_cal.buttons[1], steer_cal.buttons[2], steer_cal.buttons[3])
@@ -616,12 +868,13 @@ while run:
     if arm_enable.buttons[1] == 1:
         # set arm velocities
         cl_control = \
-            set_arm(arm_xyl.axis[0], arm_xyl.axis[1], ep_vel, arm_xyr.axis[0], arm_xyr.axis[1], arm_cl_open,
+            set_arm(arm_xyl.axis[0]*(-0.5*arm_sr_scale.axis[0]+0.5), arm_xyl.axis[1]*(-0.5*arm_sp_scale.axis[0]+0.5), ep_vel*(-0.5*arm_ep_scale.axis[0]+0.5),
+                    arm_xyr.axis[0]*(-0.5*arm_wr_scale.axis[0]+0.5), arm_xyr.axis[1]*(-0.5*arm_wp_scale.axis[0]+0.5), arm_cl_open,
                     arm_cl_close, cl_control)
     elif arm_enable.buttons[0] == 1:
-        cl_control = calc_arm(arm_xyl.axis[0], arm_xyl.axis[1], ep_vel, arm_xyr.axis[0], arm_xyr.axis[1], arm_cl_open,
+        cl_control = calc_arm(arm_xyl.axis[1], arm_xyl.axis[0], ep_vel, arm_xyr.axis[0], arm_xyr.axis[1], arm_cl_open,
                               arm_cl_close, cl_control)
-        print('aaaaaaaaaaaaaaaaaaaaa')
+        #print('aaaaaaaaaaaaaaaaaaaaa')
 
     # draw axes in center of screen
     # draw axes for drive joystick
@@ -645,17 +898,30 @@ while run:
     steer_option.draw(win, infofont, (255, 255, 255), (145, 199, 136))
     manual_control.draw(win, infofont, (255, 255, 255), (21, 25, 101))
     drive_manual_xy.draw(win, infofont, (255, 255, 255), (21, 25, 101))
-    arm_cross.draw(win, infofont, (255, 255, 255), (240, 89, 69))
-    arm_ab.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    arm_cam_control.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    util_control.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    hook_control.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    sci_control.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    lumin_control.draw(win, infofont, (255, 255, 255), (240, 89, 69))
+    arm_sr_scale.draw(win, infofont, (255, 255, 255), (255, 0, 0))
+    arm_sp_scale.draw(win, infofont, (255, 255, 255), (0, 255, 0))
+    arm_ep_scale.draw(win, infofont, (255, 255, 255), (0, 0, 255))
+    arm_wr_scale.draw(win, infofont, (255, 255, 255), (255, 255, 0))
+    arm_wp_scale.draw(win, infofont, (255, 255, 255), (255, 0, 255))
+    arm_scale_control.draw(win, infofont, (255, 255, 255), (128, 0, 0))
     steer_cal.draw(win, infofont, (255, 255, 255), (40, 150, 114))
-    arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
+    #arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
     auto_en.draw(win, infofont, (255, 255, 255), (105, 48, 195))
-    temp_data.draw(win, rover.temperature, infofont, (255, 255, 255), (200, 0, 200))
-    bat1_data.draw(win, rover.voltage[0], infofont, (255, 255, 255), (232, 69, 69))
-    bat2_data.draw(win, rover.voltage[1], infofont, (255, 255, 255), (232, 69, 69))
-    long_data.draw(win, rover._gps.longitude, infofont, (255, 255, 255), (91, 138, 114))
-    lat_data.draw(win, rover._gps.latitude, infofont, (255, 255, 255), (91, 138, 114))
-    head_data.draw(win, rover._gps.heading, infofont, (255, 255, 255), (91, 138, 114))
+    temp_data.draw(win, rover._temperature_getter.value, infofont, (255, 255, 255), (200, 0, 200)) #rover.temperature
+    bat1_data.draw(win, rover.voltage[0], infofont, (255, 255, 255), (232, 69, 69)) #rover.voltage[0]
+    bat2_data.draw(win, rover.voltage[1], infofont, (255, 255, 255), (232, 69, 69)) #rover.voltage[1]
+    long_data.draw(win, rover._gps.longitude, infofont, (255, 255, 255), (91, 138, 114)) #rover._gps.longitude
+    lat_data.draw(win, rover._gps.latitude, infofont, (255, 255, 255), (91, 138, 114)) #rover._gps.latitude
+    head_data.draw(win, rover._gps.heading, infofont, (255, 255, 255), (91, 138, 114)) #rover._gps.heading
+    wp_map.draw(rover._gps.latitude, rover._gps.longitude)
+    wp_list.draw()
+
+    """
     gps_map.draw_map(win, northfont, (0, 255, 0), (100, 0, 100))
     if len(gps_map.waypoints_pos) > 0:
         print(gps_map.waypoints_pos[0])
@@ -664,8 +930,9 @@ while run:
         gps_map.draw_rover(win, rover._gps.longitude, rover._gps.latitude)
     if gps_map.x < mouse_pos[0] < gps_map.x + gps_map.base and gps_map.y < mouse_pos[1] < gps_map.y + gps_map.height:
         gps_map.draw_mouse_pos(win, gpsfont, (255, 255, 255), (0, 0, 0), mouse_pos)
+    """
     display.flip()
-    py.time.delay(10)
+    #py.time.delay(10)
     win.fill((0, 0, 0))
 # end
 py.quit()
