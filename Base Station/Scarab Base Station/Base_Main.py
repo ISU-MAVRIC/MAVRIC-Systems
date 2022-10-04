@@ -11,7 +11,6 @@ import math
 
 # install classes
 import Base_Data as Base
-import Base_Sim
 import scarab
 
 # initial values
