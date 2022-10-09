@@ -35,13 +35,13 @@ def set_velocity_output(id, value):
     can_send(msg)
 
 
+#while True:
+ #   send_heartbeat()
+#    set_percent_output(2, math.sin(time()*0.25))
+#    sleep(0.002)
+
+
 while True:
     send_heartbeat()
-    set_percent_output(2, math.sin(time()*0.25))
+    set_velocity_output(2, 1000)
     sleep(0.002)
-
-
-# while True:
-#     send_heartbeat()
-#     set_velocity_output(2, 100)
-#     sleep(0.002)
