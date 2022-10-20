@@ -1,5 +1,8 @@
 from can.interface import Bus
 from can import Message
+from threading import Thread
+import time
+
 
 """
 Description: Library for providing objects for controlling and receving feedback from multiple Spark Max Controllers via
@@ -24,6 +27,16 @@ class SparkBus(Bus):
         # init CAN bus
         Bus.__init__(self, channel=channel, bustype=bustype, bitrate=bitrate)
 
+        
+        self.can_ids = []
+
+
+        #Start heartbeat thread
+        self.heartbeat_enabled = True
+        self.enable_id_array = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.heartbeat_thread = Thread(target=_heartbeat_runnable, daemon=True)
+        self.heartbeat_thread.start()
+
     def init_controller(self, canID):
         """
         Initializes Spark Max controllers for sending and receiving messages for a specific controller.
@@ -35,6 +48,11 @@ class SparkBus(Bus):
         # TODO: Create function for initiating controller objects, saving them to the SparkBus object, and returning
         #  a pointer
 
+        self.can_ids.append(canID)
+
+        #update enable_id_array
+        _update_heartbeat_array()
+
         return None
 
     def send_msg(self, msg):
@@ -44,14 +62,42 @@ class SparkBus(Bus):
         @param msg: CAN message to be sent to controller.
         @type msg: Message
         """
+        try:
+            self.send(msg)
+        except can.CanError as err:
+            print(err)
 
-        # TODO: Create function for sending messages to the CAN bus, must include a CAN error catch
-        #  (see CAN_Output_Test.py)
-
-    def send_heartbeat(self):
+    def enable_heartbeat(self):
         """
-        Sends heartbeat message to CAN bus.
+        Enables heartbeat runnable for sending heartbeat message to CAN Bus
         """
+        self.heartbeat_enabled = True
 
-        # TODO: Create function for sending heartbeat, should use the send_msg function (see CAN_Output_Test.py)
+    def disable_heartbeat(self):
+        """
+        Disables heartbeat runnable for sending heartbeat message to CAN Bus
+        """
+        self.heartbeat_enabled = False
 
+    def _update_heartbeat_array(self):
+        enable_array = ['0'] * 64
+        for id in self.can_ids:
+            enable_array[id] = '1'
+        enable_array.reverse()
+        self.enable_id_array = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.enable_id_array[7] = hex(int("".join(enable_array[0:8]), 2))
+        self.enable_id_array[6] = hex(int("".join(enable_array[8:16]), 2))
+        self.enable_id_array[5] = hex(int("".join(enable_array[16:24]), 2))
+        self.enable_id_array[4] = hex(int("".join(enable_array[24:32]), 2))
+        self.enable_id_array[3] = hex(int("".join(enable_array[32:40]), 2))
+        self.enable_id_array[2] = hex(int("".join(enable_array[40:48]), 2))
+        self.enable_id_array[1] = hex(int("".join(enable_array[48:56]), 2))
+        self.enable_id_array[0] = hex(int("".join(enable_array[56:64]), 2))
+
+    def _heartbeat_runnable(self):
+        while True:
+            if self.heartbeat_enabled:
+                msg = can.Message(arbitration_id=0x02052480,
+                data=self.enable_id_array)  # set when init_controller is called
+                self.send_msg(msg)
+                time.sleep(.002)
