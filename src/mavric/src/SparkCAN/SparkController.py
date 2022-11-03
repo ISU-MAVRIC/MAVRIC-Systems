@@ -1,12 +1,15 @@
 from can.interface import Bus
 from can import Message
 from Statuses import Status
-from SparkCAN import packer_float
+from struct import pack
 
 """
 Description: Objects for storing data from motor controllers and sending data to motor controllers
 Author: Jacob Peskuski, Gabriel Carlson
 """
+def packer_float(value):
+    hexStr = pack('fi', value, 0)
+    return hexStr
 
 
 class Controller:
