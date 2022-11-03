@@ -1,6 +1,7 @@
 from can.interface import Bus
 from can import Message
 from Statuses import Status
+from SparkCAN import packer_float
 
 """
 Description: Objects for storing data from motor controllers and sending data to motor controllers
@@ -24,13 +25,13 @@ class Controller:
         pass
         # TODO: Send disable control message to motor controller
 
-    def voltage_output(self, value):
-        pass
-        # TODO: Send voltage control message to motor controller using given value
+    def percent_output(self, value):
+        msg = can.Message(arbitration_id= 0x02050080 + id, data=packer_float(value))
+        self.bus.send_msg(msg)
 
     def velocity_output(self, value):
-        pass
-        # TODO: Send velocity control message to motor controller using given value
+        msg = can.Message(arbitration_id= 0x02050480 + id, data=packer_float(value))
+        self.bus.send_msg(msg)
 
     @property
     def velocity(self):
