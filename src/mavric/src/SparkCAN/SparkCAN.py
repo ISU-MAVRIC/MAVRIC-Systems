@@ -1,7 +1,9 @@
 from can.interface import Bus
-from can import Message
+from can import Message, CanError
 from threading import Thread
 import time
+
+from SparkController import Controller
 
 
 """
@@ -27,14 +29,14 @@ class SparkBus(Bus):
         # init CAN bus
         Bus.__init__(self, channel=channel, bustype=bustype, bitrate=bitrate)
 
-        
+        self.controllers = {}
+
         self.can_ids = []
 
-
-        #Start heartbeat thread
+        # Start heartbeat thread
         self.heartbeat_enabled = True
         self.enable_id_array = [0, 0, 0, 0, 0, 0, 0, 0]
-        self.heartbeat_thread = Thread(target=_heartbeat_runnable, daemon=True)
+        self.heartbeat_thread = Thread(target=self._heartbeat_runnable, daemon=True)
         self.heartbeat_thread.start()
 
     def init_controller(self, canID):
@@ -43,17 +45,18 @@ class SparkBus(Bus):
 
         @param canID: ID of the controller
         @type canID: int
+        @return: Controller object pointer
         """
 
-        # TODO: Create function for initiating controller objects, saving them to the SparkBus object, and returning
-        #  a pointer
+        # create new controller object, add it to list of controllers
+        self.controllers.update({canID: Controller(self, canID)})
 
         self.can_ids.append(canID)
 
-        #update enable_id_array
-        _update_heartbeat_array()
+        # update enable_id_array
+        self._update_heartbeat_array()
 
-        return None
+        return self.controllers.get(canID)
 
     def send_msg(self, msg):
         """
@@ -64,7 +67,7 @@ class SparkBus(Bus):
         """
         try:
             self.send(msg)
-        except can.CanError as err:
+        except CanError as err:
             print(err)
 
     def enable_heartbeat(self):
@@ -97,7 +100,7 @@ class SparkBus(Bus):
     def _heartbeat_runnable(self):
         while True:
             if self.heartbeat_enabled:
-                msg = can.Message(arbitration_id=0x02052480,
-                data=self.enable_id_array)  # set when init_controller is called
+                # set when init_controller is called
+                msg = Message(arbitration_id=0x02052480, data=self.enable_id_array)
                 self.send_msg(msg)
                 time.sleep(.002)
