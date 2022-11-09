@@ -37,12 +37,12 @@ class Status:
         # loop through each data range to get each value in status message
         for i in range(len(self.datatypes)):
             # get start and end indexes of each value in the message
-            start = sum(list(self.datasizes[0:i]))
-            end = sum(list(self.datasizes[0:i+1]))
+            start = sum(list(self.datasizes[0:i+1]))
+            end = sum(list(self.datasizes[0:i+2]))
 
             # get string of bits
             data = bitstring.BitArray(msg)
-            bits = data.bin[self.datasizes[start]:self.datasizes[end]]
+            bits = data.bin[start:end]
             sub = bitstring.Bits(bin=bits)
 
             # convert to data type for the current value

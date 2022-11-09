@@ -5,7 +5,9 @@ import time
 busy = SparkBus(channel="can0", bustype='socketcan', bitrate=1000000)
 sparkESC = busy.init_controller(2)
 time.sleep(5)
-sparkESC.velocity_output(1000)
-print(sparkESC.velocity)
-time.sleep(5)
+sparkESC.velocity_output(2000)
+for i in range(5000):
+    print(sparkESC.velocity)
+    print(sparkESC.position)
+    time.sleep(0.001)
 sparkESC.percent_output(0)

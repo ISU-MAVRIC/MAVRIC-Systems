@@ -87,11 +87,12 @@ class SparkBus:
                 continue
 
             # get api (class and index) and id of device from the message id
-            api = (message.arbitration_id & 0x000003C0) >> 6
+            api = (message.arbitration_id & 0x0000FFC0) >> 6
             devID = (message.arbitration_id & 0x0000003F)
 
-            # using device id and api, send message to decoder
-            self.controllers[devID].statuses[api].decode(message.data)
+            if devID in self.controllers.keys() and api in self.controllers[devID].statuses.keys() and self.controllers[devID].statuses[api] is not None:
+                # using device id and api, send message to decoder
+                self.controllers[devID].statuses[api].decode(message.data)
 
     def enable_heartbeat(self):
         """
