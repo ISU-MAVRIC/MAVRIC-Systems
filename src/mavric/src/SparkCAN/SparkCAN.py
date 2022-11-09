@@ -13,7 +13,7 @@ Author: Jacob Peskuski, Gabriel Carlson
 """
 
 
-class SparkBus(Bus):
+class SparkBus:
     def __init__(self, channel='can0', bustype='socketcan', bitrate=1000000):
         """
         Object for sending and receiving Spark Max CAN messages.
@@ -27,7 +27,7 @@ class SparkBus(Bus):
         @type bitrate: int
         """
         # init CAN bus
-        Bus.__init__(self, channel=channel, bustype=bustype, bitrate=bitrate)
+        self.bus = Bus(channel=channel, bustype=bustype, bitrate=bitrate)
 
         self.controllers = {}
 
@@ -66,7 +66,7 @@ class SparkBus(Bus):
         @type msg: Message
         """
         try:
-            self.send(msg)
+            self.bus.send(msg)
         except CanError as err:
             print(err)
 
@@ -88,14 +88,14 @@ class SparkBus(Bus):
             enable_array[id] = '1'
         enable_array.reverse()
         self.enable_id_array = [0, 0, 0, 0, 0, 0, 0, 0]
-        self.enable_id_array[7] = hex(int("".join(enable_array[0:8]), 2))
-        self.enable_id_array[6] = hex(int("".join(enable_array[8:16]), 2))
-        self.enable_id_array[5] = hex(int("".join(enable_array[16:24]), 2))
-        self.enable_id_array[4] = hex(int("".join(enable_array[24:32]), 2))
-        self.enable_id_array[3] = hex(int("".join(enable_array[32:40]), 2))
-        self.enable_id_array[2] = hex(int("".join(enable_array[40:48]), 2))
-        self.enable_id_array[1] = hex(int("".join(enable_array[48:56]), 2))
-        self.enable_id_array[0] = hex(int("".join(enable_array[56:64]), 2))
+        self.enable_id_array[7] = int("".join(enable_array[0:8]), 2)
+        self.enable_id_array[6] = int("".join(enable_array[8:16]), 2)
+        self.enable_id_array[5] = int("".join(enable_array[16:24]), 2)
+        self.enable_id_array[4] = int("".join(enable_array[24:32]), 2)
+        self.enable_id_array[3] = int("".join(enable_array[32:40]), 2)
+        self.enable_id_array[2] = int("".join(enable_array[40:48]), 2)
+        self.enable_id_array[1] = int("".join(enable_array[48:56]), 2)
+        self.enable_id_array[0] = int("".join(enable_array[56:64]), 2)
 
     def _heartbeat_runnable(self):
         while True:

@@ -25,7 +25,7 @@ class Controller:
                          0x64: None}
 
         # control properties
-        self.percentProps = {"dir": 1, "scale": 0}
+        self.percentProps = {"dir": 1, "scale": 1}
         self.velocityProps = {"dir": 1, "countConversion": 1}
 
     def enable(self):
