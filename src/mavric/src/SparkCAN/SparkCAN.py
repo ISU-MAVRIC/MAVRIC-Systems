@@ -39,6 +39,10 @@ class SparkBus:
         self.heartbeat_thread = Thread(target=self._heartbeat_runnable, daemon=True)
         self.heartbeat_thread.start()
 
+        # Start monitor thread
+        self.monitor_thread = Thread(target=self.bus_monitor, daemon=True)
+        self.monitor_thread.start()
+
     def init_controller(self, canID):
         """
         Initializes Spark Max controllers for sending and receiving messages for a specific controller.
@@ -46,6 +50,7 @@ class SparkBus:
         @param canID: ID of the controller
         @type canID: int
         @return: Controller object pointer
+        @rtype: Controller
         """
 
         # create new controller object, add it to list of controllers
@@ -69,6 +74,24 @@ class SparkBus:
             self.bus.send(msg)
         except CanError as err:
             print(err)
+
+    def bus_monitor(self):
+        """
+        Thread for monitoring the bus for receivable messages.
+        """
+
+        while True:
+            message = self.bus.recv(0)
+            if message is None:
+                time.sleep(0.002)
+                continue
+
+            # get api (class and index) and id of device from the message id
+            api = (message.arbitration_id & 0x000003C0) >> 6
+            devID = (message.arbitration_id & 0x0000003F)
+
+            # using device id and api, send message to decoder
+            self.controllers[devID].statuses[api].decode(message.data)
 
     def enable_heartbeat(self):
         """
