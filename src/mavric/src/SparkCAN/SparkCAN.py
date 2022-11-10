@@ -83,7 +83,6 @@ class SparkBus:
         while True:
             message = self.bus.recv(0)
             if message is None:
-                time.sleep(0.002)
                 continue
 
             # get api (class and index) and id of device from the message id
@@ -127,4 +126,4 @@ class SparkBus:
                 # set when init_controller is called
                 msg = Message(arbitration_id=0x02052480, data=self.enable_id_array)
                 self.send_msg(msg)
-                time.sleep(.002)
+                time.sleep(.02)
