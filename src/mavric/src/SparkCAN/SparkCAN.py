@@ -29,8 +29,10 @@ class SparkBus:
         # init CAN bus
         self.bus = Bus(channel=channel, bustype=bustype, bitrate=bitrate)
 
+        #dictionary to store all of the controllers 
         self.controllers = {}
 
+        #array of all the currently added CAN IDs (Used for heartbeat)
         self.can_ids = []
 
         # Start heartbeat thread
@@ -71,6 +73,7 @@ class SparkBus:
         @type msg: Message
         """
         try:
+            #Sends the passed in CAN message to the CAN Bus initialized in constructor
             self.bus.send(msg)
         except CanError as err:
             print(err)
@@ -106,11 +109,15 @@ class SparkBus:
         self.heartbeat_enabled = False
 
     def _update_heartbeat_array(self):
+        """
+        Helper method to update the heartbeat CAN message being sent when another controller is added
+        """
         enable_array = ['0'] * 64
         for id in self.can_ids:
             enable_array[id] = '1'
         enable_array.reverse()
         self.enable_id_array = [0, 0, 0, 0, 0, 0, 0, 0]
+        #For testing, should rewrite to clean up
         self.enable_id_array[7] = int("".join(enable_array[0:8]), 2)
         self.enable_id_array[6] = int("".join(enable_array[8:16]), 2)
         self.enable_id_array[5] = int("".join(enable_array[16:24]), 2)
@@ -120,6 +127,8 @@ class SparkBus:
         self.enable_id_array[1] = int("".join(enable_array[48:56]), 2)
         self.enable_id_array[0] = int("".join(enable_array[56:64]), 2)
 
+
+    #Multithreaded runnable to continuously send heartbeat without blocking main thread. Thread started in constructor
     def _heartbeat_runnable(self):
         while True:
             if self.heartbeat_enabled:
