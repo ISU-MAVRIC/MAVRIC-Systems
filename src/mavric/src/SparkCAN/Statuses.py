@@ -1,5 +1,6 @@
 from can.interface import Bus
 from can import Message
+import bitstring
 
 """
 Description: Objects for decoding status messages sent from the motor controllers
@@ -20,7 +21,10 @@ class Status:
         @type: tuple
         """
 
-        # TODO: Set up variables for object
+        self.id = id
+        self.datasizes = (0,) + datasizes
+        self.datatypes = datatypes
+        self.data = [0]*len(datatypes)
 
     def decode(self, msg):
         """
@@ -30,5 +34,33 @@ class Status:
         @type msg: Message
         """
 
-        # TODO: Write function to convert CAN message to binary, seperate the bits, convert bits into values.
+        # loop through each data range to get each value in status message
+        for i in range(len(self.datatypes)):
+            # get start and end indexes of each value in the message
+            start = sum(list(self.datasizes[0:i+1]))
+            end = sum(list(self.datasizes[0:i+2]))
 
+            # get string of bits
+            data = bitstring.BitArray(msg)
+            bits = data.bin[start:end]
+            sub = bitstring.Bits(bin=bits)
+
+            # convert to data type for the current value
+            if self.datatypes[i] == "float":
+                self.data[i] = sub.floatle
+            elif self.datatypes[i] == "int":
+                self.data[i] = sub.int
+            elif self.datatypes[i] == "uint":
+                self.data[i] = sub.uint
+            else:
+                self.data[i] = 0
+
+    def get_value(self, index):
+        """
+        Returns the specified value from the most recent status message.
+
+        @param index: index of the desired data value
+        @type index: int
+        @return: specified value from the most recent status message.
+        """
+        return self.data[index]
