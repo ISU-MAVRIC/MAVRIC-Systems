@@ -5,7 +5,7 @@ from mavric.SparkCAN.SparkCAN import SparkBus
 
 
 
-c_Scale = 0.3
+c_Scale = 60*2*3.14159/0.4167
 c_lfDir = 1
 c_lmDir = -1
 c_lbDir = -1
