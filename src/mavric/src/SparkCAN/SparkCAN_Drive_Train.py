@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import rospy
-
+from std_msgs.msg import Float32
 from mavric.msg import Steer, Drivetrain, Steertrain
 from SparkCAN import SparkBus
 
@@ -47,6 +47,9 @@ spark_str_lf = sparkBus.init_controller(7)
 spark_str_lb = sparkBus.init_controller(8)
 spark_str_rf = sparkBus.init_controller(9)
 spark_str_rb = sparkBus.init_controller(10)
+
+
+spark_pitch = sparkBus.init_controller(11)
 
 #add publish and subs
 
@@ -130,6 +133,16 @@ def driveCallback(data):
 		rb = -100
 
 
+def pitchCallback(data):
+  global pitch
+  pitch = data
+
+  if (pitch > 100):
+    pitch = 100
+  if (pitch < -100):
+    pitch = -100
+
+  pitch /= 100
 
 
 def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
@@ -147,13 +160,14 @@ def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
 
 
 def talker():
-    global str_pub, lf, lm, lb, rf, rm, rb
+    global str_pub, lf, lm, lb, rf, rm, rb, pitch
     global c_Scale, c_str_Scale, c_pitch
     global c_lfDir, c_lmDir, c_lbDir, c_rfDir, c_rmDir, c_rbDir
     rospy.init_node("CAN_DTS")
 
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
+    pitch_sub = rospy.Subscriber("Pitch_Train", Float32, pitchCallback, queue_size = 10)
     #cal_sub = rospy.Subscriber("Steer_Cal", 1000, CalCallback);
     str_pub = rospy.Publisher("Steer_Feedback", Steer, queue_size=10)
 
@@ -173,6 +187,7 @@ def talker():
     while rospy.is_shutdown() is False:
         setOutputs(lf, lm, lb, rf, rm, rb, slf, slb, srf, srb)
         strpub()
+        spark_pitch.percent_output(pitch)
         rosRate.sleep()
 
 if __name__ == '__main__':
