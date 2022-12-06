@@ -27,6 +27,7 @@ class Controller:
         # control properties
         self.percentProps = {"dir": 1, "scale": 1}
         self.velocityProps = {"dir": 1, "countConversion": 1}
+        self.positionProps = {"dir": 1, "countConversion": 1}
 
     def enable(self):
         pass
@@ -44,6 +45,11 @@ class Controller:
     def velocity_output(self, value):
         mod_value = value * self.velocityProps["dir"]*self.velocityProps["countConversion"]
         msg = Message(arbitration_id= 0x02050480 + self.id, data=packer_float(mod_value))
+        self.bus.send_msg(msg)
+
+    def position_output(self, value):
+        mod_value = value * self.positionProps["dir"]*self.positionProps["countConversion"]
+        msg = Message(arbitration_id= 0x02050C80 + self.id, data=packer_float(mod_value))
         self.bus.send_msg(msg)
 
     @property

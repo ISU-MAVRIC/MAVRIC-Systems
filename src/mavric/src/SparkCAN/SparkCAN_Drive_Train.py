@@ -2,54 +2,37 @@
 import rospy
 
 from mavric.msg import Steer, Drivetrain, Steertrain
-from SparkCAN.SparkCAN import SparkBus
+from SparkCAN import SparkBus
 
 
 
-c_Scale = 60*2*3.14159/0.4167
+c_Scale = 1.15*20
 c_lfDir = 1
 c_lmDir = -1
 c_lbDir = -1
 c_rfDir = 1
 c_rmDir = -1
 c_rbDir = 1
-c_str_Scale = 0.25
-c_str_lfDir = 1
-c_str_lbDir = -1
-c_str_rfDir = 1
-c_str_rbDir = -1
+c_str_Scale = 0.12
+c_str_lfDir = -1
+c_str_lbDir = 1
+c_str_rfDir = -1
+c_str_rbDir = 1
 c_pitch = 0.2
 
-lfTarget = 0
-lmTarget = 0
-lbTarget = 0
-rfTarget = 0
-rmTarget = 0
-rbTarget = 0
-strLfTarget = 0
-strLbTarget = 0
-strRfTarget = 0
-strRbTarget = 0
-pitchTarget = 0
-
-dlf = 0
-dlm = 0
-dlb = 0
-drf = 0
-drm = 0
-drb = 0
-strLf = 0
-strLb = 0
-strRf = 0
-strRb = 0
+lf = 0
+lm = 0
+lb = 0
+rf = 0
+rm = 0
+rb = 0
+slf = 0
+slb = 0
+srf = 0
+srb = 0
 pitch = 0
 
-rampRateUp = 0.5
-rampRateDown = 0.5
-strRateUp = 100
-strRateDown = 100
-pRateUp = 100
-pRateDown = 100
+str_pub = None
 
 sparkBus = SparkBus(channel="can0", bustype='socketcan', bitrate=1000000)
 
@@ -70,16 +53,17 @@ spark_str_rb = sparkBus.init_controller(10)
 
 def strpub():
   steerMsg = Steer()
-  steerMsg.lf = spark_str_lf.position
-  steerMsg.lb = spark_str_lb.position
-  steerMsg.rf = spark_str_rf.position
-  steerMsg.rb = spark_str_rb.position
-  strPub.publish(steerMsg)
+  steerMsg.lf = int(spark_str_lf.position)
+  steerMsg.lb = int(spark_str_lb.position)
+  steerMsg.rf = int(spark_str_rf.position)
+  steerMsg.rb = int(spark_str_rb.position)
+  str_pub.publish(steerMsg)
   
 
 #Calibration KIA currently
 
 def strCallback(data):
+  global slf, slb, srf, srb
   slf = data.strLf
   if (slf > 100):
     slf = 100
@@ -106,12 +90,14 @@ def strCallback(data):
 
 
 def driveCallback(data):
+	global lf, lm, lb, rf, rm, rb
 	lf = data.lf
 	lm = data.lm
 	lb = data.lb
 	rf = data.rf
 	rm = data.rm
 	rb = data.rb
+	print(lf, lm, lb, rf, rm, rb)
 
 	if (lf > 100):
 		lf = 100
@@ -154,13 +140,16 @@ def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
 	spark_rm.velocity_output(rm * c_Scale * c_rmDir)
 	spark_rb.velocity_output(rb * c_Scale * c_rbDir)
 
-	talon_str_lf.position_output(str_lf * c_str_lfDir * c_str_Scale)
-	talon_str_lb.position_output(str_lb * c_str_lbDir * c_str_Scale)
-	talon_str_rf.position_output(str_rf * c_str_rfDir * c_str_Scale)
-	talon_str_rb.position_output(str_rb * c_str_rbDir * c_str_Scale)
+	spark_str_lf.position_output(str_lf * c_str_lfDir * c_str_Scale)
+	spark_str_lb.position_output(str_lb * c_str_lbDir * c_str_Scale)
+	spark_str_rf.position_output(str_rf * c_str_rfDir * c_str_Scale)
+	spark_str_rb.position_output(str_rb * c_str_rbDir * c_str_Scale)
 
 
-def main():
+def talker():
+    global str_pub, lf, lm, lb, rf, rm, rb
+    global c_Scale, c_str_Scale, c_pitch
+    global c_lfDir, c_lmDir, c_lbDir, c_rfDir, c_rmDir, c_rbDir
     rospy.init_node("CAN_DTS")
 
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
@@ -168,24 +157,27 @@ def main():
     #cal_sub = rospy.Subscriber("Steer_Cal", 1000, CalCallback);
     str_pub = rospy.Publisher("Steer_Feedback", Steer, queue_size=10)
 
-    c_Scale = rospy.get_param("~Range")
-    c_str_Scale = rospy.get_param("~Str/Range")
-    c_lfDir = rospy.get_param("~Left_Front/Scale")
-    c_lmDir = rospy.get_param("~Left_Middle/Scale")
-    c_lbDir = rospy.get_param("~Left_Back/Scale")
-    c_rfDir = rospy.get_param("~Right_Front/Scale")
-    c_rmDir = rospy.get_param("~Right_Middle/Scale")
-    c_rbDir = rospy.get_param("~Right_Back/Scale")
-    c_pitch = rospy.get_param("~Pitch/Scale")
-    rampRateUp = rospy.get_param("~ramp_rate_up")
-    rampRateDown = rospy.get_param("~ramp_rate_down")
-    strRateUp = rospy.get_param("~str_ramp_rate_up")
-    strRateDown = rospy.get_param("~str_ramp_rate_down")
+    c_Scale = rospy.get_param("~Range", 1.15*20) #60*2*3.14159/0.4167
+    c_str_Scale = rospy.get_param("~Str/Range", 0.12)
+    c_lfDir = rospy.get_param("~Left_Front/Scale", 1)
+    c_lmDir = rospy.get_param("~Left_Middle/Scale", 1)
+    c_lbDir = rospy.get_param("~Left_Back/Scale", 1)
+    c_rfDir = rospy.get_param("~Right_Front/Scale", -1)
+    c_rmDir = rospy.get_param("~Right_Middle/Scale", -1)
+    c_rbDir = rospy.get_param("~Right_Back/Scale", -1)
+    c_pitch = rospy.get_param("~Pitch/Scale", 1)
 
     setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     rosRate = rospy.Rate(30)
-    while not rospy.is_shutdown():
-        setOutputs(dlf, dlm, dlb, drf, drm, drb, strLf, strLb, strRf, strRb)
+    while rospy.is_shutdown() is False:
+        setOutputs(lf, lm, lb, rf, rm, rb, slf, slb, srf, srb)
         strpub()
-        r.sleep()
+        rosRate.sleep()
+
+if __name__ == '__main__':
+    try:
+        talker()
+    except rospy.ROSInterruptException:
+        pass
+
