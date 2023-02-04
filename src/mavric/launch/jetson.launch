@@ -64,12 +64,14 @@
     <node name="GPS_Interface" pkg="mavric" type="GPS_Interface.py" respawn="true" unless="$(arg nogps)" />
 
   </group>
-  
+
+  <!--
   <include file="$(find mavric)/launch/SystemCooling.launch" unless="$(arg nocooling)">
     <arg name="Fan_Output_Out" value="/HW/FastPWM/CH0" />
     <arg name="Fan_Output_In"  value="/HW/FastPWM/CH1" />
     <arg name="simulated" value="$(arg simulated)" />
   </include>
+  -->
   
   <!-- Interface Nodes -->
   <!-- <node name="CAN_RobotEnable" pkg="mavric" type="CAN_RobotEnable.py" respawn="true" /> -->
@@ -79,7 +81,7 @@
   </node>
 
   <group ns="Arm" unless="$(arg noarm)">
-    <arg name="ShoulderRot_Scale" value="-0.15" />
+    <arg name="ShoulderRot_Scale" value="-0.5" />
     <arg name="ShoulderPitch_Scale" value="0.9" />
     <arg name="ElbowPitch_Scale" value="1.0" />
     <arg name="WristRot_Scale" value="0.75" />
@@ -178,21 +180,25 @@
       <remap from="Steer_Cal" to="Cal_Command" />
 
       <param name="Left_Front/Scale" value="-1" />
-      <param name="Left_Back/Scale" value="-1" />
+      <param name="Left_Back/Scale" value="1" />
       <param name="Right_Back/Scale" value="-1" />
-      <param name="Pitch/Scale" value="0.05" />
+      <param name="Pitch/Scale" value="0.3" />
 
       <param name="ramp_rate_up" value="2.0" />
       <param name="ramp_rate_down" value="4.0" />
+
       <param name="str_ramp_rate_up" value="1" />
       <param name="str_ramp_rate_down" value="1" />
       <param name="pitch_ramp_rate_up" value="5" />
       <param name="pitch_ramp_rate_down" value="5" />
+
     </node>
     
+    <!--
     <node name="Steer_Feedback" pkg="mavric" type="Drive_Feedback_Interface.py" respawn="true" >
       <param name="port" value="9004" />
     </node>
+    -->
   </group>
 
 </launch>

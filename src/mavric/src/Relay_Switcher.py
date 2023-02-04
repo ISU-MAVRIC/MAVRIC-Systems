@@ -5,8 +5,8 @@ from std_msgs.msg import Bool
 
 config = {
     "light_pole/red": 31,
-    "light_pole/blue": 33,
-    "light_pole/green": 35,
+    "light_pole/blue": 22,
+    "light_pole/green": 36,
     "light_pole/buzzer": 37
 }
 
@@ -25,4 +25,7 @@ def talker():
         GPIO.cleanup()
 
 if __name__ == '__main__':
-    talker()
+    try:
+        talker()
+    except rospy.ROSInterruptException:
+        pass
