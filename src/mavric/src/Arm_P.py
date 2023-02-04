@@ -45,8 +45,12 @@ def talker():
 
     pub_hook_a = rospy.Publisher("HookActuation", Float64, queue_size=10)
 
-    pub_cam_rot = rospy.Publisher("ArmCamRot", Float64, queue_size=10)
-    pub_cam_Pitch = rospy.Publisher("ArmCamPitch", Float64, queue_size=10)
+    pub_cam_rot = rospy.Publisher("CamRot", Float64, queue_size=10)
+    pub_cam_Pitch = rospy.Publisher("CamPitch", Float64, queue_size=10)
+
+    pub_util = rospy.Publisher("Util", Float64, queue_size=10)
+    pub_sci = rospy.Publisher("Sci", Float64, queue_size=10)
+    pub_Button = rospy.Publisher("Button", Float64, queue_size=10)
 
     
     
@@ -123,6 +127,21 @@ def talker():
                 parameters = data[2:].strip().split(',')
                 cmd = float(parameters[0])
                 pub_hook_a.publish(cmd)
+            
+            elif data[1] == 'U':
+                parameters = data[2:].strip().split(',')
+                cmd = float(parameters[0])
+                pub_util.publish(cmd)
+            
+            elif data[1] == 'L':
+                parameters = data[2:].strip().split(',')
+                cmd = float(parameters[0])
+                pub_sci.publish(cmd)
+            
+            elif data[1] == 'B':
+                parameters = data[2:].strip().split(',')
+                cmd = float(parameters[0])
+                pub_Button.publish(cmd)
 
         elif (data[0] == 'S'):
             # all arm data
@@ -134,6 +153,8 @@ def talker():
             pub_elbow_p.publish(cmd[2])
             pub_wrist_r.publish(cmd[3])
             pub_wrist_p.publish(cmd[4])
+        
+
 
         elif (data[0] == 'N'):
             # Complex Control Command
