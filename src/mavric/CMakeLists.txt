@@ -69,6 +69,10 @@ add_message_files(
   Autonomous.msg
   Waypoint.msg
   LED.msg
+  Auto_Status.msg
+  Aruco.msg
+  Object.msg
+  ObjectVector.msg
 )
 
 ## Generate services in the 'srv' folder

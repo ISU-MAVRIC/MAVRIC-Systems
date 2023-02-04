@@ -43,31 +43,40 @@ def aruco_detection():
         time.sleep(.01)
         markers1 = get_markers_from_frame(frame)
         markers2 = get_markers_from_frame(frame2)
+        camera_type = []
+        pixel_location = []
         for index, ID in enumerate(markers1[0]):
+            pixel_location.append(markers1[1][index])
+            camera_type.append('realsense')
             markers1[1][index] = (float(markers1[1][index][0] - 390) / 390) * 25.32
             #g.debug_pub.publish("Realsense: %f" %(markers1[1][index]))
             #g.debug_pub.publish("ID: %d" %(markers1[0][index]))
         for index, ID in enumerate(markers2[0]):
             if ID not in markers1[0]:
+                pixel_location.append(markers2[1][index])
                 markers1[0].append(markers2[0][index])
-                #print(markers2[1][index][0])
-                markers1[1].append((float(markers2[1][index][0] - 973) / 973) * 48.9 )
+                markers1[1].append((float(markers2[1][index][0] - 973) / 973) * 48.9 ) 
+                camera_type.append('dome')
                 #g.debug_pub.publish("Dome: %f" %(markers1[1][-1]))
                 #g.debug_pub.publish("ID: %f" %(markers1[0][-1]))
         g.posts["id"] = markers1[0]
         g.posts["heading"] = markers1[1]
-        g.posts["distance"] = [-1]*len(markers1[1])
-        #TEMP: For SAR overlay
-        g.posts["dome_coords"] = markers2[1]
-        #TEMP: For SAR overlay
-        if len(g.posts["id"]) > 0:
-            print(g.posts)
+        #if len(g.posts["distance"]) == 0:
+        g.posts["distance"] = [-1]*len(markers1[0])
+        g.posts["type"] = camera_type
+        g.posts["pixel_location"] = pixel_location
+
+        for i in range(len(markers1[0])):
+            #g.debug_pub.publish("%d, %d" %(pixel_location[i][0], pixel_location[i][1]))
+            if camera_type[i] == 'realsense':
+                pixel_location[i] = [int((pixel_location[i][0]/640)*480), int((pixel_location[i][1]/480)*270)]
+                g.aruco_pub.publish(pixel_location[i][0], pixel_location[i][1], 0, markers1[0][i])
+
     vs.stop()
     vs2.stop()
 
 thread = threading.Thread(target=aruco_detection)
+thread.daemon = True
 
 def start_aruco_detection():
     thread.start()
-
-start_aruco_detection()

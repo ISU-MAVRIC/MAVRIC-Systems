@@ -10,8 +10,8 @@ from geographiclib.geodesic import Geodesic
 
 vel = 0
 theta = 0
-lon = -93.646558
-lat = 42.026272
+lon = 0 #-93.646558
+lat = 0 #42.026272
 
 def drive_cb(data):
         global vel

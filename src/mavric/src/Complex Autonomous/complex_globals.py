@@ -18,14 +18,20 @@ good_fix = False
 good_imu = True
 fix_timeout = False   #unnecessary?
 
+#state
+state = "Off"
+
 #location data
 position = [0, 0]
 prev_position = [0, 0]
 waypoints = []
 waypoint_id = []
 detected = False
+angular_velocity = 0
 
+# rover heading and position
 heading = 0
+desired_heading = 0
 
 prev_angular_error = ANG_ERROR_THRESHOLD * 2
 prev_linear_error = LIN_ERROR_THRESHOLD * 2
@@ -48,10 +54,12 @@ path = None # object for pathing class
 # id: aruco tag number
 # heading: angle from camera center
 # distance: actual or approximate distance to post
-posts = {"id": [], "heading": [], "distance": []}
+# type: "realsense"  || "dome"
+# pixel_location: Pixel location from camera
+posts = {"id": [], "heading": [], "distance": [], "type": [], "pixel_location": []}
 
 #object data
-objects = {"position": [], "size": [], "height": []}
+objects = {"distance": [], "heading": [], "size": [], "height": []}
 
 #GPS timeout data
 fix_time = 0
@@ -66,4 +74,6 @@ Rover_MinTurnRadius = 0
 drive_pub = None
 steer_pub = None
 debug_pub = None
+status_pub = None
 indicator_pub = None
+aruco_pub = None

@@ -13,6 +13,8 @@ class NextPathPoint(State):
         g.pathpoint_num += 1
         g.debug_pub.publish("# of pathpoints, index")
         g.debug_pub.publish(str(len(g.pathpoints["linear"]))+ ", "+str(g.pathpoint_num))
+        g.desired_heading = 0
+        g.state = "NextPathPoint"
 
     def run(self):
         self.linear = g.pathpoints["linear"][g.pathpoint_num]
