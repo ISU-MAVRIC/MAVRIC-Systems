@@ -317,7 +317,7 @@ class ValueGetter(threading.Thread):
 
     def run(self):
         buffer = ''
-        while self._run:
+        while not self._run:
             try:
                 if self._socket is None:
                     self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -369,7 +369,7 @@ class GPS(ValueGetter):
 
     def run(self):
         buffer = ''
-        while self._run:
+        while not self._run:
             try:
                 if self._socket is None:
                     self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
