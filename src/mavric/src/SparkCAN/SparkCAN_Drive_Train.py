@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 from mavric.msg import Steer, Drivetrain, Steertrain
 from SparkCAN import SparkBus
 
@@ -135,7 +135,7 @@ def driveCallback(data):
 
 def pitchCallback(data):
   global pitch
-  pitch = data
+  pitch = data.data
 
   if (pitch > 100):
     pitch = 100
@@ -167,7 +167,7 @@ def talker():
 
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
-    pitch_sub = rospy.Subscriber("Pitch_Train", Float32, pitchCallback, queue_size = 10)
+    pitch_sub = rospy.Subscriber("Pitch_Train", Float64, pitchCallback, queue_size = 10)
     #cal_sub = rospy.Subscriber("Steer_Cal", 1000, CalCallback);
     str_pub = rospy.Publisher("Steer_Feedback", Steer, queue_size=10)
 
