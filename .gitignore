@@ -38,3 +38,5 @@ rospy
 *.pyc
 *~
 *.DS_Store
+
+.idea
