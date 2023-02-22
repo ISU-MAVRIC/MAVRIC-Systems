@@ -20,6 +20,8 @@ class ReachedWayPoint(State):
         # Stops the rover and starts blinking the green led
         g.drive_pub.publish(0, 0, 0, 0, 0, 0)
         g.steer_pub.publish(0, 0, 0, 0)
+        g.desired_heading = 0
+        g.state = "ReachedWaypoint"
         self.blink = True
         g.indicator_pub.publish(self.blink, 255, "Green")
         self.stop_time = time.time()

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
 Created on Wed Apr 14 15:29:55 2021
 
@@ -7,7 +7,7 @@ Created on Wed Apr 14 15:29:55 2021
 
 import socket
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import String, Float64
 from mavric.msg import Voltage
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

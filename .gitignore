@@ -40,3 +40,4 @@ rospy
 *.DS_Store
 
 .idea
+/.vscode/

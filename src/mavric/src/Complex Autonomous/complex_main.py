@@ -21,7 +21,7 @@ import rospy
 from std_msgs.msg import String
 from std_msgs.msg import Bool
 from geometry_msgs.msg import Vector3
-from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS, LED
+from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS, LED, Auto_Status, Aruco, Object, ObjectVector
 
 # import pathing, and detection classes, and all states.
 from pathing import Pathing
@@ -142,11 +142,25 @@ def imu_cal_cb(data):
     # else:
     #    auto_globals.good_imu = False
 
+
+def object_cb(data):
+    g.objects = {"distance": [], "heading": [], "size": [], "height": []}
+    for obj in data.Objects:
+        g.objects["distance"].append(obj.distance)
+        g.objects["heading"].append(obj.heading)
+        g.objects["size"].append(obj.size)
+
+def aruco_cb(data):
+    if data.id in g.posts["id"] and data.z != 0:
+        i = g.posts["id"].index(data.id)
+        g.posts["distance"][i] = data.z
+        g.debug_pub.publish("GOT ARUCO DEPTH")
+
 # main code and autonomous/pathing init
 auto = AutonomousStateMachine()
 g.path = Pathing(0.81, 1.20)
 
-
+# main loop
 def main():
     # setup ROS node
     rospy.init_node("ANS")
@@ -154,8 +168,10 @@ def main():
     #init publishers and subscribers
     g.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     g.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
-    g.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
+    g.debug_pub = rospy.Publisher("Debug", String, queue_size=10)
+    g.status_pub = rospy.Publisher("Status", Auto_Status, queue_size=10)
     g.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
+    g.aruco_pub = rospy.Publisher("Aruco/pos", Aruco, queue_size=10)
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
@@ -165,8 +181,14 @@ def main():
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
     imu_cal_sub = rospy.Subscriber("SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
 
+    aruco_sub = rospy.Subscriber("Aruco/depth", Aruco, aruco_cb, queue_size=10)
+    object_sub = rospy.Subscriber("Objects", ObjectVector, object_cb, queue_size=10)
+
+
     
     rate = rospy.Rate(2)  # 2 Hz
+
+    aruco.start_aruco_detection()
 
     # autonomous loop, while the aruco detection runs in its own loop this loop runs the pathing code and state machine
     while not rospy.is_shutdown():
@@ -174,6 +196,11 @@ def main():
             #g.debug_pub.publish("Running Pathing")
             g.path.run()
         auto.run()
+        if len(g.waypoints) != 0:
+            g.status_pub.publish(g.enabled, g.good_fix, g.good_imu, len(g.waypoints), g.waypoints[0][0], g.waypoints[0][1], g.desired_heading, g.prev_angular_error, g.prev_linear_error)
+        else:
+            g.status_pub.publish(g.enabled, g.good_fix, g.good_imu, len(g.waypoints), 0, 0, g.desired_heading, g.prev_angular_error, g.prev_linear_error)
+
         rate.sleep()
 
 

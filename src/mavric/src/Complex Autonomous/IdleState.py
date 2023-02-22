@@ -19,6 +19,8 @@ class Idle(State):
         """
         g.drive_pub.publish(0, 0, 0, 0, 0, 0)
         g.steer_pub.publish(0, 0, 0, 0)
+        g.desired_heading = 0
+        g.state = "Idle"
 
 
     def run(self):
