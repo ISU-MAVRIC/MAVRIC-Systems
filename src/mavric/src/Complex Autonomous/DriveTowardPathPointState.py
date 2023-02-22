@@ -7,21 +7,41 @@ import time
 from StateMachine import State
 from driver import Driver
 
+"""
+Description:
+- Drives the rover towards the waypoint
+- Uses bank steering for corrections
+"""
 class DriveTowardPathPoint(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
         self.DriveLib = Driver()
 
     def enter(self):
+        """
+        Enters from:
+        - TurnTowardPathPoint
+        """
+
         self.linear_error = g.LIN_ERROR_THRESHOLD * 2
         #set first waypoint in array as target
         self.tgt = [0, 0]
         self.tgt[0] = g.pathpoints["position"][g.pathpoint_num][0]
         self.tgt[1] = g.pathpoints["position"][g.pathpoint_num][1]
+
+        # Set wheels to normal position
         g.steer_pub.publish(0,0,0,0)
         time.sleep(5)
 
     def run(self):
+        """
+        Description:
+        - First checks the distance and heading to the next path point
+        - Then calculates speed based off of distance from path point
+        - Then calculates bank turning angle based off of angular error
+        - Finally, publishes drive data
+        """
+
         g.prev_fix_time = g.fix_time
 
         #capture position in case it changes later
@@ -96,6 +116,13 @@ class DriveTowardPathPoint(State):
         g.debug_pub.publish("%d, %d" % (self.linear_error, self.angular_error))
 
     def next(self):
+        """
+        Exits to:
+        - Idle
+        - NextPathPoint
+        - reachedWaypoint
+        """
+
         if(not g.enabled or not g.good_fix or g.fix_timeout):
             return self._stateMachine.idle
             

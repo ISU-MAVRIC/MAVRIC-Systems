@@ -2,6 +2,16 @@ import complex_globals as g
 from geographiclib.geodesic import Geodesic
 import math as m
 
+"""
+Description:
+- Used for creating the path for the state machine to follow
+- It takes the current rover position, the waypoint, and everything in between and creates a series of points for the rover to follow to get to the waypoint
+Pathing Scenarios:
+- Direct Drive: Rover drives directly to waypoint
+- Waypoint Search [NOT IMPLEMENTED]: Rover drives around searching for aruco tag
+- Aruco waypoint [NEEDS WORK]: Rover drives to an aruco tag the the waypoint
+- Avoid Obstacle [NOT NEEDED]: Rover paths around an obstacle
+"""
 class Pathing():
     def __init__(self, rover_width, avoidance_mod):
         self.w = rover_width
