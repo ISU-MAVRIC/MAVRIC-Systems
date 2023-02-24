@@ -26,10 +26,14 @@
           <param name="wr_ramp_rate_down" value="400"/>
           <param name="wp_ramp_rate_up" value="300"/>
           <param name="wp_ramp_rate_down" value="400"/>
-          <param name="sr/Scale" value=".1"/>
-          <param name="ep/Scale" value=".1"/>
-          <param name="wr/Scale" value=".1"/>
-          <param name="wp/Scale" value=".1"/>
+          <param name="sr/Scale" value=".25"/>
+          <param name="ep/Scale" value=".25"/>
+          <param name="wr/Scale" value=".2"/>
+          <param name="wp/Scale" value=".2"/>
+          <remap from="SR_Train" to="/Arm/ShoulderRot" />
+          <remap from="EP_Train" to="/Arm/ElbowPitch" />
+          <remap from="WR_Train" to="/Arm/WristRot" />
+          <remap from="WP_Train" to="/Arm/WristPitch" />
         </node>
         <node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
             <param name="port" value="10001" />
