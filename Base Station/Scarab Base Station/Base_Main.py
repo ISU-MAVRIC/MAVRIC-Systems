@@ -629,15 +629,15 @@ while run:
                         arm_xyl.axis[0] = round(event.value, 2)
                     if event.axis == 1:
                         arm_xyl.axis[1] = round(event.value, 2)
-                    if event.axis == 4:
+                    if event.axis == 2:
                         ep_vel = (round(event.value) + 1) / 2
                         arm_trigl.axis[0] = -round(event.value, 2)
                     if event.axis == 5:
                         ep_vel = -(round(event.value) + 1) / 2
                         arm_trigr.axis[0] = -round(event.value, 2)
-                    if event.axis == 2:
-                        arm_xyr.axis[0] = round(event.value, 2)
                     if event.axis == 3:
+                        arm_xyr.axis[0] = round(event.value, 2)
+                    if event.axis == 4:
                         arm_xyr.axis[1] = round(event.value, 2)
             except:
                 print("No arm joy")
@@ -829,20 +829,23 @@ while run:
     rover.set_drive(d_lf, d_lm, d_lb, d_rf, d_rm, d_rb, str_lf, str_lb, str_rf, str_rb)
 
     # set cam
-    rover.set_arm_cam(arm_cam_control.axis[0]*100, arm_cam_control.axis[1]*100)
+    #rover.set_arm_cam(arm_cam_control.axis[0]*100, arm_cam_control.axis[1]*100)
 
     # set util
+    '''
     if util_control.buttons[0] == 1:
         rover.set_util(100)
     elif util_control.buttons[1] == 1:
         rover.set_util(-100)
     else:
         rover.set_util(0)
+        '''
 
     # set hook
-    rover.set_hook(hook*100)
+    #rover.set_hook(hook*100)
 
     # set sci
+    '''
     if sci_control.buttons[0] == 1:
         rover.set_sci(0)
     elif sci_control.buttons[1] == 1:
@@ -850,13 +853,15 @@ while run:
     else:
         pass
         #rover.set_sci(0)
-
+        '''
+    '''
     if lumin_control.buttons[0] == 0:
         rover.set_button(95)
     elif lumin_no == 1:
         rover.set_button(-200)
     else:
         rover.set_button(-45)
+        '''
 
 
 
