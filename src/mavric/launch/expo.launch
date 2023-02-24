@@ -1,4 +1,5 @@
 <launch>
+    <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH4" />
     <group ns="Drive">
         <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" >
             <remap from="Drive_Train" to="Drive_Command" />
@@ -17,6 +18,7 @@
         </node>
     </group>
     <group ns="Arm">
+        <arg name="ClawActuation_Scale" value="1.0" />
         <node name="Armtrain" pkg="mavric" type="mavric_CAN_Arm_Train" >
           <param name="sr_ramp_rate_up" value="300"/>
           <param name="sr_ramp_rate_down" value="400"/>
@@ -38,5 +40,23 @@
         <node name="Arm_Interface" pkg="mavric" type="Arm_P.py" respawn="true">
             <param name="port" value="10001" />
         </node>
+        <node name="ClawActuation_Scale" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="ClawActuation" />
+            <param name="outputs" value="$(arg ClawActuationPWM_CH)" />
+            <param name="slopes"      value="$(eval ClawActuation_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+        </node>
     </group>
+    <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
+        <param name="container" value="SlowPWM/" />
+        <param name="control_mode" value="PulseTime" />
+        <param name="frequency" value="50" />
+    
+        <!-- addresses start at 0x40 (64) and can be configured on the board -->
+        <param name="address" value="64" />
+        
+        <!-- we want to run as fast as possible here -->
+        <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+        <param name="clk_error" value="1.04166667" />
+    </node>
 </launch>
