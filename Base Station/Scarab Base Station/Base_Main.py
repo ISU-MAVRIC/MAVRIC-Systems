@@ -626,7 +626,7 @@ while run:
             try:
                 if arm_joy.check_stick(joystick.Joystick(event.joy)):
                     if event.axis == 0:
-                        arm_xyl.axis[0] = round(event.value, 2)
+                        arm_xyl.axis[0] = -1 * round(event.value, 2)
                     if event.axis == 1:
                         arm_xyl.axis[1] = round(event.value, 2)
                     if event.axis == 2:
@@ -636,7 +636,7 @@ while run:
                         ep_vel = -(round(event.value) + 1) / 2
                         arm_trigr.axis[0] = -round(event.value, 2)
                     if event.axis == 3:
-                        arm_xyr.axis[0] = round(event.value, 2)
+                        arm_xyr.axis[0] = -1 * round(event.value, 2)
                     if event.axis == 4:
                         arm_xyr.axis[1] = round(event.value, 2)
             except:
@@ -813,9 +813,9 @@ while run:
 
     # set position for hook
     if hook_control.buttons[0] == 1 and hook <= 1:
-        hook += 0.05
+        hook += 0.02
     elif hook_control.buttons[1] == 1 and hook >= -1:
-        hook -= 0.05
+        hook -= 0.02
 
     # set wheel drive and position
     if joy is True:
