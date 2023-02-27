@@ -11,5 +11,12 @@
         <remap from="Drive_Train" to="/Drive/Drive_Command" />
         <remap from="Steer_Train" to="/Drive/Steer_Command" />
     </node>
+    <node name="BNO055" pkg="mavric" type="BNO055_IMU.py" respawn="true">
+        <remap from="/IMU/FusedAngle" to="/HW/IMU/FusedAngle" />
+    </node>
+    <node name="GPS" pkg="mavric" type="GPS_Streamer.py" respawn="true">
+        <remap from="GPS_Data" to="/HW/GPS_Data" />
+        <remap from="GPS_Fix" to="/HW/GPS_Fix" />
+    </node>
     
 </launch>
