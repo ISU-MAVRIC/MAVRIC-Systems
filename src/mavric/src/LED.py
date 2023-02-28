@@ -62,6 +62,11 @@ class Strip(LED):
     def setBrightness(self, brightness):
         pass
 
+
+
+
+
+
 '''
 
 class LightPole(LED):
