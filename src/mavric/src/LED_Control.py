@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import rospy
+import board
 
 from mavric.msg import LED
 from LED import LightPole
