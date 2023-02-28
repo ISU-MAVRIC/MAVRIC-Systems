@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from std_msgs.msg import Bool
 import rospy
-import board
+
 import Jetson.GPIO as GPIO
 import neopixel
 
-pixels = neopixel.NeoPixel(board.D18, 30)
+pixels = neopixel.NeoPixel(GPIO.D18, 30)
 
 class LED(ABC):
 
