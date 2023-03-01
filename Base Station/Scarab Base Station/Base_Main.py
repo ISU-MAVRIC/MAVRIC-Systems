@@ -628,15 +628,15 @@ while run:
                     if event.axis == 0:
                         arm_xyl.axis[0] = -1 * round(event.value, 2)
                     if event.axis == 1:
-                        arm_xyl.axis[1] = round(event.value, 2)
-                    if event.axis == 2:
+                        arm_xyl.axis[1] = -1 * round(event.value, 2)
+                    if event.axis == 5:
                         ep_vel = (round(event.value) + 1) / 2
                         arm_trigl.axis[0] = -round(event.value, 2)
-                    if event.axis == 5:
+                    if event.axis == 2:
                         ep_vel = -(round(event.value) + 1) / 2
                         arm_trigr.axis[0] = -round(event.value, 2)
                     if event.axis == 3:
-                        arm_xyr.axis[0] = -1 * round(event.value, 2)
+                        arm_xyr.axis[0] =  round(event.value, 2)
                     if event.axis == 4:
                         arm_xyr.axis[1] = round(event.value, 2)
             except:
