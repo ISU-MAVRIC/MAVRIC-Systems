@@ -829,7 +829,7 @@ while run:
     rover.set_drive(d_lf, d_lm, d_lb, d_rf, d_rm, d_rb, str_lf, str_lb, str_rf, str_rb)
 
     # set cam
-    #rover.set_arm_cam(arm_cam_control.axis[0]*100, arm_cam_control.axis[1]*100)
+    rover.set_arm_cam(arm_cam_control.axis[0]*100, arm_cam_control.axis[1]*100)
 
     # set util
     '''
