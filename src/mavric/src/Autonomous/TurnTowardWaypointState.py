@@ -25,6 +25,7 @@ class TurnTowardWaypoint(State):
         return copysign(turn_speed, self.get_angular_error())
     
     def enter(self):
+        auto_globals.debug_pub.publish("Entering TurnTowardWaypointState.py")
         self.angular_error = auto_globals.ANG_ERROR_THRESHOLD * 2   #arbitrary, default
         lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(0)
         auto_globals.drive_pub.publish(0,0,0,0,0,0)
@@ -68,6 +69,7 @@ class TurnTowardWaypoint(State):
             return self._stateMachine.idle
 
         if(abs(self.get_angular_error()) < auto_globals.ANG_ERROR_THRESHOLD):
+            auto_globals.debug_pub.publish("Exiting TurnTowardWaypointState.py")
             return self._stateMachine.driveTowardWaypoint
 
         return self._stateMachine.turnTowardWaypoint
