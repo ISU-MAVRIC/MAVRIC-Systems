@@ -8,8 +8,11 @@ from driver import Driver
 from StateMachine import State
 
 
-#On inital trek to a waypoint, turn twords the waypoint, then advance the state
-
+"""
+Description:
+- Steers the rover towards the next path point
+- Uses point steer
+"""
 class TurnTowardPathPoint(State):
 
     def __init__(self, stateMachine):
@@ -36,9 +39,13 @@ class TurnTowardPathPoint(State):
     
 
     def enter(self):
-
+        """
+        Enters from:
+        - NextPathPoint
+        """
         self.angular_error = g.ANG_ERROR_THRESHOLD * 2   #arbitrary, default
 
+        # Set wheels to point steer position
         lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(0)
         g.drive_pub.publish(0,0,0,0,0,0)
         g.steer_pub.publish(lfs, lbs, rfs, rbs)
@@ -64,6 +71,11 @@ class TurnTowardPathPoint(State):
 
 
     def run(self):
+        """
+        Description:
+        - First it calculates the heading from the rover's current position to the next point
+        - Then using IMU data it turns the rover to the desired heading
+        """
         g.prev_fix_time = g.fix_time  #update in gps_cb
 
         #g.debug_pub.publish("a"+str(g.desired_heading))
@@ -82,6 +94,12 @@ class TurnTowardPathPoint(State):
 
 
     def next(self):
+        """
+        Exits to:
+        - Idle
+        - NextPathPoint
+        - DriveTowardPathPoint
+        """
         if(not g.enabled or not g.good_fix or g.fix_timeout):
             return self._stateMachine.idle
         

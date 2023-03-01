@@ -1,16 +1,16 @@
 #global constants
 LIN_ERROR_THRESHOLD = 5     #arbitrary, meters
 ANG_ERROR_THRESHOLD = 10    #arbitrary, degrees
-ANG_POINT_STEER_MAX = 50 #between 1-100 (inclusive)
-ANG_POINT_STEER_MIN = 5 
+ANG_POINT_STEER_MAX = 20 #between 1-100 (inclusive)
+ANG_POINT_STEER_MIN = 2 
 ANG_POINT_STEER_TIMEOUT = 10000 #max ms until Turn state exit
 UPDATE_INTERVAL = 1
 FIX_TIMEOUT_THRESHOLD = UPDATE_INTERVAL * 5
 
 #control flags
-enabled = False
+enabled = True
 good_fix = False
-good_imu = False
+good_imu = True
 fix_timeout = False   #unnecessary?
 
 #location data
