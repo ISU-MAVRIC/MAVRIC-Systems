@@ -14,11 +14,12 @@
     <node name="BNO055" pkg="mavric" type="BNO055_IMU.py" respawn="true">
         <remap from="/IMU/FusedAngle" to="/HW/IMU/FusedAngle" />
     </node>
-    <node name="GPS" pkg="mavric" type="GPS_Streamer.py" respawn="true">
+    <!-- <node name="GPS" pkg="mavric" type="GPS_Streamer.py" respawn="true">
         <remap from="GPS_Data" to="/HW/GPS_Data" />
         <remap from="GPS_Fix" to="/HW/GPS_Fix" />
-    </node>
-    <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" >
+    </node> -->
+    <group ns="Drive">
+        <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" >
             <remap from="Drive_Train" to="Drive_Command" />
             <remap from="Steer_Train" to="Steer_Command" />
         </node>
