@@ -8,7 +8,7 @@ UPDATE_INTERVAL = 1
 FIX_TIMEOUT_THRESHOLD = UPDATE_INTERVAL * 5
 
 #control flags
-enabled = True
+enabled = False
 good_fix = False
 good_imu = True
 fix_timeout = False   #unnecessary?

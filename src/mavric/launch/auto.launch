@@ -1,4 +1,6 @@
 <launch>
+    <arg name="nosim" default="true" />
+    <arg name="nogps" default="false" />
 
     <node name="Auto_Interface" pkg="mavric" type="Autonomous_P.py" respawn="true">
     </node>
@@ -14,7 +16,11 @@
     <group ns="HW">
         <node name="BNO055" pkg="mavric" type="BNO055_IMU.py" respawn="true">
         </node>
-        <node name="GPS" pkg="mavric" type="GPS_Streamer.py" respawn="true">
+        <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)">
+        </node>
+        <node name="GPS_Sim" pkg="mavric" type="GPS_Sim.py" respawn="true" unless="$(arg nosim)">
+            <remap from="FusedAngle" to="IMU/FusedAngle" />
+            <remap from="Drive_Train" to="/Drive/Drive_Command" />
         </node>
     </group>
 
