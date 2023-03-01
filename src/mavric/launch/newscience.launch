@@ -1,5 +1,7 @@
 <launch>
     <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH4" />
+    <arg name="CamRotPWM_CH" value="/SlowPWM/CH5" />
+    <arg name="CamPitchPWM_CH" value="/SlowPWM/CH6" />
     <group ns="Drive">
         <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" >
             <remap from="Drive_Train" to="Drive_Command" />
@@ -19,6 +21,8 @@
     </group>
     <group ns="Arm">
         <arg name="ClawActuation_Scale" value="1.0" />
+        <arg name="CamRot_Scale" value="1.0" />
+        <arg name="CamPitch_Scale" value="1.0" />
         <node name="Armtrain" pkg="mavric" type="mavric_CAN_Arm_Train" >
           <param name="sr_ramp_rate_up" value="300"/>
           <param name="sr_ramp_rate_down" value="400"/>
@@ -44,6 +48,18 @@
             <param name="inputs"  value="ClawActuation" />
             <param name="outputs" value="$(arg ClawActuationPWM_CH)" />
             <param name="slopes"      value="$(eval ClawActuation_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+        </node>
+        <node name="CamRot_Scale" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="CamRot" />
+            <param name="outputs" value="$(arg CamRotPWM_CH)" />
+            <param name="slopes"      value="$(eval CamRot_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+        </node>
+        <node name="CamPitch_Scale" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="CamPitch" />
+            <param name="outputs" value="$(arg CamPitchPWM_CH)" />
+            <param name="slopes"      value="$(eval CamPitch_Scale*0.001/100)" />
             <param name="intercepts"  value="0.0015" />
         </node>
     </group>
