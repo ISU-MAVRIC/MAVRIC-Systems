@@ -18,7 +18,7 @@ import scarab
 joysticks = []
 drive_stick_name =  "Madcatz Mad Catz V.1 Stick" #"Logitech Extreme 3D"
 drive_joy_name = " " #"Controller (Xbox One For Windows)"
-arm_stick_name =  "PDP Xbox 360 Afterglow" #'Xbox One S Controller' #Xbox 360 Controller" # 'Xbox One S Controller'"PDP Xbox 360 Afterglow"
+arm_stick_name =  "PDP Xbox 360 Rock Candy" #'Xbox One S Controller' #Xbox 360 Controller" # 'Xbox One S Controller'"PDP Xbox 360 Afterglow"
 joy = True
 master_ip = "192.168.1.10"
 cal = [0, 0, 0, 0]
@@ -91,7 +91,7 @@ def calc_drive(tank, car, point, manual, tdrive, tsteer, cdrive, csteer, pdrive,
         right = -100*(tdrive*sensdrive + tsteer*senssteer/2)
         #print(sensdrive)
         return left, left, left, right, right, right, 0, 0, 0, 0
-    elif car:
+    elif car:il
         in_angle = math.radians(abs(csteer*100*senssteer))*0.9
         #print(in_angle)
         if in_angle != 0:
