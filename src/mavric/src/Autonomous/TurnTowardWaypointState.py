@@ -37,8 +37,8 @@ class TurnTowardWaypoint(State):
 
         #set first waypoint in array as target
         tgt = [0, 0]
-        tgt[0] = auto_globals.waypoints[0][0]
-        tgt[1] = auto_globals.waypoints[0][1]
+        tgt[1] = auto_globals.waypoints[0][0]
+        tgt[0] = auto_globals.waypoints[0][1]
 
         #capture position in case it changes later
         pos = auto_globals.position
@@ -46,21 +46,25 @@ class TurnTowardWaypoint(State):
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
         geod = Geodesic.WGS84.Inverse(pos[1], pos[0], tgt[1], tgt[0])
+        auto_globals.state_ind.publish(str(pos))
+        auto_globals.state_ind.publish(str(tgt))
 
         self.desired_heading = geod['azi1']
+        auto_globals.state_ind.publish(str(geod))
 
         start_time = time.time()
         #auto_globals.debug_pub.publish(str(tgt))
         #auto_globals.debug_pub.publish(str(pos))
         #auto_globals.debug_pub.publish(str(geod))
-        while abs(self.get_angular_error()) > auto_globals.ANG_ERROR_THRESHOLD and time.time() < (start_time + auto_globals.ANG_POINT_STEER_TIMEOUT) and auto_globals.enabled:
+        while abs(self.get_angular_error()) > auto_globals.ANG_ERROR_THRESHOLD and auto_globals.enabled:
             auto_globals.debug_pub.publish(str(self.get_ramped_turn_speed()))
+            auto_globals.state_ind.publish("starting turn")
             lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())
             auto_globals.debug_pub.publish(str(self.get_angular_error()))
             auto_globals.debug_pub.publish("a"+str(self.desired_heading))
             auto_globals.drive_pub.publish(lf, lm, lb, rf, rm, rb)
             auto_globals.steer_pub.publish(lfs, lbs, rfs, rbs)
-
+        auto_globals.state_ind.publish("unflexing")
         auto_globals.drive_pub.publish(0,0,0,0,0,0)
         auto_globals.steer_pub.publish(0,0,0,0)
 

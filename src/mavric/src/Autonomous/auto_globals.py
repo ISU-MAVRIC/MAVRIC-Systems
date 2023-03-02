@@ -1,6 +1,6 @@
 #global constants
-LIN_ERROR_THRESHOLD = 5     #arbitrary, meters
-ANG_ERROR_THRESHOLD = 10    #arbitrary, degrees
+LIN_ERROR_THRESHOLD = 1     #arbitrary, meters
+ANG_ERROR_THRESHOLD = 5    #arbitrary, degrees
 ANG_POINT_STEER_MAX = 20 #between 1-100 (inclusive)
 ANG_POINT_STEER_MIN = 2 
 ANG_POINT_STEER_TIMEOUT = 10000 #max ms until Turn state exit

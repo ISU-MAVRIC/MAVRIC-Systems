@@ -20,8 +20,8 @@ class DriveTowardWaypoint(State):
 
         #set first waypoint in array as target
         tgt = [0, 0]
-        tgt[0] = auto_globals.waypoints[0][0]
-        tgt[1] = auto_globals.waypoints[0][1]
+        tgt[1] = auto_globals.waypoints[0][0]
+        tgt[0] = auto_globals.waypoints[0][1]
 
         #capture position in case it changes later
         pos = auto_globals.position
@@ -61,7 +61,7 @@ class DriveTowardWaypoint(State):
         
         #controls the top end of the curve. top velocity, presumably 0 -> 100
         #TODO check range, starting with 40 percent power, if 100 is max velocity
-        b = 20
+        b = 40
         
         #r controls when the deccel starts, 0.75 is around 10 - 15m
         #0.3 is around 20m
@@ -99,8 +99,8 @@ class DriveTowardWaypoint(State):
         #remember linear error for the next cycle
         auto_globals.prev_linear_error = self.linear_error
 
-	#auto_globals.debug_pub.publish("lin error, left power, right power")
-	#auto_globals.debug_pub.publish("%d, %d, %d" % (self.linear_error, left_power, right_power))
+	auto_globals.debug_pub.publish("lin error")
+	auto_globals.debug_pub.publish(str(self.linear_error))
 
     def next(self):
         if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):

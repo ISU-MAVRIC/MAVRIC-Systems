@@ -1,6 +1,6 @@
 <launch>
-    <arg name="nosim" default="false" />
-    <arg name="nogps" default="true" />
+    <arg name="nosim" default="true" />
+    <arg name="nogps" default="false" />
 
     <node name="Auto_Interface" pkg="mavric" type="Autonomous_P.py" respawn="true">
     </node>
