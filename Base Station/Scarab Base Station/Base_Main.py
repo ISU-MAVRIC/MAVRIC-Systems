@@ -91,7 +91,7 @@ def calc_drive(tank, car, point, manual, tdrive, tsteer, cdrive, csteer, pdrive,
         right = -100*(tdrive*sensdrive + tsteer*senssteer/2)
         #print(sensdrive)
         return left, left, left, right, right, right, 0, 0, 0, 0
-    elif car:il
+    elif car:
         in_angle = math.radians(abs(csteer*100*senssteer))*0.9
         #print(in_angle)
         if in_angle != 0:
