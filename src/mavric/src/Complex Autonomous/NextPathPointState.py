@@ -15,6 +15,7 @@ class NextPathPoint(State):
         g.debug_pub.publish(str(len(g.pathpoints["linear"]))+ ", "+str(g.pathpoint_num))
         g.desired_heading = 0
         g.state = "NextPathPoint"
+        g.state_ind.publish("Entering NextPathPointState")
 
     def run(self):
         self.linear = g.pathpoints["linear"][g.pathpoint_num]
@@ -23,12 +24,15 @@ class NextPathPoint(State):
     
     def next(self):
         if not g.enabled or not g.good_fix or g.fix_timeout:
+            g.state_ind.publish("Leaving NextPathPointState attempting to enter IdleState")
             return self._stateMachine.idle
         
         if self.linear is True:
+            g.state_ind.publish("Leaving NextPathPointState attempting to enter turnTowardPathPointState")
             return self._stateMachine.turnTowardPathPoint
         
         if self.linear is False:
+            g.state_ind.publish("Leaving NextPathPointState attempting to enter bankTowardPathPointState")
             return self._stateMachine.bankTowardPathPoint
 
         return self._stateMachine.nextPathPoint

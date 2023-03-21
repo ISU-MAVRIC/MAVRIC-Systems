@@ -13,6 +13,7 @@ class Idle(State):
         g.steer_pub.publish(0, 0, 0, 0)
         g.desired_heading = 0
         g.state = "Idle"
+        g.state_ind.publish("Entering IdleState")
 
 
     def run(self):
@@ -25,6 +26,7 @@ class Idle(State):
         if(g.enabled and len(g.waypoints) > 0 and g.good_fix and g.good_imu and not g.fix_timeout):
             # set next waypoint
             g.path.set_end_point(g.waypoints[0])
+            g.state_ind.publish("Leaving IdleState attempting to enter NextPathPointState")
             return self._stateMachine.nextPathPoint
 
         return self._stateMachine.idle

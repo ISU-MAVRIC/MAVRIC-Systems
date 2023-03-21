@@ -77,3 +77,4 @@ debug_pub = None
 status_pub = None
 indicator_pub = None
 aruco_pub = None
+state_ind = None

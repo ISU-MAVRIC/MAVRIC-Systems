@@ -15,6 +15,7 @@ class BankTowardPathPoint(State):
         self.tgt[1] = g.pathpoints["position"][g.pathpoint_num][1]
         g.desired_heading = g.pathpoints["heading"][g.pathpoint_num]
         self.turn_radius = g.pathpoints["radius"][g.pathpoint_num]
+        g.state_ind.publish("Entering BankTowardPathPointState")
         g.state = "BankTowardPathPoint"
         
     
@@ -52,12 +53,15 @@ class BankTowardPathPoint(State):
 
     def next(self):
         if(not g.enabled or not g.good_fix or g.fix_timeout):
+            g.state_ind.publish("Leaving BankTowardPathPointState attempting to enter IdleState")
             return self._stateMachine.idle
             
         if(self.linear_error <= g.LIN_ERROR_THRESHOLD and self.angular_error < g.ANG_ERROR_THRESHOLD):
             if self.tgt == g.waypoints[0]:
+                g.state_ind.publish("Leaving BankTowardPathPointState attempting to enter ReachedWaypointState")
                 return self._stateMachine.reachedWaypoint
             else:
+                g.state_ind.publish("Leaving BankTowardPathPointState attempting to enter NextPathPointState")
                 return self._stateMachine.nextPathPoint
         
         return self._stateMachine.bankTowardPathPoint

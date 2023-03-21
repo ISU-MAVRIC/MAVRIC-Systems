@@ -12,6 +12,7 @@ class ReachedWayPoint(State):
         g.steer_pub.publish(0, 0, 0, 0)
         g.desired_heading = 0
         g.state = "ReachedWaypoint"
+        g.state_ind.publish("Entering ReachedWaypointState")
         self.blink = True
         g.indicator_pub.publish(self.blink, 255, "Green")
         self.stop_time = time.time()
@@ -33,12 +34,14 @@ class ReachedWayPoint(State):
                 g.waypoints.pop(0)
                 g.waypoint_id.pop(0)
                 g.path.set_end_point(g.waypoints[0])
+                g.state_ind.publish("Leaving ReachedWayPointState attempting to enter NextPathPointState")
                 return self._stateMachine.nextPathPoint
 
             if(len(g.waypoints) > 0):
                 g.pathpoint_num = 0
                 g.waypoints.pop(0)
                 g.waypoint_id.pop(0)
+                g.state_ind.publish("Leaving ReachedWayPointState attempting to enter IdleState")
                 return self._stateMachine.idle
         
         return self._stateMachine.reachedWaypoint

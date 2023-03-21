@@ -20,6 +20,7 @@ class DriveTowardPathPoint(State):
         self.tgt[1] = g.pathpoints["position"][g.pathpoint_num][1]
         g.steer_pub.publish(0,0,0,0)
         g.state = "DriveTowardPathPoint"
+        g.state_ind.publish("Entering DriveTowardPathPointState")
         time.sleep(5)
 
     def run(self):
@@ -99,12 +100,15 @@ class DriveTowardPathPoint(State):
 
     def next(self):
         if(not g.enabled or not g.good_fix or g.fix_timeout):
+            g.state_ind.publish("Leaving DriveTowardPathPointState attempting to enter IdleState")
             return self._stateMachine.idle
             
         if(self.linear_error <= g.LIN_ERROR_THRESHOLD):
             if self.tgt == g.waypoints[0]:
+                g.state_ind.publish("Leaving DriveTowardPathPointState attempting to enter ReachedWayPointState")
                 return self._stateMachine.reachedWaypoint
             else:
+                g.state_ind.publish("Leaving DriveTowardPathPointState attempting to enter NextPathPointState")
                 return self._stateMachine.nextPathPoint
         
         if self.tgt != g.pathpoints["position"][g.pathpoint_num]:
@@ -118,9 +122,11 @@ class DriveTowardPathPoint(State):
                     return self._stateMachine.driveTowardPathPoint
                 else:
                     g.pathpoint_num += -1
+                    g.state_ind.publish("Leaving DriveTowardPathPointState attempting to enter NextPathPointState")
                     return self._stateMachine.nextPathPoint
             else:
                 g.pathpoint_num += -1
+                g.state_ind.publish("Leaving DriveTowardPathPointState attempting to enter NextPathPointState")
                 return self._stateMachine.nextPathPoint
         
         return self._stateMachine.driveTowardPathPoint

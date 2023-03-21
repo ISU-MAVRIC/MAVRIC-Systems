@@ -67,6 +67,7 @@ def gps_fix_cb(data):
     g.good_fix = data.data #data.data
 
 
+
 def gps_cb(data):
     # how often does the gps publish? do we have to compare values here?
 
@@ -101,6 +102,8 @@ def aruco_cb(data):
         i = g.posts["id"].index(data.id)
         g.posts["distance"][i] = data.z
         g.debug_pub.publish("GOT ARUCO DEPTH")
+        
+
 
 # main loop
 auto = AutonomousStateMachine()
@@ -118,6 +121,7 @@ def main():
     g.status_pub = rospy.Publisher("Status", Auto_Status, queue_size=10)
     g.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
     g.aruco_pub = rospy.Publisher("Aruco/pos", Aruco, queue_size=10)
+    g.state_pub = rospy.Publisher("State_Indicator", String, queue_size=10)
 
     cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)

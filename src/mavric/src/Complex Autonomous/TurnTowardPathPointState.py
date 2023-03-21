@@ -38,7 +38,7 @@ class TurnTowardPathPoint(State):
     def enter(self):
 
         self.angular_error = g.ANG_ERROR_THRESHOLD * 2   #arbitrary, default
-
+        g.state_ind.publish("Entering TurnTowardPathPointState")
         lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(0)
         g.drive_pub.publish(0,0,0,0,0,0)
         g.steer_pub.publish(lfs, lbs, rfs, rbs)
@@ -83,13 +83,16 @@ class TurnTowardPathPoint(State):
 
     def next(self):
         if(not g.enabled or not g.good_fix or g.fix_timeout):
+            g.state_ind.publish("Leaving TurnTowardPathPointState attempting to enter IdleState")
             return self._stateMachine.idle
         
         if(self.tgt != g.pathpoints["position"][g.pathpoint_num]):
             g.pathpoint_num += -1
+            g.state_ind.publish("Leaving TurnTowardPathPointState attempting to enter NextPathPointState")
             return self._stateMachine.nextPathPoint
 
         if(abs(self.get_angular_error()) < g.ANG_ERROR_THRESHOLD):
+            g.state_ind.publish("Leaving TurnTowardPathPointState attempting to enter DriveTowardPathPointState")
             return self._stateMachine.driveTowardPathPoint
 
         return self._stateMachine.turnTowardPathPoint
