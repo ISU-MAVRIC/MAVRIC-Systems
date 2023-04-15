@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <package>
   <name>mavric</name>
-  <version>0.1.0</version>
-  <description>The mavric package. Designed to operate the current revision of MAVRIC:Phoenix</description>
+  <version>0.2.0</version>
+  <description>The mavric package. Designed to operate the current revision of MAVRIC: Scarab</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="bcra@iastate.edu">pi</maintainer>
+  <maintainer email="itsnate@iastate.edu">Nate Logston</maintainer>
+  <maintainer email="gabe25@iastate.edu">Gabe Carlson</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -20,20 +21,14 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <url type="repository">https://github.com/m2i/MAVRIC-Electrical/tree/ROS-Experiments</url> -->
+  <url type="repository">https://github.com/ISU-MAVRIC/MAVRIC-Systems</url> -->
   <url type="website">https://m2i.aere.iastate.edu/mavric/</url> -->
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
   <!-- Authors do not have to be maintainers, but could be -->
   <!-- Example: -->
-  <author email="jtalbert@iastate.edu">James Talbert</author>
-  <author email="bcra@iastate.edu">Brady Anderson</author>
-  <author email="jmobrien@iastate.edu">Jefferson O'Brien</author>
-  <author email="aavande@iastate.edu">Alexander Vande Loo</author>
-  <author email="foley146@iastate.edu">Morgan Foley</author>
-  <author email="svashi@iastate.edu">Shivam Vashi</author>
-  <author email="jmayes@iastate.edu">Jensen Mayes</author>
-  <author email="jmraymer@iastate.edu">Jacob Raymer</author>
+  <author email="gabe25@iastate.edu">Gabe Carlson</author>
+  <author email="itsnate@iastate.edu">Nate Logston</author>
 
   <!-- The *_depend tags are used to specify dependencies -->
   <!-- Dependencies can be catkin packages or system dependencies -->

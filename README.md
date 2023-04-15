@@ -2,7 +2,7 @@
 The repository for the Systems Team. Contains all resources pertaining to the Systems Team, including: rover and base station code, custom PCB designs, electrical diagrams, and rover documentation. Clone this repository to your computer with Git Bash, GitHub Desktop, or another Git client to edit files. Talk to the current Systems Team Lead or the current MAVRIC Project Manager to get commit access so you can push your changes to the repository.
 
 ## Repository Structure
-MAVRIC maintains two rovers as of 12/2020: the previous-generation Phoenix and the next-gen Scarab. The code for Phoenix was captured as a GitHub release and can be viewed by checking out the _Phoenix - Stable_ release, tagged `v1.0.0`. Use `git checkout v1.0.0` in Git Bash or the equivalent feature in your Git client to load the Phoenix code. Each rover's code will be tagged with a release name and version number once it is complete; this repository will otherwise reflect the code state of the most recent rover in development.
+MAVRIC currently only maintains the Scarab code base. The code for Phoenix, our previous rover, was captured as a GitHub release and can be viewed by checking out the _Phoenix - Stable_ release, tagged `v1.0.0`. Use `git checkout v1.0.0` in Git Bash or the equivalent feature in your Git client to load the Phoenix code. Each rover's code will be tagged with a release name and version number once it is complete; this repository will otherwise reflect the code state of the most recent rover in development.
 
 Newer code is not backwards-compatible with previous generation rovers. For example, the base station software intended for use with Scarab is not compatible with Phoenix.
 

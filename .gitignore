@@ -23,6 +23,7 @@ _autosave-*
 **/gerber/**
 Electrical/~$PowerBudget.xlsx
 
+#Generated when compiling software
 */build/*
 build/*
 */devel/*
@@ -39,5 +40,7 @@ rospy
 *~
 *.DS_Store
 
+
+#IDE Config files
 .idea
 /.vscode/
