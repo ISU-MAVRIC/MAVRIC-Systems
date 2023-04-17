@@ -93,6 +93,7 @@ def main():
     auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
     auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
+    auto_globals.state_ind = rospy.Publisher("State_Indicator", String, queue_size=10)
     #auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
 
 
