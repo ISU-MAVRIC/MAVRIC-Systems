@@ -50,12 +50,6 @@
     </node>
 
 	
-    <node name="ADC_Monitor" pkg="mavric" type="Voltage_Monitor.py" respawn="true">
-      <param name="frequency" value="100" />
-      
-      <!-- Address defaults to 0x18 (24) and can be configured on the board -->
-      <!-- See datasheet for address configuration table -->
-    </node>
 
     <node name="IMU_Streamer" pkg="mavric" type="BNO055_IMU.py" respawn="true" >
       <remap from="IMU_Cal_Servo" to="IMUServoPWM_CH" />
