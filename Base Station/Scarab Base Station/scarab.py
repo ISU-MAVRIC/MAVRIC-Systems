@@ -5,7 +5,6 @@ import threading
 
 class Scarab:
     _temperature_getter = None
-    _voltage_getter = None
     _steer_getter = None
     _arm_getter = None
     _run = True
@@ -21,13 +20,11 @@ class Scarab:
         self._test = test
         self._temperature_getter = ValueGetter(ip, 8002, float)
         self._arm_getter = ValueGetter(ip, 10002, int)
-        self._voltage_getter = ValueGetter(ip, 8003, float)
         self._steer_getter = ValueGetter(ip, 9005, int)
 
     def open(self):
         self._temperature_getter.start()
         #self._arm_getter.start()
-        self._voltage_getter.start()
         #self._steer_getter.start()
         self._gps.start()
 
@@ -41,9 +38,6 @@ class Scarab:
         if self._arm_getter is not None:
             self._arm_getter.close()
             self._arm_getter._good_fix = False
-        if self._voltage_getter is not None:
-            self._voltage_getter.close()
-            self._voltage_getter._good_fix = False
         if self._steer_getter is not None:
             self._steer_getter.close()
             self._steer_getter._good_fix = False
@@ -279,12 +273,6 @@ class Scarab:
         else:
             return self._steer_getter.value
 
-    @property
-    def voltage(self):
-        if self._voltage_getter.value is None:
-            return [None, None]
-        else:
-            return self._voltage_getter.value
 
     @property
     def arm_feedback(self):

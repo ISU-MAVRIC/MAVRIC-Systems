@@ -50,7 +50,6 @@ alpha = 0
 wheel_length = 43.75
 wheel_width = 30
 temp = None
-voltage = [None, None]
 mouse_pos = [0, 0]
 ac_hor = 0
 ac_vert = 0
@@ -273,8 +272,6 @@ drive_manual_xy = Base.Axis([0, 0], 100, 625, "rectangle", "Manual")
 arm_enable = Base.Button([0, 1], 225, 525, "column", ["Arm Enable", "Arm Disable"])
 auto_en = Base.Button([0, 1], 225, 375, "column", ["Auto Enable", "Auto Disable"])
 temp_data = Base.Data("Temperature", 618, 625, 100, "C", 2)
-bat1_data = Base.Data("Bat 1 Voltage", 768, 625, 100, "V", 2)
-bat2_data = Base.Data("Bat 2 Voltage", 918, 625, 100, "V", 2)
 long_data = Base.Data("Longitude", 618, 525, 125, "deg", 6)
 lat_data = Base.Data("Latitude", 768, 525, 125, "deg", 6)
 head_data = Base.Data("Heading", 918, 525, 100, "deg", 2)
@@ -912,8 +909,6 @@ while run:
     #arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
     auto_en.draw(win, infofont, (255, 255, 255), (105, 48, 195))
     temp_data.draw(win, rover._temperature_getter.value, infofont, (255, 255, 255), (200, 0, 200)) #rover.temperature
-    bat1_data.draw(win, rover.voltage[0], infofont, (255, 255, 255), (232, 69, 69)) #rover.voltage[0]
-    bat2_data.draw(win, rover.voltage[1], infofont, (255, 255, 255), (232, 69, 69)) #rover.voltage[1]
     long_data.draw(win, rover._gps.longitude, infofont, (255, 255, 255), (91, 138, 114)) #rover._gps.longitude
     lat_data.draw(win, rover._gps.latitude, infofont, (255, 255, 255), (91, 138, 114)) #rover._gps.latitude
     head_data.draw(win, rover._gps.heading, infofont, (255, 255, 255), (91, 138, 114)) #rover._gps.heading

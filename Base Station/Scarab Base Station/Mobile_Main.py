@@ -48,7 +48,6 @@ alpha = 0
 wheel_length = 37.5
 wheel_width = 28.5
 temp = None
-voltage = [None, None]
 mouse_pos = [0, 0]
 
 
@@ -175,8 +174,6 @@ arm_ab = Base.Button([0, 0], 363, 625, "row", ["-Z Pos", "+Z Pos"])
 drive_manual_xy = Base.Axis([0, 0], 100, 625, "rectangle", "Manual")
 arm_enable = Base.Button([0, 1], 225, 525, "column", ["Arm Enable", "Arm Disable"])
 temp_data = Base.Data("Temperature", 618, 625, 100, "C", 2)
-bat1_data = Base.Data("Bat 1 Voltage", 768, 625, 100, "V", 2)
-bat2_data = Base.Data("Bat 2 Voltage", 918, 625, 100, "V", 2)
 
 # py initialization
 py.init()
@@ -569,8 +566,6 @@ while run:
     #arm_ab.draw(win, infofont, (255, 255, 255), (240, 89, 69))
     #arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
     #temp_data.draw(win, rover.temperature, infofont, (255, 255, 255), (200, 0, 200))
-    #bat1_data.draw(win, rover.voltage[0], infofont, (255, 255, 255), (232, 69, 69))
-    #bat2_data.draw(win, rover.voltage[1], infofont, (255, 255, 255), (232, 69, 69))
 
     display.flip()
     win.fill((0, 0, 0))
