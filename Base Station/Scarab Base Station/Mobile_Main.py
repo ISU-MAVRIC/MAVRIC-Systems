@@ -47,7 +47,6 @@ cl_delta = [0, 0, 0]
 alpha = 0
 wheel_length = 37.5
 wheel_width = 28.5
-temp = None
 mouse_pos = [0, 0]
 
 
@@ -173,7 +172,6 @@ arm_cross = Base.Button([0, 0, 0, 0], 400, 450, "cross", ["+X Pos", "-X Pos", "+
 arm_ab = Base.Button([0, 0], 363, 625, "row", ["-Z Pos", "+Z Pos"])
 drive_manual_xy = Base.Axis([0, 0], 100, 625, "rectangle", "Manual")
 arm_enable = Base.Button([0, 1], 225, 525, "column", ["Arm Enable", "Arm Disable"])
-temp_data = Base.Data("Temperature", 618, 625, 100, "C", 2)
 
 # py initialization
 py.init()
@@ -565,7 +563,6 @@ while run:
     #arm_cross.draw(win, infofont, (255, 255, 255), (240, 89, 69))
     #arm_ab.draw(win, infofont, (255, 255, 255), (240, 89, 69))
     #arm_enable.draw(win, infofont, (255, 255, 255), (129, 0, 0))
-    #temp_data.draw(win, rover.temperature, infofont, (255, 255, 255), (200, 0, 200))
 
     display.flip()
     win.fill((0, 0, 0))

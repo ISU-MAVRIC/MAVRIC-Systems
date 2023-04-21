@@ -4,7 +4,6 @@ import threading
 
 
 class Scarab:
-    _temperature_getter = None
     _steer_getter = None
     _arm_getter = None
     _run = True
@@ -18,12 +17,10 @@ class Scarab:
         self._gps = GPS(ip, 8001)
         self._ip = ip
         self._test = test
-        self._temperature_getter = ValueGetter(ip, 8002, float)
         self._arm_getter = ValueGetter(ip, 10002, int)
         self._steer_getter = ValueGetter(ip, 9005, int)
 
     def open(self):
-        self._temperature_getter.start()
         #self._arm_getter.start()
         #self._steer_getter.start()
         self._gps.start()
@@ -32,9 +29,6 @@ class Scarab:
         if self._gps is not None:
             self._gps.close()
             self._gps._good_fix = False
-        if self._temperature_getter is not None:
-            self._temperature_getter.close()
-            self._temperature_getter._good_fix = False
         if self._arm_getter is not None:
             self._arm_getter.close()
             self._arm_getter._good_fix = False
@@ -259,12 +253,7 @@ class Scarab:
             print("add waypoint")
             print(e)
 
-    @property
-    def temperature(self):
-        if self._temperature_getter.value is None:
-            return None
-        else:
-            return self._temperature_getter.value
+
 
     @property
     def steer_feedback(self):
