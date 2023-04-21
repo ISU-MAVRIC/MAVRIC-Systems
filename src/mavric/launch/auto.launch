@@ -1,8 +1,9 @@
 <launch>
+    <arg name="nosim" default="true" />
+    <arg name="nogps" default="false" />
 
     <node name="Auto_Interface" pkg="mavric" type="Autonomous_P.py" respawn="true">
     </node>
-
     <node name="Auto_System" pkg="mavric" type="auto_main.py" respawn="true">
         <remap from="GPS_Fix" to="/HW/GPS_Fix" />
         <remap from="GPS" to="/HW/GPS_Data" />
@@ -11,5 +12,33 @@
         <remap from="Drive_Train" to="/Drive/Drive_Command" />
         <remap from="Steer_Train" to="/Drive/Steer_Command" />
     </node>
+
+    <group ns="HW">
+        <node name="BNO055" pkg="mavric" type="BNO055_IMU.py" respawn="true">
+        </node>
+        <node name="GPS_Streamer" pkg="mavric" type="GPS_Streamer.py" respawn="true" unless="$(arg nogps)">
+        </node>
+        <node name="GPS_Sim" pkg="mavric" type="GPS_Sim.py" respawn="true" unless="$(arg nosim)">
+            <remap from="FusedAngle" to="IMU/FusedAngle" />
+            <remap from="Drive_Train" to="/Drive/Drive_Command" />
+        </node>
+    </group>
+
+    <group ns="Drive">
+        <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" >
+            <remap from="Drive_Train" to="Drive_Command" />
+            <remap from="Steer_Train" to="Steer_Command" />
+        </node>
+        <node name="Drivetrain_Interface" pkg="mavric" type="Drive_Train_P.py" respawn="true" >
+            <remap from="Drive_Train" to="Drive_Command" />
+            <remap from="Steer_Train" to="Steer_Command" />
+            <remap from="Steer_Cal" to="Cal_Command" />
+            <param name="port" value="9002" />
+        </node>
+        <node name="Drivetrain_Heartbeat" pkg="mavric" type="DrivetrainHeartbeat.py" respawn="true" >
+            <param name="timeout" value="1" />
+            <remap from="Drive_Train" to="Drive_Command" />
+        </node>
+    </group>
     
 </launch>
