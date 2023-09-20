@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10.2)
 project(mavric)
 
 #PHOENIX_JETSONLIB = ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib
