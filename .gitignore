@@ -41,3 +41,7 @@ rospy
 
 .idea
 /.vscode/
+logs/
+*/logs/*
+.catkin_tools
+*/.catkin_tools/*
