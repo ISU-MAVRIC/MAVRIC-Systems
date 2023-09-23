@@ -73,6 +73,7 @@ add_message_files(
   Aruco.msg
   Object.msg
   ObjectVector.msg
+  Armtrain.msg
 )
 
 ## Generate services in the 'srv' folder
