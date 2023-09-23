@@ -99,7 +99,7 @@ def WR_cb(data):
         WristRot = -100
 
 def listener():
-    global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot,
+    global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot
     rospy.init_node("CAN_ATS")
 
     SR_sub = rospy.Subscriber("ShoulderRot", Float64, SR_cb, queue_size=10)
@@ -109,7 +109,7 @@ def listener():
     WR_sub = rospy.Subscriber("WristRot", Float64, WR_cb, queue_size=10)
     rosRate = rospy.Rate(30)
     while not rospy.is_shutdown():
-        spark_shoulderRot.percent_output(c_armScale * c_shoulderRot * ShoulderRot & c_ShoulderRotDir)
+        spark_shoulderRot.percent_output(c_armScale * c_ShoulderRot * ShoulderRot * c_ShoulderRotDir)
         spark_shoulderPitch.percent_output(c_armScale * c_ShoulderPitch * ShoulderPitch * c_ShoulderPitchDir)
         spark_elbowPitch.percent_output(c_armScale * c_ElbowPitch * ElbowPitch * c_ElbowPitchDir)
         spark_wristPitch.percent_output(c_armScale * c_WristPitch * WristPitch * c_WristPitchDir)
