@@ -1,5 +1,4 @@
 <launch>
-    <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH4" />
     <group ns="Arm">
         <node name="Armtrain_Control" pkg="mavric" type="SparkCAN_Arm_Train.py">
         </node>
@@ -15,17 +14,4 @@
             <param name="port" value="9002" />
         </node>
     </group>
-
-    <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
-        <param name="container" value="SlowPWM/" />
-        <param name="control_mode" value="PulseTime" />
-        <param name="frequency" value="50" />
-    
-        <!-- addresses start at 0x40 (64) and can be configured on the board -->
-        <param name="address" value="64" />
-        
-        <!-- we want to run as fast as possible here -->
-        <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
-        <param name="clk_error" value="1.04166667" />
-    </node>
 </launch>

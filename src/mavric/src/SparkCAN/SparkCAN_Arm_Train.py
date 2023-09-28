@@ -21,14 +21,11 @@ from mavric.msg import Armtrain
 from SparkCAN import SparkBus
 
 ### scales and directions 
-c_armScale = 0.25           # Governs entire arm rate
-                            # if all axis are too fast or too slow, change this value
-
 c_ShoulderPitch = 0.01      # Define individual arm rates
-c_ShoulderRot = 0.5         # If one axis is faster/slower than the others, change these values
-c_ElbowPitch = 0.5
-c_WristPitch = 0.5
-c_WristRot = 0.5
+c_ShoulderRot = 1           # If one axis is faster/slower than the others, change these values
+c_ElbowPitch = 1
+c_WristPitch = 1
+c_WristRot = 1
 
 c_ShoulderRotDir = 1        # Arm Directions
 c_ShoulderPitchDir = -1     # If axis is moving wrong way, invert these 
@@ -109,11 +106,11 @@ def listener():
     WR_sub = rospy.Subscriber("WristRot", Float64, WR_cb, queue_size=10)
     rosRate = rospy.Rate(30)
     while not rospy.is_shutdown():
-        spark_shoulderRot.percent_output(c_armScale * c_ShoulderRot * ShoulderRot * c_ShoulderRotDir)
-        spark_shoulderPitch.percent_output(c_armScale * c_ShoulderPitch * ShoulderPitch * c_ShoulderPitchDir)
-        spark_elbowPitch.percent_output(c_armScale * c_ElbowPitch * ElbowPitch * c_ElbowPitchDir)
-        spark_wristPitch.percent_output(c_armScale * c_WristPitch * WristPitch * c_WristPitchDir)
-        spark_wristRot.percent_output(c_armScale * c_WristRot * WristRot * c_WristRotDir)
+        spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot/100 * c_ShoulderRotDir)
+        spark_shoulderPitch.percent_output(c_ShoulderPitch * ShoulderPitch/100 * c_ShoulderPitchDir)
+        spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch/100 * c_ElbowPitchDir)
+        spark_wristPitch.percent_output(c_WristPitch * WristPitch/100 * c_WristPitchDir)
+        spark_wristRot.percent_output(c_WristRot * WristRot/100 * c_WristRotDir)
         rosRate.sleep()
 
 if __name__ == '__main__':
