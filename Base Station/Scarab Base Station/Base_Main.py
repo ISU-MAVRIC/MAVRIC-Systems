@@ -10,15 +10,22 @@ import socket
 import math
 from csv import reader
 
+osType = 'windows' #'windows' or 'linux'
+
 # install classes
 import Base_Data as Base
 import scarab
 
 # initial values
 joysticks = []
-drive_stick_name =  "Madcatz Mad Catz V.1 Stick" #"Logitech Extreme 3D"
-drive_joy_name = " " #"Controller (Xbox One For Windows)"
-arm_stick_name =  "PDP Xbox 360 Afterglow" #'Xbox One S Controller' #Xbox 360 Controller" # 'Xbox One S Controller'"PDP Xbox 360 Afterglow" "PDP Xbox 360 Rock Candy"
+if osType == 'linux':
+    drive_stick_name =  "Madcatz Mad Catz V.1 Stick" #"Logitech Extreme 3D"
+    drive_joy_name = " " #"Controller (Xbox One For Windows)"
+    arm_stick_name =  "PDP Xbox 360 Afterglow" #'Xbox One S Controller' #Xbox 360 Controller" # 'Xbox One S Controller'"PDP Xbox 360 Afterglow" "PDP Xbox 360 Rock Candy"
+if osType == 'windows':
+    drive_stick_name = "Mad Catz V.1 Stick"
+    drive_joy_name = " "
+    arm_stick_name = "PDP Xbox 360 Afterglow"
 joy = True
 master_ip = "192.168.1.10"
 cal = [0, 0, 0, 0]
@@ -624,21 +631,39 @@ while run:
                 print("no drive joy")
                 pass
             try:
-                if arm_joy.check_stick(joystick.Joystick(event.joy)):
-                    if event.axis == 0:
-                        arm_xyl.axis[0] = -1 * round(event.value, 2)
-                    if event.axis == 1:
-                        arm_xyl.axis[1] = -1 * round(event.value, 2)
-                    if event.axis == 5:
-                        ep_vel = (round(event.value) + 1) / 2
-                        arm_trigl.axis[0] = -round(event.value, 2)
-                    if event.axis == 2:
-                        ep_vel = -(round(event.value) + 1) / 2
-                        arm_trigr.axis[0] = -round(event.value, 2)
-                    if event.axis == 3:
-                        arm_xyr.axis[0] =  round(event.value, 2)
-                    if event.axis == 4:
-                        arm_xyr.axis[1] = round(event.value, 2)
+                match osType:
+                    case 'linux':
+                        if arm_joy.check_stick(joystick.Joystick(event.joy)):
+                            if event.axis == 0:
+                                arm_xyl.axis[0] = -1 * round(event.value, 2)
+                            if event.axis == 1:
+                                arm_xyl.axis[1] = -1 * round(event.value, 2)
+                            if event.axis == 5:
+                                ep_vel = (round(event.value) + 1) / 2
+                                arm_trigl.axis[0] = -round(event.value, 2)
+                            if event.axis == 2:
+                                ep_vel = -(round(event.value) + 1) / 2
+                                arm_trigr.axis[0] = -round(event.value, 2)
+                            if event.axis == 3:
+                                arm_xyr.axis[0] =  round(event.value, 2)
+                            if event.axis == 4:
+                                arm_xyr.axis[1] = round(event.value, 2)
+                    case 'windows':
+                        if arm_joy.check_stick(joystick.Joystick(event.joy)):
+                            if event.axis == 0:
+                                arm_xyl.axis[0] = round(event.value, 2)
+                            if event.axis == 1:
+                                arm_xyl.axis[1] = round(event.value, 2)
+                            if event.axis == 4:
+                                ep_vel = (round(event.value) + 1) / 2
+                                arm_trigl.axis[0] = -round(event.value, 2)
+                            if event.axis == 5:
+                                ep_vel = -(round(event.value) + 1) / 2
+                                arm_trigr.axis[0] = -round(event.value, 2)
+                            if event.axis == 2:
+                                arm_xyr.axis[0] =  round(event.value, 2)
+                            if event.axis == 3:
+                                arm_xyr.axis[1] = round(event.value, 2)
             except:
                 print("No arm joy")
                 pass
