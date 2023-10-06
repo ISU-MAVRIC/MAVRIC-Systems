@@ -17,7 +17,7 @@ Topics:
 '''
 import rospy
 from std_msgs.msg import Float64
-from mavric.msg import Armtrain
+from mavric.msg import ArmFeedback
 from SparkCAN import SparkBus
 
 ### scales and directions 
@@ -95,8 +95,15 @@ def WR_cb(data):
     if WristRot < -100:
         WristRot = -100
 
+def feedback():
+    EP_msg = ArmFeedback()
+    EP_msg.position = Float64(spark_elbowPitch.position)
+    EP_msg.velocity = Float64(spark_elbowPitch.velocity)
+    EP_pub.publish(EP_msg)
+
 def listener():
     global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot
+    global EP_pub
     rospy.init_node("CAN_ATS")
 
     SR_sub = rospy.Subscriber("ShoulderRot", Float64, SR_cb, queue_size=10)
@@ -104,13 +111,14 @@ def listener():
     EP_sub = rospy.Subscriber("ElbowPitch", Float64, EP_cb, queue_size=10)
     WP_sub = rospy.Subscriber("WristPitch", Float64, WP_cb, queue_size=10)
     WR_sub = rospy.Subscriber("WristRot", Float64, WR_cb, queue_size=10)
+    EP_pub = rospy.Publisher("ShoulderRotFb", ArmFeedback, queue_size=10)
     rosRate = rospy.Rate(30)
     while not rospy.is_shutdown():
-        spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot/100 * c_ShoulderRotDir)
-        spark_shoulderPitch.percent_output(c_ShoulderPitch * ShoulderPitch/100 * c_ShoulderPitchDir)
-        spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch/100 * c_ElbowPitchDir)
-        spark_wristPitch.percent_output(c_WristPitch * WristPitch/100 * c_WristPitchDir)
-        spark_wristRot.percent_output(c_WristRot * WristRot/100 * c_WristRotDir)
+        spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot * c_ShoulderRotDir)
+        spark_shoulderPitch.percent_output(c_ShoulderPitch * ShoulderPitch * c_ShoulderPitchDir)
+        spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch * c_ElbowPitchDir)
+        spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir)
+        spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir)
         rosRate.sleep()
 
 if __name__ == '__main__':
