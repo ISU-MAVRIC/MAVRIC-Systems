@@ -114,11 +114,12 @@ def listener():
     EP_pub = rospy.Publisher("ShoulderRotFb", ArmFeedback, queue_size=10)
     rosRate = rospy.Rate(30)
     while not rospy.is_shutdown():
-        spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot * c_ShoulderRotDir)
-        spark_shoulderPitch.percent_output(c_ShoulderPitch * ShoulderPitch * c_ShoulderPitchDir)
-        spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch * c_ElbowPitchDir)
-        spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir)
-        spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir)
+        spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot * c_ShoulderRotDir/100)
+        spark_shoulderPitch.percent_output(c_ShoulderPitch * ShoulderPitch * c_ShoulderPitchDir/100)
+        spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch * c_ElbowPitchDir/100)
+        spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir/100)
+        spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
+        feedback()
         rosRate.sleep()
 
 if __name__ == '__main__':
