@@ -97,8 +97,8 @@ def WR_cb(data):
 
 def feedback():
     EP_msg = ArmFeedback()
-    EP_msg.position = Float64(spark_elbowPitch.position)
-    EP_msg.velocity = Float64(spark_elbowPitch.velocity)
+    EP_msg.position = spark_elbowPitch.position
+    EP_msg.velocity = spark_elbowPitch.velocity
     EP_pub.publish(EP_msg)
 
 def listener():
@@ -111,7 +111,7 @@ def listener():
     EP_sub = rospy.Subscriber("ElbowPitch", Float64, EP_cb, queue_size=10)
     WP_sub = rospy.Subscriber("WristPitch", Float64, WP_cb, queue_size=10)
     WR_sub = rospy.Subscriber("WristRot", Float64, WR_cb, queue_size=10)
-    EP_pub = rospy.Publisher("ShoulderRotFb", ArmFeedback, queue_size=10)
+    EP_pub = rospy.Publisher("ElbowPitchFb", ArmFeedback, queue_size=10)
     rosRate = rospy.Rate(30)
     while not rospy.is_shutdown():
         spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot * c_ShoulderRotDir/100)
