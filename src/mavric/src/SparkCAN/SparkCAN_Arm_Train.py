@@ -96,14 +96,27 @@ def WR_cb(data):
         WristRot = -100
 
 def feedback():
-    EP_msg = ArmFeedback()
-    EP_msg.position = Float64(spark_elbowPitch.position)
-    EP_msg.velocity = Float64(spark_elbowPitch.velocity)
-    EP_pub.publish(EP_msg)
+    Pos_msg = ArmFeedback()
+    Vel_msg = ArmFeedback()
+
+    Pos_msg.ShoulderRot = Float64(spark_shoulderRot.position)
+    Pos_msg.ShoulderPitch = Float64(spark_shoulderPitch.position)
+    Pos_msg.ElbowPitch = Float64(spark_elbowPitch.position)
+    Pos_msg.WristPitch = Float64(spark_wristPitch.position)
+    Pos_msg.WristRot = Float64(spark_wristRot.position)
+
+    Vel_msg.ShoulderRot = Float64(spark_shoulderRot.velocity)
+    Vel_msg.ShoulderPitch = Float64(spark_shoulderPitch.velocity)
+    Vel_msg.ElbowPitch = Float64(spark_elbowPitch.velocity)
+    Vel_msg.WristPitch = Float64(spark_wristPitch.velocity)
+    Vel_msg.WristRot = Float64(spark_wristRot.velocity)
+
+    Pos_pub.publish(Pos_msg)
+    Vel_pub.publish(Vel_msg)
 
 def listener():
     global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot
-    global EP_pub
+    global Pos_pub, Vel_pub
     rospy.init_node("CAN_ATS")
 
     SR_sub = rospy.Subscriber("ShoulderRot", Float64, SR_cb, queue_size=10)
@@ -111,7 +124,9 @@ def listener():
     EP_sub = rospy.Subscriber("ElbowPitch", Float64, EP_cb, queue_size=10)
     WP_sub = rospy.Subscriber("WristPitch", Float64, WP_cb, queue_size=10)
     WR_sub = rospy.Subscriber("WristRot", Float64, WR_cb, queue_size=10)
-    EP_pub = rospy.Publisher("ShoulderRotFb", ArmFeedback, queue_size=10)
+    Pos_pub = rospy.Publisher("JointPosition", ArmFeedback, queue_size=10)
+    Vel_pub = rospy.Publisher("JointVelocity", ArmFeedback, queue_size=10)
+    
     rosRate = rospy.Rate(30)
     while not rospy.is_shutdown():
         spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot * c_ShoulderRotDir/100)
