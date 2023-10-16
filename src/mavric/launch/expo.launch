@@ -47,6 +47,10 @@
             <param name="intercepts"  value="0.0015" />
         </node>
     </group>
+    <group ns='camera'>
+        <node name='arm_camera' pkg='mavric' type='HTTP_Cam.py'> 
+        </node>
+    </group>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
         <param name="container" value="SlowPWM/" />
         <param name="control_mode" value="PulseTime" />

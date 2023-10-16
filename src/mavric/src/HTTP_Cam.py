@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 import time
 import cv2
@@ -24,8 +26,8 @@ def shutdown_mjpg_streamer():
 camera_location = detect_camera_location()
 
 # Camera input settings
-resolution = '1920x1080'
-frame_rate = '60'
+resolution = '1280x720'
+frame_rate = '30'
 
 # Creates HTTP Stream from location of the camera using MJPG Streamer
 mjpg_streamer_command = f"mjpg_streamer -i 'input_uvc.so -d /dev/video{camera_location} -r {resolution} -f {frame_rate}' -o 'output_http.so -w /home/mavric/mjpg-streamer/mjpg-streamer-experimental/www'"
