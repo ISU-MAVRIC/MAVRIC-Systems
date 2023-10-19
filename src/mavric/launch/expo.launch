@@ -48,7 +48,11 @@
         </node>
     </group>
     <group ns='camera'>
-        <node name='arm_camera' pkg='mavric' type='HTTP_Cam.py'> 
+        <node name='arm_camera' pkg='mavric' type='HTTP_Cam.py'>
+            <param name="armCameraResolution" value="1280x720"/>
+            <param name="armCameraFrameRate" value="30"/>
+            <param name="port" value="8080"/>
+            <param name="cameraLocation" value="video0"/>
         </node>
     </group>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
