@@ -2,7 +2,6 @@ import time
 import os
 import sys
 os.environ["BLINKA_FT232H"] = "1"
-import board
 import neopixel_spi as neopixel
 
 NUM_PIXELS = 31
