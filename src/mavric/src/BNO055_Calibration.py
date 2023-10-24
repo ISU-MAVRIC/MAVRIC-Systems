@@ -12,67 +12,110 @@ import adafruit_bno055 as BNO055
 import board
 import time
 import json
+import random
 
 i2c = board.I2C()
 bno = BNO055.BNO055_I2C(i2c)
 
+pwm_offset_ms = 0
+HEADING_OFFSET = 0
+
 accel_offsets = [0X55, 0X56, 0X57, 0X58, 0X59, 0X5A]
-
 mag_offsets = [0X5B, 0X5C, 0X5D, 0X5E, 0X5F, 0X60]
-
 gyro_offsets = [0X61, 0X62, 0X63, 0X64, 0X65, 0X66]
-
 radius_offsets = [0X67, 0X68, 0X69, 0X6A]
 
 CONFIG_MODE = 0x00
+NDOF_MODE = 0x0C
+AMG_MODE = 0x07
+NDOF_FMC_OFF_MODE = 0x0B
+
+MODES_LIST = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C]
 
 register_offsets_master = accel_offsets + mag_offsets + gyro_offsets + radius_offsets
 
-def get_calibration() -> list:
+def get_calibration(last_mode) -> list:
+    print("last: "+str(last_mode))
+    bno.mode = CONFIG_MODE
+    print("config: "+str(bno.mode))
     data = list()
     for i in register_offsets_master:
         data.append(bno._read_register(i))
+    bno.mode = last_mode
+    print("back to last: "+str(bno.mode))
     return data
 
-def set_calibration(data):
-    last_mode = bno.mode
+def set_calibration(data, last_mode):
     bno.mode = CONFIG_MODE
-    for i in range(len(register_offsets_master)):
+    print("config: "+str(bno.mode))
+    for i in range(0,len(register_offsets_master)):
         bno._write_register(register_offsets_master[i], data[i])
     bno.mode = last_mode
+    print("NDOF: "+str(bno.mode))
+    print("setting_calibration")
 
-def print_calibration_data():
-    calibration_data = get_calibration()
-    for i in range(len(calibration_data)):
-        print("register: "+i+"   data: "+calibration_data[i])
-    print("\n --- next read ---")
+def print_data(data):
+    print()
+    for i in range(0,len(data)):
+        print("d:"+str(data[i])+"  ",end="")
+    print()
 
-#unimplimented
-def save_calibration():
-    # Save calibration data to disk.
-    # First grab the lock on BNO sensor access to make sure nothing else is
-    # writing to the sensor right now.
-    with bno_changed:
-        data = bno.get_calibration()
-    # Write the calibration to disk.
-    with open(CALIBRATION_FILE, 'w') as cal_file:
-        json.dump(data, cal_file)
-    return 'OK'
+def generate_random_offsets() -> list:
+    data = list()
+    for i in range(0,len(register_offsets_master)):
+        data.append(random.randint(0,255))
+    return data
+
+def compare_data(list_1, list_2) -> list:
+    similiar = list()
+    for i in range(0,len(list_1)):
+        if list_1[i] == list_2[i]:
+            similiar.append(list_1[i])
+    return similiar
 
 def main():
+    print("starting . . .")
     while True:
-        time.sleep(10)
-        print_calibration_data()
-        i2c = board.I2C()
-        bno = BNO055.BNO055_I2C(i2c)
+        random_number = generate_random_offsets()
+        for i in range(0,len(MODES_LIST)):
+            print("\n\n --- next read ---  ")
+
+            set_calibration(random_number, MODES_LIST[i])
+            print_data(random_number)
+
+            data = get_calibration(MODES_LIST[i])
+            print_data(data)
+
+            similiar_data = compare_data(random_number, data)
+            similiar_result = len(similiar_data)
+            print("Number of Similiar " + str(similiar_result))
+        time.sleep(7.5)
 
 if __name__ == '__main__':
     main()
 
     
+#def print_IMU_info(cal):
+#        sys_cal, gyro_cal, accel_cal, mag_cal = bno.calibration_status
+#        yaw, pitch, roll = bno.euler
+#        if cal == True and yaw != None:
+#            HEADING_OFFSET = -yaw
+#            cal = False
+#        print("sys_cal: {}  gyro_cal: {}  accel_cal: {}  mag_cal: {} ".format(sys_cal, gyro_cal, accel_cal, mag_cal))
+#        print("yaw: {}  pitch: {}  roll: {}".format(yaw, pitch, roll))
     
         
-
+#unimplimented
+#def save_calibration():
+#    # Save calibration data to disk.
+#    # First grab the lock on BNO sensor access to make sure nothing else is
+#    # writing to the sensor right now.
+#    with bno_changed:
+#        data = bno.get_calibration()
+#    # Write the calibration to disk.
+#    with open(CALIBRATION_FILE, 'w') as cal_file:
+#        json.dump(data, cal_file)
+#    return 'OK'
 
         
 
