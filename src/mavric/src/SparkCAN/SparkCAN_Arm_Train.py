@@ -3,11 +3,10 @@
 Description: Reads Arm axis topics and controls the relevant motors through Mavric's SparkCAN Library
 Author: Nathan Logston
 
-TODO: Provide feedback from each arm's encoder
-
 Topics:
     Publishers:
-        NONE
+        JointPosition
+        JointVelocity
     Subscribers:
         ShoulderPitch
         ShoulderRot
