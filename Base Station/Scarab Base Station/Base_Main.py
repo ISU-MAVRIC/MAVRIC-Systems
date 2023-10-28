@@ -10,15 +10,22 @@ import socket
 import math
 from csv import reader
 
+osType = 'windows' #'windows' or 'linux'
+
 # install classes
 import Base_Data as Base
 import scarab
 
 # initial values
 joysticks = []
-drive_stick_name =  "Mad Catz V.1 Stick" #"Logitech Extreme 3D"
-drive_joy_name = " " #"Controller (Xbox One For Windows)"
-arm_stick_name =  "Controller (Xbox One For Windows)" #'Xbox One S Controller' #Xbox 360 Controller" # 'Xbox One S Controller'"PDP Xbox 360 Afterglow"
+if osType == 'linux':
+    drive_stick_name =  "Madcatz Mad Catz V.1 Stick" #"Logitech Extreme 3D"
+    drive_joy_name = " " #"Controller (Xbox One For Windows)"
+    arm_stick_name =  "PDP Xbox 360 Afterglow" #'Xbox One S Controller' #Xbox 360 Controller" # 'Xbox One S Controller'"PDP Xbox 360 Afterglow" "PDP Xbox 360 Rock Candy"
+if osType == 'windows':
+    drive_stick_name = "Mad Catz V.1 Stick"
+    drive_joy_name = " "
+    arm_stick_name = "PDP Xbox 360 Afterglow"
 joy = True
 master_ip = "192.168.1.10"
 cal = [0, 0, 0, 0]
@@ -624,21 +631,39 @@ while run:
                 print("no drive joy")
                 pass
             try:
-                if arm_joy.check_stick(joystick.Joystick(event.joy)):
-                    if event.axis == 0:
-                        arm_xyl.axis[0] = round(event.value, 2)
-                    if event.axis == 1:
-                        arm_xyl.axis[1] = round(event.value, 2)
-                    if event.axis == 4:
-                        ep_vel = (round(event.value) + 1) / 2
-                        arm_trigl.axis[0] = -round(event.value, 2)
-                    if event.axis == 5:
-                        ep_vel = -(round(event.value) + 1) / 2
-                        arm_trigr.axis[0] = -round(event.value, 2)
-                    if event.axis == 2:
-                        arm_xyr.axis[0] = round(event.value, 2)
-                    if event.axis == 3:
-                        arm_xyr.axis[1] = round(event.value, 2)
+                match osType:
+                    case 'linux':
+                        if arm_joy.check_stick(joystick.Joystick(event.joy)):
+                            if event.axis == 0:
+                                arm_xyl.axis[0] = -1 * round(event.value, 2)
+                            if event.axis == 1:
+                                arm_xyl.axis[1] = -1 * round(event.value, 2)
+                            if event.axis == 5:
+                                ep_vel = (round(event.value) + 1) / 2
+                                arm_trigl.axis[0] = -round(event.value, 2)
+                            if event.axis == 2:
+                                ep_vel = -(round(event.value) + 1) / 2
+                                arm_trigr.axis[0] = -round(event.value, 2)
+                            if event.axis == 3:
+                                arm_xyr.axis[0] =  round(event.value, 2)
+                            if event.axis == 4:
+                                arm_xyr.axis[1] = round(event.value, 2)
+                    case 'windows':
+                        if arm_joy.check_stick(joystick.Joystick(event.joy)):
+                            if event.axis == 0:
+                                arm_xyl.axis[0] = round(event.value, 2)
+                            if event.axis == 1:
+                                arm_xyl.axis[1] = round(event.value, 2)
+                            if event.axis == 4:
+                                ep_vel = (round(event.value) + 1) / 2
+                                arm_trigl.axis[0] = -round(event.value, 2)
+                            if event.axis == 5:
+                                ep_vel = -(round(event.value) + 1) / 2
+                                arm_trigr.axis[0] = -round(event.value, 2)
+                            if event.axis == 2:
+                                arm_xyr.axis[0] =  round(event.value, 2)
+                            if event.axis == 3:
+                                arm_xyr.axis[1] = round(event.value, 2)
             except:
                 print("No arm joy")
                 pass
@@ -813,9 +838,9 @@ while run:
 
     # set position for hook
     if hook_control.buttons[0] == 1 and hook <= 1:
-        hook += 0.05
+        hook += 0.02
     elif hook_control.buttons[1] == 1 and hook >= -1:
-        hook -= 0.05
+        hook -= 0.02
 
     # set wheel drive and position
     if joy is True:
@@ -832,17 +857,20 @@ while run:
     rover.set_arm_cam(arm_cam_control.axis[0]*100, arm_cam_control.axis[1]*100)
 
     # set util
+    '''
     if util_control.buttons[0] == 1:
         rover.set_util(100)
     elif util_control.buttons[1] == 1:
         rover.set_util(-100)
     else:
         rover.set_util(0)
+        '''
 
     # set hook
-    rover.set_hook(hook*100)
+    #rover.set_hook(hook*100)
 
     # set sci
+    '''
     if sci_control.buttons[0] == 1:
         rover.set_sci(0)
     elif sci_control.buttons[1] == 1:
@@ -850,13 +878,15 @@ while run:
     else:
         pass
         #rover.set_sci(0)
-
+        '''
+    '''
     if lumin_control.buttons[0] == 0:
         rover.set_button(95)
     elif lumin_no == 1:
         rover.set_button(-200)
     else:
         rover.set_button(-45)
+        '''
 
 
 
