@@ -59,4 +59,9 @@
         <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
         <param name="clk_error" value="1.04166667" />
     </node>
+    <group ns="HW">
+        <node name="BNO055" pkg="mavric" type="BNO055_IMU.py" respawn="true">
+            <remap from="FusedAngle" to="IMU/FusedAngle" />
+        </node>
+    </group>
 </launch>
