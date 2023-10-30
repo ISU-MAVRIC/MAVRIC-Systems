@@ -11,10 +11,7 @@ DELAY = 0.1
 
 spi = board.SPI()
 
-pixels = neopixel.NeoPixel_SPI(spi,
-                               NUM_PIXELS,
-                               pixel_order=PIXEL_ORDER,
-                               auto_write=False)
+pixels = neopixel.NeoPixel_SPI(spi,NUM_PIXELS,pixel_order=PIXEL_ORDER,auto_write=False)
 
 
 def main():
