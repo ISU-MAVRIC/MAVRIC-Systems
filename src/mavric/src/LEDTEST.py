@@ -18,7 +18,7 @@ def main():
     while True:
         for color in COLORS:
             for i in range(NUM_PIXELS):
-                pixels[i] = color
+            pixels[i] = color
                 pixels.show()
                 time.sleep(DELAY)
                 pixels.fill(0)
