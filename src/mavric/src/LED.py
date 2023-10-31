@@ -1,11 +1,18 @@
 from abc import ABC, abstractmethod
 from std_msgs.msg import Bool
 import rospy
+import os
+os.environ["BLINKA_FT232H"] = "1"
+import Jetson.GPIO as GPIO  
+import board
+import neopixel_spi as neopixel
 
-import Jetson.GPIO as GPIO
-import neopixel
+NUM_PIXELS = 31
+PIXEL_ORDER = neopixel.GRB
 
-pixels = neopixel.NeoPixel(GPIO.D18, 30)
+spi = board.SPI()
+
+pixels = neopixel.NeoPixel_SPI(spi,NUM_PIXELS,pixel_order=PIXEL_ORDER,auto_write=False)
 
 class LED(ABC):
 
@@ -67,7 +74,6 @@ class Strip(LED):
 
 
 
-'''
 
 class LightPole(LED):
 
@@ -107,5 +113,3 @@ class LightPole(LED):
 
 class LightStrip(LED):
     pass
-
-'''
