@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import time
-import math
+import os
 from pySerialTransfer import pySerialTransfer as txfer
-import serial.tools.list_ports
 import driveMath
 
 
@@ -54,11 +53,14 @@ if __name__=='__main__':
                     print('ERROR: STOP_BYTE_ERROR')
                 else:
                     print('ERROR: {}'.format(link.status))
+            dataRX.drive = round(dataRX.drive, 2)
+            dataRX.steer = round(dataRX.steer, 2)
             #print("Drive: {}    Steer: {}".format(dataRX.drive,dataRX.steer))
             parameters = driveMath.car_drive(dataRX.drive,dataRX.steer)
-            parameters = math.ceil(parameters)
+            for i in range(8):
+                if parameters[i] < 0.05:
+                    parameters[i] = 0
             drive.publish(float(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]))
             steer.publish(float(parameters[6]), float(parameters[7]), float(parameters[8]), float(parameters[9]))
     except rospy.ROSInterruptException:
-        link.close()
         pass
