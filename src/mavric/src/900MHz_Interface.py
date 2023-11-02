@@ -14,6 +14,8 @@ port = '/dev/ttyACM0'
 drive = 0.0
 steer = 0.0
 
+deadzone = 0.05
+
 
 class struct(object):
     drive = float
@@ -56,10 +58,11 @@ if __name__=='__main__':
             dataRX.drive = round(dataRX.drive, 2)
             dataRX.steer = round(dataRX.steer, 2)
             #print("Drive: {}    Steer: {}".format(dataRX.drive,dataRX.steer))
+            if abs(dataRX.drive) < deadzone:
+                dataRX.drive = 0
+            if abs(dataRX.steer) < deadzone:
+                dataRX.steer = 0
             parameters = driveMath.car_drive(dataRX.drive,dataRX.steer)
-            for i in range(8):
-                if parameters[i] < 0.05:
-                    parameters[i] = 0
             drive.publish(float(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]))
             steer.publish(float(parameters[6]), float(parameters[7]), float(parameters[8]), float(parameters[9]))
     except rospy.ROSInterruptException:
