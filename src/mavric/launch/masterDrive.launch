@@ -3,7 +3,6 @@
         <arg name="port" value="9090"/>
     </include>
     <include file="$(find mavric)/launch/Drive.launch"/>
-    <include file="$(find mavric)/launch/Arm.launch"/>
     <include file="$(find mavric)/launch/Sensors.launch"/>
     <node name="LoRa_Interface" pkg="mavric" type="900MHz_Interface.py" >
         <remap from="Drive_Train" to="Drive/Drive_Command" />
