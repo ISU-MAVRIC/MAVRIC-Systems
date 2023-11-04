@@ -5,7 +5,7 @@ wheel_length = 37.5
 wheel_width = 28.5
 
 sensdrive = 1
-senssteer = 1
+senssteer = 0.75
 
 lf = 0
 lm = 0
@@ -52,4 +52,15 @@ def car_drive(drive,steer):
     else:
         return [-drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, 0, 0, 0, 0]
 def point_drive(drive,steer):
+    str_angle = degrees(math.atan(wheel_length/wheel_width))
+    str_r = math.sqrt(math.pow(wheel_width/2,2) + math.pow(wheel_length/2,2))
+    mid_r = wheel_width/2
+    str_v = abs(steer*sensdrive*100)
+    mid_v = str_v*mid_r/str_r
+    if steer < 0:
+        return [-str_v, -mid_v, -str_v, str_v, mid_v, str_v, -str_angle, -str_angle, str_angle, str_angle]
+    if steer > 0:
+        return [str_v, mid_v, str_v, -str_v, -mid_v, -str_v, -str_angle, -str_angle, str_angle, str_angle]
+    else:
+        return [0, 0, 0, 0, 0, 0, -str_angle, -str_angle, str_angle, str_angle]
     return [0,0,0,0,0,0,0,0,0,0]
