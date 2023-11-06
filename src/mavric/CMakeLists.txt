@@ -74,7 +74,7 @@ add_message_files(
   Object.msg
   ObjectVector.msg
   Armtrain.msg
-  ArmFeedback.msg
+  ArmData.msg
 )
 
 ## Generate services in the 'srv' folder
