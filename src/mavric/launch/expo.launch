@@ -47,12 +47,18 @@
             <param name="intercepts"  value="0.0015" />
         </node>
     </group>
-    <group ns='camera'>
-        <node name='arm_camera' pkg='mavric' type='HTTP_Cam.py'>
-            <param name="armCameraResolution" value="1280x720"/>
-            <param name="armCameraFrameRate" value="30"/>
+    <group ns='Camera'>
+        <node name='arm_camera1' pkg='mavric' type='HTTP_Cam.py'>
+            <param name="resolution" value="1280x720"/>
+            <param name="frame_rate" value="30"/>
             <param name="port" value="8080"/>
-            <param name="cameraLocation" value="video0"/>
+            <param name="video_device" value="0"/>
+        </node>
+        <node name='arm_camera2' pkg='mavric' type='HTTP_Cam.py'>
+            <param name="resolution" value="1280x720"/>
+            <param name="frame_rate" value="30"/>
+            <param name="port" value="8081"/>
+            <param name="video_device" value="1"/>
         </node>
     </group>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
