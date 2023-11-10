@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import math
 
+# This code is gobaldy gook
+# If anyone wants to change it, go right ahead. No one but Jacob P. knows how this code works.
+# This code was imported from the old base station.
+
 wheel_length = 37.5
 wheel_width = 28.5
 

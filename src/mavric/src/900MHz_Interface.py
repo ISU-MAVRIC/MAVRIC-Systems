@@ -12,13 +12,13 @@ from mavric.msg import Steertrain
 
 port = '/dev/ttyACM0'
 
+# Defaults and beginning values
 drive = 0.0
 steer = 0.0
 mode = 0
 parameters = [0,0,0,0,0,0,0,0,0,0]
 deadzone = 0.05
 sensitivity = 0.5
-
 LoRaEnabled = False
 
 class struct(object):
@@ -26,6 +26,10 @@ class struct(object):
     steer = float
     mode = float
 
+
+# Client Callback function that will run whenever the value for clients connected changes. 
+# if connected clients is greater than zero, publish all zeros once and stop publishing to 
+# stop interrupting websocket clients.
 def client_cb(data):
     global LoRaEnabled
     val = int(data.data)
@@ -40,6 +44,7 @@ def client_cb(data):
 
 if __name__=='__main__':
     try:
+        # Publishers and Subscribers
         drive = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
         steer = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
         status = rospy.Publisher("LoRa_Status", String, queue_size=10)
@@ -47,14 +52,12 @@ if __name__=='__main__':
         rospy.init_node("LoRa_Radio")
 
         dataRX = struct
-
-        print("Attempting to Connect to {}".format(port))
-        link = txfer.SerialTransfer(port)
-        link.open()
-        print("Connected to {}".format(port))
+        link = txfer.SerialTransfer(port)   # setup serial transfer on port specified
+        link.open() # open link between rover and LoRa
         time.sleep(1)
+
         while not rospy.is_shutdown():
-            if link.available():
+            if link.available():    # Recieve new data from serial
                 recSize = 0
 
                 dataRX.drive = link.rx_obj(obj_type='f', start_pos=recSize)
@@ -66,8 +69,8 @@ if __name__=='__main__':
                 dataRX.mode = link.rx_obj(obj_type='f', start_pos=recSize)
                 recSize += txfer.STRUCT_FORMAT_LENGTHS['f']
 
-                #print('drive: {}  steer: {}   mode: {}'.format(dataRX.drive, dataRX.steer, dataRX.mode)) # debug
-            elif link.status < 0:
+                #print('drive: {}  steer: {}   mode: {}'.format(dataRX.drive, dataRX.steer, dataRX.mode)) # debug print
+            elif link.status < 0:   # Error codes for Serial Transfer Library 
                 if link.status == txfer.CRC_ERROR:
                     print('ERROR: CRC_ERROR')
                 elif link.status == txfer.PAYLOAD_ERROR:
@@ -77,19 +80,24 @@ if __name__=='__main__':
                 else:
                     print('ERROR: {}'.format(link.status))
             if LoRaEnabled:
+                # Round data and test against deadzone
                 dataRX.drive = round(dataRX.drive, 2)
                 dataRX.steer = round(dataRX.steer, 2)
-                #print("Drive: {}    Steer: {}".format(dataRX.drive,dataRX.steer))
                 if abs(dataRX.drive) < deadzone:
                     dataRX.drive = 0
                 if abs(dataRX.steer) < deadzone:
                     dataRX.steer = 0
+
+                # Drive Modes given mode switch's setting
+                # Had to use floats to compare since the mode can't be transfered in an int.
                 if dataRX.mode < 0.5:
                     parameters = driveMath.car_drive(dataRX.drive*sensitivity,dataRX.steer)
                 elif dataRX.mode > 0.5:
                     parameters = driveMath.point_drive(dataRX.drive,dataRX.steer*sensitivity)
+
+                #print("Drive: {}    Steer: {}".format(dataRX.drive,dataRX.steer)) # Test print statement
                 drive.publish(float(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]))
                 steer.publish(float(parameters[6]), float(parameters[7]), float(parameters[8]), float(parameters[9]))
     except rospy.ROSInterruptException:
-        link.close()
+        link.close()    # Close serial connection
         pass
