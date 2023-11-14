@@ -16,7 +16,7 @@ Topics:
 '''
 import rospy
 from std_msgs.msg import Float64
-from mavric.msg import ArmFeedback
+from mavric.msg import ArmData
 from SparkCAN import SparkBus
 
 ### scales and directions 
@@ -95,8 +95,8 @@ def WR_cb(data):
         WristRot = -100
 
 def feedback():
-    Pos_msg = ArmFeedback()
-    Vel_msg = ArmFeedback()
+    Pos_msg = ArmData()
+    Vel_msg = ArmData()
 
     Pos_msg.ShoulderRot = Float64(spark_shoulderRot.position)
     Pos_msg.ShoulderPitch = Float64(spark_shoulderPitch.position)
@@ -123,8 +123,8 @@ def listener():
     EP_sub = rospy.Subscriber("ElbowPitch", Float64, EP_cb, queue_size=10)
     WP_sub = rospy.Subscriber("WristPitch", Float64, WP_cb, queue_size=10)
     WR_sub = rospy.Subscriber("WristRot", Float64, WR_cb, queue_size=10)
-    Pos_pub = rospy.Publisher("JointPosition", ArmFeedback, queue_size=10)
-    Vel_pub = rospy.Publisher("JointVelocity", ArmFeedback, queue_size=10)
+    Pos_pub = rospy.Publisher("JointPosition", ArmData, queue_size=10)
+    Vel_pub = rospy.Publisher("JointVelocity", ArmData, queue_size=10)
     
     rosRate = rospy.Rate(30)
     while not rospy.is_shutdown():
