@@ -16,7 +16,7 @@ Topics:
         None
 '''
 import rospy
-import busio
+import time
 import board
 from std_msgs.msg import Float64
 from mavric.msg import Voltage
@@ -27,11 +27,25 @@ import Adafruit_ADS1x15 as ADS
 i2c = board.I2C()
 
 adc = ADS.ADS1115(busnum=1)
+# Resistors
+B1R1 = 5197
+B1R2 = 995
+B2R1 = 5202
+B2R2 = 997
+# Ratios are V_Bat/V_divider
+B1Ratio = (B1R1+B1R2)/B1R2
+B2Ratio = (B2R1+B2R2)/B2R2
+VMax = 4.09
+ADCMax = 32767
+
+
 
 if __name__ == '__main__':
     try:
         while not rospy.is_shutdown():
-            battery1 = adc.read_adc(0, gain=1)
-            print(battery1)
+            adc1 = adc.read_adc(0)*VMax/ADCMax
+            battery1 = adc1*B1Ratio
+            print(adc1,battery1)
+            time.sleep(1)
     except rospy.ROSInterruptException:
         pass
