@@ -76,6 +76,7 @@ add_message_files(
   Armtrain.msg
   ArmFeedback.msg
   Voltage.msg
+  ArmData.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -163,7 +164,7 @@ LINK_DIRECTORIES("usr/local/lib")
 ## The recommended prefix ensures that target names across packages don't collide
 #add_executable(${PROJECT_NAME}_example src/example.cpp)
 #add_executable(${PROJECT_NAME}_CAN_Drive_Train_S src/CAN_Drive_Train_S.cpp)
-add_executable(${PROJECT_NAME}_CAN_Arm_Train src/CAN_Arm_Train.cpp)
+#add_executable(${PROJECT_NAME}_CAN_Arm_Train src/CAN_Arm_Train.cpp)
 #add_executable(${PROJECT_NAME}_Encoder_Feedback src/Encoder_FB.cpp)
 
 ## Rename C++ executable without prefix
@@ -182,11 +183,11 @@ add_executable(${PROJECT_NAME}_CAN_Arm_Train src/CAN_Arm_Train.cpp)
 #target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCCI.a)
 #target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
 #target_link_libraries(${PROJECT_NAME}_CAN_Drive_Train_S ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
-target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${catkin_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_Phoenix.a)
-target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCCI.a)
-target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
-target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
+#target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${catkin_LIBRARIES})
+#target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_Phoenix.a)
+#target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCCI.a)
+#target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixPlatform_socketcan.a)
+#target_link_libraries(${PROJECT_NAME}_CAN_Arm_Train ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/lib/jetsontx/libCTRE_PhoenixCanutils.a)
 #target_link_libraries(${PROJECT_NAME}_Encoder_Feedback ${catkin_LIBRARIES} JetsonGPIO::JetsonGPIO)
 
 #############
