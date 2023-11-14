@@ -1,7 +1,7 @@
 <launch>
     <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH4" />
     <group ns="Arm">
-        <node name="Armtrain_Control" pkg="mavric" type="SparkCAN_Arm_Train.py">
+        <node name="Armtrain_Control" pkg="mavric" type="SparkCAN_Arm_Train.py" respawn="true">
         </node>
     </group>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
