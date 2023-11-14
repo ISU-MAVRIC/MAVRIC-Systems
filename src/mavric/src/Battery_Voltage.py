@@ -23,19 +23,21 @@ from mavric.msg import Voltage
 # from adafruit_ads1x15 import analog_in
 import Adafruit_ADS1x15 as ADS
 
-i2c = board.I2C()
-
 def talker():
     volt_pub = rospy.Publisher("ADC", Voltage, queue_size=10)
+    voltperCell_pub = rospy.Publisher("ADCpCell", Voltage, queue_size=10)
     rospy.init_node("ADC_Pub")
     rate = rospy.Rate(20)
     voltages = Voltage()
+    voltpcell = Voltage()
     adc = ADS.ADS1115(busnum=1)
     # Resistors
     B1R1 = 5197
     B1R2 = 995
     B2R1 = 5202
     B2R2 = 997
+    B1C = 6
+    B2C = 4
     # Ratios are V_Bat/V_divider
     B1Ratio = (B1R1+B1R2)/B1R2
     B2Ratio = (B2R1+B2R2)/B2R2
@@ -47,8 +49,10 @@ def talker():
             adc2 = adc.read_adc(1)*VMax2/ADCMax
             voltages.batt1 = adc1*B1Ratio
             voltages.batt2 = adc2*B2Ratio
-
+            voltpcell.batt1 = voltages.batt1 / B1C
+            voltpcell.batt2 = voltages.batt2 / B2C
             volt_pub.publish(voltages)
+            voltperCell_pub.publish(voltpcell)
             rate.sleep()
 
 
