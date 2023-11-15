@@ -256,20 +256,22 @@ def talker():
     global Pos_pub, Vel_pub
     rospy.init_node("CAN_DTS")
 
+
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
-    str_pub = rospy.Publisher("Steer_Feedback", Steer, queue_size=10)
-    SR_sub = rospy.Subscriber("ShoulderRot", Float64, SR_cb, queue_size=10)
-    SP_sub = rospy.Subscriber("ShoulderPitch", Float64, SP_cb, queue_size=10)
-    EP_sub = rospy.Subscriber("ElbowPitch", Float64, EP_cb, queue_size=10)
-    WP_sub = rospy.Subscriber("WristPitch", Float64, WP_cb, queue_size=10)
-    WR_sub = rospy.Subscriber("WristRot", Float64, WR_cb, queue_size=10)
-    Pos_pub = rospy.Publisher("JointPosition", ArmData, queue_size=10)
-    Vel_pub = rospy.Publisher("JointVelocity", ArmData, queue_size=10)
+    str_pub = rospy.Publisher("Drive/Steer_Feedback", Steer, queue_size=10)
+    SR_sub = rospy.Subscriber("Arm/ShoulderRot", Float64, SR_cb, queue_size=10)
+    SP_sub = rospy.Subscriber("Arm/ShoulderPitch", Float64, SP_cb, queue_size=10)
+    EP_sub = rospy.Subscriber("Arm/ElbowPitch", Float64, EP_cb, queue_size=10)
+    WP_sub = rospy.Subscriber("Arm/WristPitch", Float64, WP_cb, queue_size=10)
+    WR_sub = rospy.Subscriber("Arm/WristRot", Float64, WR_cb, queue_size=10)
+    Pos_pub = rospy.Publisher("Arm/JointPosition", ArmData, queue_size=10)
+    Vel_pub = rospy.Publisher("Arm/JointVelocity", ArmData, queue_size=10)
 
     setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     rosRate = rospy.Rate(30)
+
     while not rospy.is_shutdown():
         setOutputs(lf, lm, lb, rf, rm, rb, slf, slb, srf, srb)
         strpub()
@@ -286,4 +288,3 @@ if __name__ == '__main__':
         talker()
     except rospy.ROSInterruptException:
         pass
-
