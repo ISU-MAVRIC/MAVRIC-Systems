@@ -54,7 +54,6 @@ if __name__=='__main__':
         dataRX = struct
         link = txfer.SerialTransfer(port)   # setup serial transfer on port specified
         link.open() # open link between rover and LoRa
-        time.sleep(1)
 
         while not rospy.is_shutdown():
             if link.available():    # Recieve new data from serial

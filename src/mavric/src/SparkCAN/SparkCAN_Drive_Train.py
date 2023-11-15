@@ -4,18 +4,20 @@ Description: Reads arm and Drive topics and controlls the relevant motors
 Author: Jacob Peskuski, Gabe Carlson, Nathan Logston
 
 Topics:
-  Publishers:
-    SteerPosition
-    JointPosition
-    JointVelocity
-  Subscribers:
-    Drive_Train
-    Steer_Train
-    ShoulderPitch
-    ShoulderRot
-    ElbowPitch
-    WristPitch
-    WristRot
+    Publishers:
+        SteerPosition
+        JointPosition
+        JointVelocity
+    Subscribers:
+        Drive_Train
+        Steer_Train
+        Drive_Sensitivity
+        ShoulderPitch
+        ShoulderRot
+        ElbowPitch
+        WristPitch
+        WristRot
+        Arm_Sensitivity
 '''
 
 import rospy
@@ -24,27 +26,30 @@ from mavric.msg import Steer, Drivetrain, Steertrain, ArmData
 from SparkCAN import SparkBus
 
 
-# Scales
-c_Scale = 1.15*20
+# Drive Scales
+c_Scale_Max = 1.15*20
+c_Scale = c_Scale_Max
 c_str_Scale = 0.12
-c_str_lfDir = -1
-c_str_lbDir = 1
-c_str_rfDir = -1
-c_str_rbDir = 1
-c_ShoulderPitch = 0.01      # Define individual arm rates
+# Arm Scales
+c_ShoulderPitch = 1         # Define individual arm rates
 c_ShoulderRot = 1           # If one axis is faster/slower than the others, change these values
 c_ElbowPitch = 1
 c_WristPitch = 1
 c_WristRot = 1
 
-# Directions
+# Drive Directions
 c_lfDir = 1
-c_lmDir = -1
-c_lbDir = -1
-c_rfDir = 1
+c_lmDir = 1
+c_lbDir = 1
+c_rfDir = -1
 c_rmDir = -1
-c_rbDir = 1
-c_ShoulderRotDir = 1        # Arm Directions
+c_rbDir = -1
+c_str_lfDir = -1
+c_str_lbDir = 1
+c_str_rfDir = -1
+c_str_rbDir = 1
+# Arm Directions
+c_ShoulderRotDir = 1        
 c_ShoulderPitchDir = -1     # If axis is moving wrong way, invert these 
 c_ElbowPitchDir = 1
 c_WristPitchDir = 1
@@ -192,6 +197,15 @@ def driveCallback(data):
 	if (rb < -100):
 		rb = -100
 
+def driveSens_cb(data):
+    global c_Scale
+    temp = data.data
+    if temp > 1.0:
+      temp = 1.0
+    if temp < 0:
+      temp = 0
+    c_Scale = c_Scale_Max*temp
+
 def SR_cb(data):
     global ShoulderRot
     ShoulderRot = data.data
@@ -232,6 +246,37 @@ def WR_cb(data):
     if WristRot < -100:
         WristRot = -100
 
+def armSens_cb(data):
+    global c_ShoulderRot, c_ShoulderPitch, c_ElbowPitch, c_WristPitch, c_WristRot
+    c_ShoulderRot = data.ShoulderRot
+    c_ShoulderPitch = data.ShoulderPitch
+    c_ElbowPitch = data.ElbowPitch
+    c_WristPitch = data.WristPitch
+    c_WristRot = data.WristRot
+    if c_ShoulderRot > 1:
+        c_ShoulderRot = 1
+    elif c_ShoulderRot < 0:
+        c_ShoulderRot = 0
+
+    if c_ShoulderPitch > 1:
+        c_ShoulderPitch = 1
+    elif c_ShoulderPitch < 0:
+        c_ShoulderPitch = 0
+
+    if c_ElbowPitch > 1:
+        c_ElbowPitch = 1
+    elif c_ElbowPitch < 0:
+        c_ElbowPitch = 0
+
+    if c_WristPitch > 1:
+        c_WristPitch = 1
+    elif c_WristPitch < 0:
+        c_WristPitch = 0
+
+    if c_WristRot > 1:
+        c_WristRot = 1
+    elif c_WristRot < 0:
+        c_WristRot = 0
 
 
 def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
@@ -249,22 +294,23 @@ def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
 
 
 def talker():
-    global str_pub, lf, lm, lb, rf, rm, rb
-    global c_Scale, c_str_Scale, c_pitch
+    global str_pub, lf, lm, lb, rf, rm, rb, c_Scale, c_str_Scale
     global c_lfDir, c_lmDir, c_lbDir, c_rfDir, c_rmDir, c_rbDir
     global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot
     global Pos_pub, Vel_pub
     rospy.init_node("CAN_DTS")
 
-
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
+    drive_sens = rospy.Subscriber("Drive/Drive_Sensitivity", Float64, driveSens_cb, queue_size=10)
     str_pub = rospy.Publisher("Drive/Steer_Feedback", Steer, queue_size=10)
+
     SR_sub = rospy.Subscriber("Arm/ShoulderRot", Float64, SR_cb, queue_size=10)
     SP_sub = rospy.Subscriber("Arm/ShoulderPitch", Float64, SP_cb, queue_size=10)
     EP_sub = rospy.Subscriber("Arm/ElbowPitch", Float64, EP_cb, queue_size=10)
     WP_sub = rospy.Subscriber("Arm/WristPitch", Float64, WP_cb, queue_size=10)
     WR_sub = rospy.Subscriber("Arm/WristRot", Float64, WR_cb, queue_size=10)
+    arm_sens = rospy.Subscriber("Arm/Arm_Sensitivity", ArmData, armSens_cb, queue_size=10)
     Pos_pub = rospy.Publisher("Arm/JointPosition", ArmData, queue_size=10)
     Vel_pub = rospy.Publisher("Arm/JointVelocity", ArmData, queue_size=10)
 
