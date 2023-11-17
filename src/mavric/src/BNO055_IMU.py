@@ -51,7 +51,7 @@ def talker():
 
     pwm_offset_ms = rospy.get_param("~pwm_offset_ms", 0)  # 0.10
 
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(10)
 
     # wiggle servo
     servo_cal_roll(pub_servo)

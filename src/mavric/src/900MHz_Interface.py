@@ -56,7 +56,9 @@ if __name__=='__main__':
         link.open() # open link between rover and LoRa
 
         while not rospy.is_shutdown():
+            status.publish("Starting Loop")
             if link.available():    # Recieve new data from serial
+                status.publish("Data Recieved")
                 recSize = 0
 
                 dataRX.drive = link.rx_obj(obj_type='f', start_pos=recSize)
@@ -69,7 +71,30 @@ if __name__=='__main__':
                 recSize += txfer.STRUCT_FORMAT_LENGTHS['f']
 
                 #print('drive: {}  steer: {}   mode: {}'.format(dataRX.drive, dataRX.steer, dataRX.mode)) # debug print
+                status.publish("Data converted")
+
+                if LoRaEnabled:
+                    # Round data and test against deadzone
+                    dataRX.drive = round(dataRX.drive, 2)
+                    dataRX.steer = round(dataRX.steer, 2)
+                    if abs(dataRX.drive) < deadzone:
+                        dataRX.drive = 0
+                    if abs(dataRX.steer) < deadzone:
+                        dataRX.steer = 0
+
+                    # Drive Modes given mode switch's setting
+                    # Had to use floats to compare since the mode can't be transfered in an int.
+                    if dataRX.mode < 0.5:
+                        parameters = driveMath.car_drive(dataRX.drive*sensitivity,dataRX.steer)
+                    elif dataRX.mode > 0.5:
+                        parameters = driveMath.point_drive(dataRX.drive,dataRX.steer*sensitivity)
+
+                    #print("Drive: {}    Steer: {}".format(dataRX.drive,dataRX.steer)) # Test print statement
+                    drive.publish(float(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]))
+                    steer.publish(float(parameters[6]), float(parameters[7]), float(parameters[8]), float(parameters[9]))
+                    status.publish("Publishing New Values")
             elif link.status < 0:   # Error codes for Serial Transfer Library 
+                status.publish("No Message Recieved")
                 if link.status == txfer.CRC_ERROR:
                     print('ERROR: CRC_ERROR')
                 elif link.status == txfer.PAYLOAD_ERROR:
@@ -78,25 +103,9 @@ if __name__=='__main__':
                     print('ERROR: STOP_BYTE_ERROR')
                 else:
                     print('ERROR: {}'.format(link.status))
-            if LoRaEnabled:
-                # Round data and test against deadzone
-                dataRX.drive = round(dataRX.drive, 2)
-                dataRX.steer = round(dataRX.steer, 2)
-                if abs(dataRX.drive) < deadzone:
-                    dataRX.drive = 0
-                if abs(dataRX.steer) < deadzone:
-                    dataRX.steer = 0
-
-                # Drive Modes given mode switch's setting
-                # Had to use floats to compare since the mode can't be transfered in an int.
-                if dataRX.mode < 0.5:
-                    parameters = driveMath.car_drive(dataRX.drive*sensitivity,dataRX.steer)
-                elif dataRX.mode > 0.5:
-                    parameters = driveMath.point_drive(dataRX.drive,dataRX.steer*sensitivity)
-
-                #print("Drive: {}    Steer: {}".format(dataRX.drive,dataRX.steer)) # Test print statement
-                drive.publish(float(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]))
-                steer.publish(float(parameters[6]), float(parameters[7]), float(parameters[8]), float(parameters[9]))
+                drive.publish(0,0,0,0,0,0)
+                steer.publish(0,0,0,0)
     except rospy.ROSInterruptException:
+        status.publish("Ros Interrupt")
         link.close()    # Close serial connection
         pass
