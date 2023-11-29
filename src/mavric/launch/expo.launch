@@ -47,6 +47,14 @@
             <param name="intercepts"  value="0.0015" />
         </node>
     </group>
+    <group ns='Camera'>
+        <node name='arm_camera1' pkg='mavric' type='HTTP_Cam.py'>
+            <param name="resolution" value="1280x720"/>
+            <param name="frame_rate" value="30"/>
+            <param name="port" value="8080"/>
+            <param name="video_device" value="0"/>
+        </node>
+    </group>
     <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
         <param name="container" value="SlowPWM/" />
         <param name="control_mode" value="PulseTime" />
@@ -59,9 +67,5 @@
         <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
         <param name="clk_error" value="1.04166667" />
     </node>
-    <group ns="HW">
-        <node name="BNO055" pkg="mavric" type="BNO055_IMU.py" respawn="true">
-            <remap from="FusedAngle" to="IMU/FusedAngle" />
-        </node>
-    </group>
 </launch>
+
