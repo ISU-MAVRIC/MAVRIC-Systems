@@ -33,7 +33,7 @@ if __name__ == '__main__':
             print("There was an error trying to run MJPG Streamer.")
 
         # Keeps MJPG running unless there is an exception
-        while True:
+        while not rospy.is_shutdown():
             time.sleep(1)
 
     # Calls the MJPG Shutdown function if there is an interruption from ROS
