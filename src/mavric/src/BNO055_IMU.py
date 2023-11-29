@@ -45,7 +45,7 @@ def talker():
     #pub_accel_raw = rospy.Publisher("IMU/RawAccel", Vector3, queue_size=10)
     #pub_mag_raw = rospy.Publisher("IMU/RawMag", Vector3, queue_size=10)
 
-    pub_servo = rospy.Publisher("IMU_Cal_Servo", Float64, queue_size=10)
+    pub_servo = rospy.Publisher("IMU/IMU_Cal_Servo", Float64, queue_size=10)
 
     rospy.init_node('BNO055_IMU')
 

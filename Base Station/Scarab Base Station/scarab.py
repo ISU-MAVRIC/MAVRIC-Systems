@@ -131,14 +131,14 @@ class Scarab:
                 value_str = "S"+str(sr)+","+str(sp)+","+str(ep)+","+str(wr)+","+str(wp)
                 #print(value_str)
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.settimeout(1)
+                s.settimeout(0.25)
                 s.connect((self._ip, 10001))
                 s.sendall(value_str.encode())
                 s.close()
                 self._arm_fix = True
         except socket.error as e:
             self._arm_fix = False
-            print("set arm")
+            print("set arm all")
             print(e)
 
     def set_arm_cam(self, hor, vert):
@@ -154,7 +154,7 @@ class Scarab:
                 self._arm_fix = True
         except socket.error as e:
             self._arm_fix = False
-            print("set arm")
+            print("set arm cam")
             print(e)
 
     def set_util(self, rate):
@@ -188,7 +188,7 @@ class Scarab:
                 self._arm_fix = True
         except socket.error as e:
             self._arm_fix = False
-            print("set arm")
+            print("set arm pos")
             print(e)
 
     def enable_autonomous(self):
@@ -317,7 +317,7 @@ class ValueGetter(threading.Thread):
 
     def run(self):
         buffer = ''
-        while self._run:
+        while not self._run:
             try:
                 if self._socket is None:
                     self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -369,7 +369,7 @@ class GPS(ValueGetter):
 
     def run(self):
         buffer = ''
-        while self._run:
+        while not self._run:
             try:
                 if self._socket is None:
                     self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
