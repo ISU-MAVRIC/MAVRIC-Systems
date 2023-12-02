@@ -1,5 +1,5 @@
 <launch>
-    <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH4" />
+    <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH3" />
     <group ns="Drive">
         <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" >
             <remap from="Drive_Train" to="Drive_Command" />

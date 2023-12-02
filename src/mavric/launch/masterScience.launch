@@ -1,0 +1,11 @@
+<launch>
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+        <arg name="port" value="9090"/>
+    </include>
+    <arg name="scienceMode" value="true"/>
+    <arg name="driveMode" value="false"/>
+    <include file="$(find mavric)/launch/Drive.launch"/>
+    <include file="$(find mavric)/launch/Sensors.launch"/>
+    <include file="$(find mavric)/launch/Cameras.launch"/>
+    <include file="$(find mavric)/launch/Servos.launch" pass_all_args="true" />
+</launch>

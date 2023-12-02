@@ -1,0 +1,60 @@
+<launch>
+    <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH3" />
+    <arg name="LuminometerPWM_CH" value="/SlowPWM/CH4" />
+    <arg name="ButtonPWM_CH" value="/SlowPWM/CH5" />
+    <arg name="Luminometer_Scale" value="1.0" />
+    <arg name="Button_Scale" value="1.0" />
+    <arg name="ClawActuation_Scale" value="1.0" />
+    <group ns="Servo" if="$(arg driveMode)">
+        <node name="ClawActuation_Scale" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="ClawActuation" />
+            <param name="outputs" value="$(arg ClawActuationPWM_CH)" />
+            <param name="slopes"      value="$(eval ClawActuation_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+            <param name="lowLimit" value="-100" />
+            <param name="highLimit" value="100" />
+            <!-- mode = 0 for normal operation, mode = 1 for science system operation-->
+        </node>
+    </group>
+    <group ns="Servo" if="$(arg scienceMode)">
+        <node name="ClawActuation_Scale" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="ClawActuation" />
+            <param name="outputs" value="$(arg ClawActuationPWM_CH)" />
+            <param name="slopes"      value="$(eval ClawActuation_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+            <param name="lowLimit" value="-65" />
+            <param name="highLimit" value="35" />
+            <!-- mode = 0 for normal operation, mode = 1 for science system operation-->
+        </node>
+        <node name="Luminometer" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="Luminometer" />
+            <param name="outputs" value="$(arg LuminometerPWM_CH)" />
+            <param name="slopes"      value="$(eval Luminometer_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+            <param name="lowLimit" value="-36" />
+            <param name="highLimit" value="21" />
+            <!-- mode = 0 for normal operation, mode = 1 for science system operation-->
+        </node>
+        <node name="Button" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="LumiButton" />
+            <param name="outputs" value="$(arg ButtonPWM_CH)" />
+            <param name="slopes"      value="$(eval Button_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+            <param name="lowLimit" value="-100" />
+            <param name="highLimit" value="100" />
+            <!-- mode = 0 for normal operation, mode = 1 for science system operation-->
+        </node>
+    </group>
+    <node name="SlowPWM_HAT" pkg="mavric" type="PCA9685_PWM_HAT.py" respawn="true">
+        <param name="container" value="SlowPWM/" />
+        <param name="control_mode" value="PulseTime" />
+        <param name="frequency" value="50" />
+    
+        <!-- addresses start at 0x40 (64) and can be configured on the board -->
+        <param name="address" value="64" />
+        
+        <!-- we want to run as fast as possible here -->
+        <!-- <param name="clk_error" value="1.0893246187363834422657952069717" /> -->
+        <param name="clk_error" value="1.04166667" />
+    </node>
+</launch>
