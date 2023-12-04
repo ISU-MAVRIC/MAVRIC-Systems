@@ -50,9 +50,9 @@ c_str_rfDir = -1
 c_str_rbDir = 1
 # Arm Directions
 c_ShoulderRotDir = 1        
-c_ShoulderPitchDir = -1     # If axis is moving wrong way, invert these 
-c_ElbowPitchDir = 1
-c_WristPitchDir = 1
+c_ShoulderPitchDir = 1     # If axis is moving wrong way, invert these 
+c_ElbowPitchDir = -1
+c_WristPitchDir = -1
 c_WristRotDir = 1
 
 #set up globals for spark outputs. These should be zero

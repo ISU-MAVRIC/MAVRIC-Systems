@@ -3,9 +3,16 @@
         <remap from="Drive_Train" to="Drive/Drive_Command" />
         <remap from="Steer_Train" to="Drive/Steer_Command" />
     </node>
-    <node name="Scale_Startups" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg scienceMode)">
+    <node name="Scale_Startups_Drive" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg driveMode)">
+        <param name="ShoulderRot"  value="0.50" />
+        <param name="ShoulderPitch" value="0.50" />
+        <param name="ElbowPitch" value="0.75" />
+        <param name="WristPitch" value="0.75" />
+        <param name="WristRot" value="0.75" />
+    </node>
+    <node name="Scale_Startups_Science" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg scienceMode)">
         <param name="ShoulderRot"  value="0.25" />
-        <param name="ShoulderPitch" value="0.25" />
+        <param name="ShoulderPitch" value="0.50" />
         <param name="ElbowPitch" value="0" />
         <param name="WristPitch" value="0.75" />
         <param name="WristRot" value="0.05" />
