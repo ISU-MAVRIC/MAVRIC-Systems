@@ -1,0 +1,10 @@
+<launch>
+    <group ns='Camera'>
+        <node name='arm_camera1' pkg='mavric' type='HTTP_Cam.py'>
+            <param name="resolution" value="1280x720"/>
+            <param name="frame_rate" value="30"/>
+            <param name="port" value="8080"/>
+            <param name="video_device" value="0"/>
+        </node>
+    </group>
+</launch>

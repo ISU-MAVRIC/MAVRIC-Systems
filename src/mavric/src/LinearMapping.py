@@ -6,13 +6,18 @@ from std_msgs.msg import Bool
 
 
 def callback(data, args):
+    global lowLimit, highLimit
     pub = args[0]
     dat = data.data
+    if dat > highLimit:
+        dat = highLimit
+    if dat < lowLimit:
+        dat = lowLimit
     pub.publish(dat*args[1]+args[2])
 
 
 def talker():
-    global low_limit
+    global lowLimit, highLimit
     global slope
     global intercept
 
@@ -21,6 +26,11 @@ def talker():
     outputs = rospy.get_param('~outputs', 'q')
 
     slopes = rospy.get_param('~slopes', '0')
+    # MODES:
+    # 0: normal operation (-100 to 100)
+    # 1: claw operation
+    lowLimit = rospy.get_param("~lowLimit", 100)
+    highLimit = rospy.get_param("~highLimit", 100)
     if type(slopes) == str:
         slopes = float(slopes)
     else:

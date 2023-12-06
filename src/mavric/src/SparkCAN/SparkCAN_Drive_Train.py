@@ -1,24 +1,61 @@
 #!/usr/bin/env python3
+'''
+Description: Reads arm and Drive topics and controlls the relevant motors
+Author: Jacob Peskuski, Gabe Carlson, Nathan Logston
+
+Topics:
+    Publishers:
+        SteerPosition
+        JointPosition
+        JointVelocity
+    Subscribers:
+        Drive_Train
+        Steer_Train
+        Drive_Sensitivity
+        ShoulderPitch
+        ShoulderRot
+        ElbowPitch
+        WristPitch
+        WristRot
+        Arm_Sensitivity
+'''
+
 import rospy
 from std_msgs.msg import Float64
-from mavric.msg import Steer, Drivetrain, Steertrain
+from mavric.msg import Steer, Drivetrain, Steertrain, ArmData
 from SparkCAN import SparkBus
 
 
-
-c_Scale = 1.15*20
-c_lfDir = 1
-c_lmDir = -1
-c_lbDir = -1
-c_rfDir = 1
-c_rmDir = -1
-c_rbDir = 1
+# Drive Scales
+c_Scale_Max = 1.15*20
+c_Scale = c_Scale_Max
 c_str_Scale = 0.12
+# Arm Scales
+c_ShoulderPitch = 1         # Define individual arm rates
+c_ShoulderRot = 1           # If one axis is faster/slower than the others, change these values
+c_ElbowPitch = 1
+c_WristPitch = 1
+c_WristRot = 1
+
+# Drive Directions
+c_lfDir = 1
+c_lmDir = 1
+c_lbDir = 1
+c_rfDir = -1
+c_rmDir = -1
+c_rbDir = -1
 c_str_lfDir = -1
 c_str_lbDir = 1
 c_str_rfDir = -1
 c_str_rbDir = 1
+# Arm Directions
+c_ShoulderRotDir = 1        
+c_ShoulderPitchDir = 1     # If axis is moving wrong way, invert these 
+c_ElbowPitchDir = -1
+c_WristPitchDir = -1
+c_WristRotDir = 1
 
+#set up globals for spark outputs. These should be zero
 lf = 0
 lm = 0
 lb = 0
@@ -29,26 +66,36 @@ slf = 0
 slb = 0
 srf = 0
 srb = 0
+ShoulderRot = 0
+ShoulderPitch = 0
+ElbowPitch = 0
+WristPitch = 0
+WristRot = 0
 
-str_pub = None
 
+# Setup Sparkmax on can bus
 sparkBus = SparkBus(channel="can0", bustype='socketcan', bitrate=1000000)
-
+# Wheels
 spark_lf = sparkBus.init_controller(1)
 spark_lm = sparkBus.init_controller(2)
 spark_lb = sparkBus.init_controller(3)
 spark_rf = sparkBus.init_controller(4)
 spark_rm = sparkBus.init_controller(5)
 spark_rb = sparkBus.init_controller(6)
-
+# Steering
 spark_str_lf = sparkBus.init_controller(7)
 spark_str_lb = sparkBus.init_controller(8)
 spark_str_rf = sparkBus.init_controller(9)
 spark_str_rb = sparkBus.init_controller(10)
+# Arm
+spark_shoulderPitch = sparkBus.init_controller(11)
+spark_shoulderRot = sparkBus.init_controller(12)
+spark_elbowPitch = sparkBus.init_controller(13)
+spark_wristPitch = sparkBus.init_controller(14)
+spark_wristRot = sparkBus.init_controller(15)
 
-#add publish and subs
 
-
+# Axis Feedback Publishers
 def strpub():
   steerMsg = Steer()
   steerMsg.lf = int(spark_str_lf.position)
@@ -56,10 +103,33 @@ def strpub():
   steerMsg.rf = int(spark_str_rf.position)
   steerMsg.rb = int(spark_str_rb.position)
   str_pub.publish(steerMsg)
+
+def feedback():
+    Pos_msg = ArmData()
+    Vel_msg = ArmData()
+
+    Pos_msg.ShoulderRot = Float64(spark_shoulderRot.position)
+    Pos_msg.ShoulderPitch = Float64(spark_shoulderPitch.position)
+    Pos_msg.ElbowPitch = Float64(spark_elbowPitch.position)
+    Pos_msg.WristPitch = Float64(spark_wristPitch.position)
+    Pos_msg.WristRot = Float64(spark_wristRot.position)
+
+    Vel_msg.ShoulderRot = Float64(spark_shoulderRot.velocity)
+    Vel_msg.ShoulderPitch = Float64(spark_shoulderPitch.velocity)
+    Vel_msg.ElbowPitch = Float64(spark_elbowPitch.velocity)
+    Vel_msg.WristPitch = Float64(spark_wristPitch.velocity)
+    Vel_msg.WristRot = Float64(spark_wristRot.velocity)
+
+    Pos_pub.publish(Pos_msg)
+    Vel_pub.publish(Vel_msg)
   
 
-#Calibration KIA currently
-
+'''
+### CALLBACK FUNCTIONS ###
+Each callback function is run whenever a topic changes it's value.
+When the value changes, each callback function updates its relevant axis output.
+Then as a safety measure, makes sure the percent out is between the values -100 and 100.
+'''
 def strCallback(data):
   global slf, slb, srf, srb
   slf = data.strLf
@@ -127,17 +197,86 @@ def driveCallback(data):
 	if (rb < -100):
 		rb = -100
 
+def driveSens_cb(data):
+    global c_Scale
+    temp = data.data
+    if temp > 1.0:
+      temp = 1.0
+    if temp < 0:
+      temp = 0
+    c_Scale = c_Scale_Max*temp
 
-def pitchCallback(data):
-  global pitch
-  pitch = data.data
+def SR_cb(data):
+    global ShoulderRot
+    ShoulderRot = data.data
+    if ShoulderRot > 100:
+        ShoulderRot = 100
+    if ShoulderRot < -100:
+        ShoulderRot = -100
 
-  if (pitch > 100):
-    pitch = 100
-  if (pitch < -100):
-    pitch = -100
+def SP_cb(data):
+    global ShoulderPitch
+    ShoulderPitch = data.data
+    if ShoulderPitch > 100:
+        ShoulderPitch = 100
+    if ShoulderPitch < -100:
+        ShoulderPitch = -100
 
-  pitch /= 100
+def EP_cb(data):
+    global ElbowPitch
+    ElbowPitch = data.data
+    if ElbowPitch > 100:
+        ElbowPitch = 100
+    if ElbowPitch < -100:
+        ElbowPitch = -100
+
+def WP_cb(data):
+    global WristPitch
+    WristPitch = data.data
+    if WristPitch > 100:
+        WristPitch = 100
+    if WristPitch < -100:
+        WristPitch = -100
+
+def WR_cb(data):
+    global WristRot
+    WristRot = data.data
+    if WristRot > 100:
+        WristRot = 100
+    if WristRot < -100:
+        WristRot = -100
+
+def armSens_cb(data):
+    global c_ShoulderRot, c_ShoulderPitch, c_ElbowPitch, c_WristPitch, c_WristRot
+    c_ShoulderRot = data.ShoulderRot
+    c_ShoulderPitch = data.ShoulderPitch
+    c_ElbowPitch = data.ElbowPitch
+    c_WristPitch = data.WristPitch
+    c_WristRot = data.WristRot
+    if c_ShoulderRot > 1:
+        c_ShoulderRot = 1
+    elif c_ShoulderRot < 0:
+        c_ShoulderRot = 0
+
+    if c_ShoulderPitch > 1:
+        c_ShoulderPitch = 1
+    elif c_ShoulderPitch < 0:
+        c_ShoulderPitch = 0
+
+    if c_ElbowPitch > 1:
+        c_ElbowPitch = 1
+    elif c_ElbowPitch < 0:
+        c_ElbowPitch = 0
+
+    if c_WristPitch > 1:
+        c_WristPitch = 1
+    elif c_WristPitch < 0:
+        c_WristPitch = 0
+
+    if c_WristRot > 1:
+        c_WristRot = 1
+    elif c_WristRot < 0:
+        c_WristRot = 0
 
 
 def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
@@ -155,32 +294,39 @@ def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
 
 
 def talker():
-    global str_pub, lf, lm, lb, rf, rm, rb
-    global c_Scale, c_str_Scale, c_pitch
+    global str_pub, lf, lm, lb, rf, rm, rb, c_Scale, c_str_Scale
     global c_lfDir, c_lmDir, c_lbDir, c_rfDir, c_rmDir, c_rbDir
+    global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot
+    global Pos_pub, Vel_pub
     rospy.init_node("CAN_DTS")
 
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
-    #cal_sub = rospy.Subscriber("Steer_Cal", 1000, CalCallback);
-    str_pub = rospy.Publisher("Steer_Feedback", Steer, queue_size=10)
+    drive_sens = rospy.Subscriber("Drive/Drive_Sensitivity", Float64, driveSens_cb, queue_size=10)
+    str_pub = rospy.Publisher("Drive/Steer_Feedback", Steer, queue_size=10)
 
-    c_Scale = rospy.get_param("~Range", 1.15*20) #60*2*3.14159/0.4167
-    c_str_Scale = rospy.get_param("~Str/Range", 0.12)
-    c_lfDir = rospy.get_param("~Left_Front/Scale", 1)
-    c_lmDir = rospy.get_param("~Left_Middle/Scale", 1)
-    c_lbDir = rospy.get_param("~Left_Back/Scale", 1)
-    c_rfDir = rospy.get_param("~Right_Front/Scale", -1)
-    c_rmDir = rospy.get_param("~Right_Middle/Scale", -1)
-    c_rbDir = rospy.get_param("~Right_Back/Scale", -1)
-    c_pitch = rospy.get_param("~Pitch/Scale", 1)
+    SR_sub = rospy.Subscriber("Arm/ShoulderRot", Float64, SR_cb, queue_size=10)
+    SP_sub = rospy.Subscriber("Arm/ShoulderPitch", Float64, SP_cb, queue_size=10)
+    EP_sub = rospy.Subscriber("Arm/ElbowPitch", Float64, EP_cb, queue_size=10)
+    WP_sub = rospy.Subscriber("Arm/WristPitch", Float64, WP_cb, queue_size=10)
+    WR_sub = rospy.Subscriber("Arm/WristRot", Float64, WR_cb, queue_size=10)
+    arm_sens = rospy.Subscriber("Arm/Arm_Sensitivity", ArmData, armSens_cb, queue_size=10)
+    Pos_pub = rospy.Publisher("Arm/JointPosition", ArmData, queue_size=10)
+    Vel_pub = rospy.Publisher("Arm/JointVelocity", ArmData, queue_size=10)
 
     setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     rosRate = rospy.Rate(30)
-    while rospy.is_shutdown() is False:
+
+    while not rospy.is_shutdown():
         setOutputs(lf, lm, lb, rf, rm, rb, slf, slb, srf, srb)
         strpub()
+        spark_shoulderRot.percent_output(c_ShoulderRot * ShoulderRot * c_ShoulderRotDir/100)
+        spark_shoulderPitch.percent_output(c_ShoulderPitch * ShoulderPitch * c_ShoulderPitchDir/100)
+        spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch * c_ElbowPitchDir/100)
+        spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir/100)
+        spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
+        feedback()
         rosRate.sleep()
 
 if __name__ == '__main__':
@@ -188,4 +334,3 @@ if __name__ == '__main__':
         talker()
     except rospy.ROSInterruptException:
         pass
-

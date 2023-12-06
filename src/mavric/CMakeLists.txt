@@ -74,7 +74,7 @@ add_message_files(
   Object.msg
   ObjectVector.msg
   Armtrain.msg
-  ArmFeedback.msg
+  ArmData.msg
   Voltage.msg
   ArmData.msg
 )
