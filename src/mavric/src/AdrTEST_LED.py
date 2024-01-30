@@ -4,8 +4,9 @@ from abc import ABC, abstractmethod
 from mavric.msg import LED
 from LED import LightPole 
 import Jetson.GPIO as GPIO  
+
 import sys
-os.environ["BLINKA_FT232H"] = "1" 1
+os.environ["BLINKA_FT232H"] = "1" 
 import board 
 
 
