@@ -1,0 +1,19 @@
+<launch>
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+        <arg name="port" value="9090"/>
+    </include>
+    <arg name="nosim" default="true" />
+    <arg name="nogps" default="false" />
+    <arg name="autoMode" value="true"/>
+    <include file="$(find mavric)/launch/Drive.launch" pass_all_args="true" />
+    <include file="$(find mavric)/launch/Sensors.launch" />
+
+    <node name="Auto_System" pkg="mavric" type="auto_main.py" respawn="true">
+        <remap from="GPS_Fix" to="/HW/GPS_Fix" />
+        <remap from="GPS" to="/HW/GPS_Data" />
+        <remap from="SensorCalibrations" to="/HW/IMU/SensorCalibrations" />
+        <remap from="FusedAngle" to="/HW/IMU/FusedAngle" />
+        <remap from="Drive_Train" to="/Drive/Drive_Command" />
+        <remap from="Steer_Train" to="/Drive/Steer_Command" />
+    </node>
+</launch>

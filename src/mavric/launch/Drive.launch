@@ -17,4 +17,10 @@
         <param name="WristPitch" value="0.75" />
         <param name="WristRot" value="0.05" />
     </node>
+    <node name="Scale_Startups_Auto" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg autoMode)">
+        <param name="ShoulderRot"  value="0" />
+        <param name="ShoulderPitch" value="0" />
+        <param name="ElbowPitch" value="0" />
+        <param name="WristPitch" value="0" />
+        <param name="WristRot" value="0" />
 </launch>
