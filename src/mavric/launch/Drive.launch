@@ -23,4 +23,5 @@
         <param name="ElbowPitch" value="0" />
         <param name="WristPitch" value="0" />
         <param name="WristRot" value="0" />
+    </node>
 </launch>

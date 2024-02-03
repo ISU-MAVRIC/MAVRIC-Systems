@@ -99,8 +99,8 @@ class DriveTowardWaypoint(State):
         #remember linear error for the next cycle
         auto_globals.prev_linear_error = self.linear_error
 
-	auto_globals.debug_pub.publish("lin error")
-	auto_globals.debug_pub.publish(str(self.linear_error))
+        auto_globals.debug_pub.publish("lin error")
+        auto_globals.debug_pub.publish(str(self.linear_error))
 
     def next(self):
         if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):

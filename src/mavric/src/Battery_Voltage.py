@@ -27,7 +27,7 @@ def talker():
     volt_pub = rospy.Publisher("ADC", Voltage, queue_size=10)
     voltperCell_pub = rospy.Publisher("ADCpCell", Voltage, queue_size=10)
     rospy.init_node("ADC_Pub")
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(0.25)
     voltages = Voltage()
     voltpcell = Voltage()
     adc = ADS.ADS1115(busnum=1)
