@@ -12,7 +12,7 @@ class ReachedWaypoint(State):
 
 
     def run(self):
-        auto_globals.state_ind.publish("Waypoint Reached!!")
+        auto_globals.debug_pub.publish("Waypoint Reached!!")
         pass
 
     def next(self):
