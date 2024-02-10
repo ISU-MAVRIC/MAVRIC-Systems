@@ -52,7 +52,10 @@ def cmd_cb(data):
 
 def waypoint_cb(data):
     # add new waypoint to list
-    auto_globals.waypoints.append([data.latitude, data.longitude])
+    if len(auto_globals.waypoints) >= data.id + 1:
+        auto_globals.waypoints[data.id] = [data.latitude, data.longitude]
+    else:
+        auto_globals.waypoints.append([data.latitude, data.longitude])
 
 def gps_fix_cb(data):
     auto_globals.good_fix = data.data
@@ -93,7 +96,7 @@ def main():
     auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
     auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
-    auto_globals.state_ind = rospy.Publisher("State_Indicator", String, queue_size=10)
+    auto_globals.state_pub = rospy.Publisher("State", String, queue_size=10)
     #auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
 
 
@@ -112,7 +115,7 @@ def main():
     rate = rospy.Rate(2)  # 2 Hz
 
     while not rospy.is_shutdown():
-        auto.run()
+        auto.run(auto_globals.state_pub)
         rate.sleep()
 
 

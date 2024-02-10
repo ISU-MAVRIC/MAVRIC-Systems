@@ -9,16 +9,14 @@ class Idle(State):
     def enter(self):
         auto_globals.drive_pub.publish(0, 0, 0, 0, 0, 0)
         auto_globals.steer_pub.publish(0, 0, 0, 0)
-        auto_globals.state_ind.publish("Entering IdleState")
 
     def run(self):
         auto_globals.debug_pub.publish("en, waypoints>0, gps, imu, gps timeout")
         auto_globals.debug_pub.publish("%d, %d, %d, %d, %d" % (auto_globals.enabled, len(auto_globals.waypoints) > 0, auto_globals.good_fix, auto_globals.good_imu, auto_globals.fix_timeout))
-
+        auto_globals.debug_pub.publish(str(auto_globals.waypoints))
     def next(self):
         #Checks for condition needed to turn
         if(auto_globals.enabled and len(auto_globals.waypoints) > 0 and auto_globals.good_fix and auto_globals.good_imu and not auto_globals.fix_timeout):
-            auto_globals.state_ind.publish("Leaving IdleState attempting to enter TurnTowardWaypoint")
             return self._stateMachine.turnTowardWaypoint
 
         return self._stateMachine.idle

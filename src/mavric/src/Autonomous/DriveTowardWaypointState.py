@@ -13,7 +13,6 @@ class DriveTowardWaypoint(State):
 
     def enter(self):
         self.linear_error = auto_globals.LIN_ERROR_THRESHOLD * 2
-        auto_globals.state_ind.publish("Entering DriveTowardWaypointState")
 
     def run(self):
         auto_globals.prev_fix_time = auto_globals.fix_time
@@ -104,12 +103,10 @@ class DriveTowardWaypoint(State):
 
     def next(self):
         if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
-            auto_globals.state_ind.publish("Leaving DriveTowardWaypointState attempting to enter IdleState")
             return self._stateMachine.idle
         
             
         elif(self.linear_error <= auto_globals.LIN_ERROR_THRESHOLD):
-            auto_globals.state_ind.publish("Leaving DriveTowardWaypointState attempting to enter ReachedWaypointState")
             return self._stateMachine.reachedWaypoint
 
         return self._stateMachine.driveTowardWaypoint

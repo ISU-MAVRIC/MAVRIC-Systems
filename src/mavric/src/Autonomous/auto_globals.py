@@ -37,4 +37,4 @@ drive_pub = None
 steer_pub = None
 debug_pub = None
 indicator_pub = None
-state_ind = None
+state_pub = None
