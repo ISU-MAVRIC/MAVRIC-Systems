@@ -5,11 +5,9 @@ import math
 # If anyone wants to change it, go right ahead. No one but Jacob P. knows how this code works.
 # This code was imported from the old base station.
 
-wheel_length = 37.5
-wheel_width = 28.5
-
-sensdrive = 1
-senssteer = 0.75
+wheel_length = 42 #inches
+wheel_width = 26.5 #inches
+wheel_radius = 10 #inches
 
 lf = 0
 lm = 0
@@ -22,39 +20,44 @@ strLb = 0
 strRf = 0
 strRb = 0
 
-def radians(degrees):
-    return degrees * math.pi / 180
-
-def degrees(radians):
-    return radians * (180 / math.pi)
-
 def car_drive(drive,steer):
-    in_angle = radians(abs(steer*100*senssteer))*0.9
 
-    if not in_angle == 0:
-        out_angle = math.pi/2 - math.atan(1/math.tan(in_angle) + 2*wheel_width/wheel_length)
-        in_r = wheel_length / (2 * math.sin(in_angle))
-        out_r = wheel_length / (2 * math.sin(out_angle))
-        center_r = in_r * math.cos(in_angle) + wheel_width / 2
-        in_mid_r = center_r - wheel_width / 2
-        out_mid_r = center_r + wheel_width / 2
-        out_v = -100*drive * sensdrive
-        angle_v = out_v / out_r
-        in_v = in_r * angle_v
-        in_mid_v = in_mid_r * angle_v
-        out_mid_v = out_mid_r * angle_v
+    if drive <= 0:
+        v = 
+    elif drive :
+        
+    if steer_val != 0:
+        steer_angle = 2*math.pi*(drive/100)
     else:
-        out_angle = 0
-        in_v = 0
-        in_mid_v = 0
-        out_v = 0
-        out_mid_v = 0
-    if steer < 0:
-        return [in_v, in_mid_v, in_v, out_v, out_mid_v, out_v, degrees(in_angle), degrees(in_angle), degrees(out_angle), degrees(out_angle)]
-    elif steer > 0:
-        return [out_v, out_mid_v, out_v, in_v, in_mid_v, in_v, -1*degrees(out_angle), -1*degrees(out_angle), -1*degrees(in_angle), -1*degrees(in_angle)]
+        steer_angle = 0
+    
+    if S_theta==0:
+        FL_theta=0
+        FR_theta=0
     else:
-        return [-drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, -drive*sensdrive*100, 0, 0, 0, 0]
+        R = (L/2)/math.tan(math.radians(S_theta))
+        FL_theta = math.atan((L/2)/(R-w/2)) # Front left turn angle
+        FR_theta = math.atan((L/2)/(R+w/2)) # Front right turn angle
+
+    BL_theta = -FL_theta # Back left turn angle
+    BR_theta = -FR_theta # Back right turn angle
+
+    # Prevents divide by zero for R
+    if S_theta==0:
+        angular_v_FL = (v/wheel_r)
+        angular_v_FR = (v/wheel_r)
+        angular_v_ML = (v/wheel_r)
+        angular_v_MR = (v/wheel_r)
+    else:
+        angular_v_FL = (v/wheel_r)*(math.sqrt((L/2)**2+(R-w/2)**2)/R)
+        angular_v_FR = (v/wheel_r)*(math.sqrt((L/2)**2+(R+w/2)**2)/R)
+        angular_v_ML = (v/wheel_r)*((R-w/2)/R)
+        angular_v_MR = (v/wheel_r)*((R+w/2)/R)
+
+    angular_v_BL = angular_v_FL
+    angular_v_BR = angular_v_FR
+
+
 def point_drive(drive,steer):
     str_angle = degrees(math.atan(wheel_length/wheel_width))
     str_r = math.sqrt(math.pow(wheel_width/2,2) + math.pow(wheel_length/2,2))
