@@ -3,9 +3,10 @@
 #import modules
 import auto_globals
 import rospy
+import json
+from types import SimpleNamespace as Namespace
 
-from std_msgs.msg import String
-from std_msgs.msg import Bool
+from std_msgs.msg import String, Bool
 from geometry_msgs.msg import Vector3
 from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS#, LED
 
@@ -37,25 +38,12 @@ def hms_to_s(h, m, s):
 
 
 def cmd_cb(data):
-    # enable/disable autonomous, forget current waypoints
-    if data.command == 'E':
-        auto_globals.enabled = True
-        #auto_globals.indicator_pub(True, 255, "RED")
-
-    elif data.command == 'D':
-        auto_globals.enabled = False
-        #auto_globals.indicator_pub(True, 255, "BLUE")
-
-    elif data.command == 'F':
-        auto_globals.waypoints = []
-
+    # enable/disable autonomous
+    auto_globals.enabled = data.data
 
 def waypoint_cb(data):
-    # add new waypoint to list
-    if len(auto_globals.waypoints) >= data.id + 1:
-        auto_globals.waypoints[data.id] = [data.latitude, data.longitude]
-    else:
-        auto_globals.waypoints.append([data.latitude, data.longitude])
+    auto_globals.waypoints = json.loads(data.data, object_hook=lambda d: Namespace(**d))
+    #auto_globals.waypoint = data.data
 
 def gps_fix_cb(data):
     auto_globals.good_fix = data.data
@@ -95,13 +83,13 @@ def main():
     #init publishers
     auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
-    auto_globals.debug_pub = rospy.Publisher("Autonomous_Debug", String, queue_size=10)
+    auto_globals.debug_pub = rospy.Publisher("Debug", String, queue_size=10)
     auto_globals.state_pub = rospy.Publisher("State", String, queue_size=10)
     #auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
 
 
-    cmd_sub = rospy.Subscriber("Autonomous", Autonomous, cmd_cb, queue_size=10)
-    way_sub = rospy.Subscriber("Next_Waypoint", Waypoint, waypoint_cb, queue_size=10)
+    cmd_sub = rospy.Subscriber("Enable", Bool, cmd_cb, queue_size=10)
+    way_sub = rospy.Subscriber("Waypoints", String, waypoint_cb, queue_size=10)
     gps_fix_sub = rospy.Subscriber("GPS_Fix", Bool, gps_fix_cb, queue_size=10)
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
 
