@@ -36,21 +36,27 @@ def car_drive(drive, steer):
     else:
         steer_angle = steer*math.radians(max_steer_angle)*0.01
         R = (wheelbase/2)/math.tan(steer_angle)
-        FR_a = math.degrees(math.atan((wheelbase/2)/(R+track/2))) # Front right turn angle
-        FL_a = math.degrees(math.atan((wheelbase/2)/(R-track/2))) # Front left turn angle
+        FR_a = math.degrees(math.atan((wheelbase/2)/(R-track/2))) # Front right turn angle
+        FL_a = math.degrees(math.atan((wheelbase/2)/(R+track/2))) # Front left turn angle
 
-        FL_v = (drive*math.sqrt((wheelbase/2)**2+(R-track/2)**2))/R
-        FR_v = (drive*math.sqrt((wheelbase/2)**2+(R+track/2)**2))/R
+        FL_v = (drive*math.sqrt((wheelbase/2)**2+(R+track/2)**2))/R
+        FR_v = (drive*math.sqrt((wheelbase/2)**2+(R-track/2)**2))/R
 
-        if abs(FL_v) > abs(FR_v):
-            v_adj = FL_v*0.01
-        elif abs(FR_v) > abs(FL_v):
-            v_adj = FR_v*0.01
+        if steer < 0:
+            FL_v = -FL_v
+            FR_v = -FR_v
+
+        v_adj = 1
+
+        if abs(FL_v) > abs(FR_v) and abs(FL_v) > 100:
+            v_adj = abs(FL_v*0.01)
+        elif abs(FR_v) > abs(FL_v) and abs(FR_v) > 100:
+            v_adj = abs(FR_v*0.01)
 
         FL_v = FL_v/v_adj
         FR_v = FR_v/v_adj
-        ML_v = (drive*(R-track/2))/R/v_adj
-        MR_v = (drive*(R+track/2))/R/v_adj
+        ML_v = (drive*(R+track/2))/R/v_adj
+        MR_v = (drive*(R-track/2))/R/v_adj
 
     BL_a = -FL_a # Back left turn angle
     BR_a = -FR_a # Back right turn angle
@@ -59,21 +65,29 @@ def car_drive(drive, steer):
     BR_v = FR_v
 
     return [FL_v, ML_v, BL_v, FR_v, MR_v, BR_v, FL_a, BL_a, FR_a, BR_a]
-   
-print(car_drive(100,-50))
+
+print(car_drive(50, 25))
 
 '''
 def point_drive(drive,steer):
-    str_angle = degrees(math.atan(wheel_length/wheel_width))
-    str_r = math.sqrt(math.pow(wheel_width/2,2) + math.pow(wheel_length/2,2))
-    mid_r = wheel_width/2
-    str_v = abs(steer*sensdrive*100)
-    mid_v = str_v*mid_r/str_r
+    steer_angle = steer*math.radians(max_steer_angle)*0.01
+    R = math.sqrt((track/2)**2 + (wheelbase/2)**2)
+
+    FL_v = drive
+    ML_v = drive
+    BL_v = drive
+    FR_v = drive
+    MR_v = drive
+    BR_v = drive
+
+    mid_v = (str_v*(track/2))/R
     if steer < 0:
-        return [-str_v, -mid_v, -str_v, str_v, mid_v, str_v, -str_angle, -str_angle, str_angle, str_angle]
+        return [FL_v, ML_v, BL_v, FR_v, MR_v, BR_v, FL_a, BL_a, FR_a, BR_a]
     if steer > 0:
-        return [str_v, mid_v, str_v, -str_v, -mid_v, -str_v, -str_angle, -str_angle, str_angle, str_angle]
+        return [FL_v, ML_v, BL_v, FR_v, MR_v, BR_v, FL_a, BL_a, FR_a, BR_a]
     else:
         return [0, 0, 0, 0, 0, 0, -str_angle, -str_angle, str_angle, str_angle]
     return [0,0,0,0,0,0,0,0,0,0]
+
+print(car_drive(50, 25))
 '''
