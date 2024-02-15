@@ -42,8 +42,12 @@ def cmd_cb(data):
     auto_globals.enabled = data.data
 
 def waypoint_cb(data):
-    auto_globals.waypoints = json.loads(data.data, object_hook=lambda d: Namespace(**d))
-    #auto_globals.waypoint = data.data
+    recieved = json.loads(data.data, object_hook=lambda d: Namespace(**d))
+    # if the data is the same (most likely from an internal repush for base station)
+    if recieved != auto_globals.waypoints:
+        auto_globals.waypoints = recieved
+    else:
+        pass
 
 def gps_fix_cb(data):
     auto_globals.good_fix = data.data
@@ -85,6 +89,7 @@ def main():
     auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
     auto_globals.debug_pub = rospy.Publisher("Debug", String, queue_size=10)
     auto_globals.state_pub = rospy.Publisher("State", String, queue_size=10)
+    auto_globals.waypoint_pub = rospy.Publisher("Waypoints", String, queue_size=10) 
     #auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
 
 
@@ -101,9 +106,17 @@ def main():
     auto_globals.Rover_MinTurnRadius = rospy.get_param("~Rover_MinTurnRadius", 2)
 
     rate = rospy.Rate(2)  # 2 Hz
-
+    i = 0
     while not rospy.is_shutdown():
         auto.run(auto_globals.state_pub)
+
+        # updates the base station list of waypoints. This is done once every 5 seconds to not hammer the waypoints subscriber with "useless" messages
+        i = i + 1
+        if i > 10:
+            if len(auto_globals.waypoints) > 0:
+                auto_globals.waypoints.pop(0)
+            auto_globals.waypoint_pub.publish(json.dumps(auto_globals.waypoints))
+            i = 0
         rate.sleep()
 
 
