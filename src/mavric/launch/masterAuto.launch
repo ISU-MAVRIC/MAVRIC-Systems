@@ -18,5 +18,6 @@
             <remap from="Drive_Train" to="/Drive/Drive_Command" />
             <remap from="Steer_Train" to="/Drive/Steer_Command" />
         </node>
+        <node name="LED_Strip" pkg="mavric" type="LED_Strip.py" respawn="true"/>
     </group>
 </launch>

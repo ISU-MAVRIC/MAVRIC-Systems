@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
 #import modules
-import auto_globals
-import rospy
-import json
+import auto_globals, rospy, json
+
 from types import SimpleNamespace as Namespace
 
 from std_msgs.msg import String, Bool
 from geometry_msgs.msg import Vector3
-from mavric.msg import Autonomous, Waypoint, Drivetrain, Steertrain, GPS#, LED
+from mavric.msg import Drivetrain, Steertrain, GPS#, LED
 
 from StateMachine import StateMachine, State
 from IdleState import Idle
@@ -54,8 +53,6 @@ def gps_fix_cb(data):
 
 
 def gps_cb(data):
-    # how often does the gps publish? do we have to compare values here?
-
     auto_globals.prev_position = auto_globals.position
     auto_globals.position = [data.longitude, data.latitude]
     auto_globals.fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
@@ -68,12 +65,11 @@ def imu_cb(data):
 
 
 def imu_cal_cb(data):
-    auto_globals.good_imu = True
-
-    # if data.z > 0:
-    #    auto_globals.good_imu = True
-    # else:
-    #    auto_globals.good_imu = False
+    #auto_globals.good_imu = True # for testing and ignoring calibrations
+    if data.z > 0:
+       auto_globals.good_imu = True
+    else:
+       auto_globals.good_imu = False
 
 
 # main loop
