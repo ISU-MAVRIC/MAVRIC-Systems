@@ -56,6 +56,7 @@ def listener():
         else:
             strip.fill(0)
         rate.sleep()
+    strip.fill(0)
 
 
 if __name__ == '__main__':

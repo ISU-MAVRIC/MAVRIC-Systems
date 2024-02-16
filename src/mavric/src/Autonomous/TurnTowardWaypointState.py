@@ -36,15 +36,15 @@ class TurnTowardWaypoint(State):
 
         #set first waypoint in array as target
         tgt = [0, 0]
-        tgt[1] = auto_globals.waypoints[0][0]
-        tgt[0] = auto_globals.waypoints[0][1]
+        tgt[0] = auto_globals.waypoints[0][0]
+        tgt[1] = auto_globals.waypoints[0][1]
 
         #capture position in case it changes later
         pos = auto_globals.position
 
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
-        geod = Geodesic.WGS84.Inverse(pos[1], pos[0], tgt[1], tgt[0])
+        geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
 
         self.desired_heading = geod['azi1']
 

@@ -19,8 +19,8 @@ class DriveTowardWaypoint(State):
 
         #set first waypoint in array as target
         tgt = [0, 0]
-        tgt[1] = auto_globals.waypoints[0][0]
-        tgt[0] = auto_globals.waypoints[0][1]
+        tgt[0] = auto_globals.waypoints[0][0]
+        tgt[1] = auto_globals.waypoints[0][1]
 
         #capture position in case it changes later
         pos = auto_globals.position
@@ -29,7 +29,7 @@ class DriveTowardWaypoint(State):
         #The inverse function returns an array of data regarding the soltion of the geodesic problem, more can be read about it above
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
-        geod = Geodesic.WGS84.Inverse(pos[1], pos[0], tgt[1], tgt[0])
+        geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
 
         #get linear error in meters
         self.linear_error = geod['s12']
