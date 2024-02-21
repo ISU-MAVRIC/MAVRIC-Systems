@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Library for calulating the drive motor speeds and steer motor positions when using car and point steering
 
@@ -15,10 +15,12 @@ Input parameters:
 
 
 class Driver():
-    def __init__(self, wheelLength=43.75/39.37, wheelWidth=30/39.37, threshold=25):
+    def __init__(self, wheelLength=42, wheelWidth=26.5, threshold=25):
         self.L = wheelLength
         self.W = wheelWidth
         self.threshold = threshold
+        self.wheelR = 5 # Radius of wheel in inches
+        self.max_steer_angle = 45   # geometric maximum steering angle
         # point steer motor position (deg)
         self.pointAngle = math.degrees(math.atan(self.L/self.W))
         # point steer radiuses (untits of w and l)
@@ -38,32 +40,24 @@ class Driver():
     def v_car_steer(self, drive, steer):
         if drive < self.threshold:
             drive = math.copysign(self.threshold, drive)
-        in_angle = math.radians(abs(steer))*0.9
-        if in_angle != 0:
-            out_angle = math.pi/2 - math.atan(1/math.tan(in_angle)+2*self.W/self.L)
-            in_r = self.L / (2 * math.sin(in_angle))
-            out_r = self.L / (2 * math.sin(out_angle))
-            center_r = in_r * math.cos(in_angle) + self.W / 2
-            in_mid_r = center_r - self.W / 2
-            out_mid_r = center_r + self.W / 2
-            out_v = drive
-            angle_v = out_v / out_r
-            in_v = in_r * angle_v
-            in_mid_v = in_mid_r * angle_v
-            out_mid_v = out_mid_r * angle_v
-        else:
-            out_angle = 0
-            in_v = 0
-            in_mid_v = 0
-            out_v = 0
-            out_mid_v = 0
+        steer_angle = steer*math.radians(self.max_steer_angle)*0.01 # convert steering command (-100 to 100) into a steering angle
+        in_mid_radius = R - self.W/2
+        out_mid_radius = R + self.W/2
+        R = (self.L/2)/math.tan(steer_angle)    # Turn Radius
+        out_angle = math.atan(self.L/2 / (out_mid_radius))
+        in_angle = math.atan(self.L/2 / (in_mid_radius))
+
+        out_radius = math.sqrt((self.L/2)**2 + (out_mid_radius)**2)
+        in_radius = math.sqrt((self.L/2)**2 + (in_mid_radius)**2)
+        
+        out_v = drive
 
         if steer < 0:
-            return in_v, in_mid_v, in_v, out_v, out_mid_v, out_v, math.degrees(in_angle), math.degrees(in_angle), \
-                math.degrees(out_angle), math.degrees(out_angle)
+            return in_v, in_mid_v, in_v, out_v, out_mid_v, out_v, math.degrees(in_angle), -math.degrees(in_angle), \
+                -math.degrees(out_angle), math.degrees(out_angle)
         elif steer > 0:
-            return out_v, out_mid_v, out_v, in_v, in_mid_v, in_v, -math.degrees(out_angle), -math.degrees(out_angle), \
-                -math.degrees(in_angle), -math.degrees(in_angle)
+            return out_v, out_mid_v, out_v, in_v, in_mid_v, in_v, -math.degrees(out_angle), math.degrees(out_angle), \
+                math.degrees(in_angle), -math.degrees(in_angle)
         else:
             return drive, drive, drive, drive, drive, drive, 0, 0, 0, 0
 
