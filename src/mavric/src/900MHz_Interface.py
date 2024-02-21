@@ -74,8 +74,8 @@ if __name__=='__main__':
 
                 if LoRaEnabled:
                     # Round data and test against deadzone
-                    dataRX.drive = round(dataRX.drive, 2)
-                    dataRX.steer = round(dataRX.steer, 2)
+                    dataRX.drive = 100*round(dataRX.drive, 2)
+                    dataRX.steer = 100*round(dataRX.steer, 2)
                     if abs(dataRX.drive) < deadzone:
                         dataRX.drive = 0
                     if abs(dataRX.steer) < deadzone:

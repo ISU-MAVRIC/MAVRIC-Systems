@@ -126,5 +126,3 @@ def point_drive(drive,steer):
     BR_a = pd_angle
 
     return [FL_v, ML_v, BL_v, FR_v, MR_v, BR_v, FL_a, BL_a, FR_a, BR_a]
-
-print(point_drive(-50, -30))
