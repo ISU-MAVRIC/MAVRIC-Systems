@@ -102,11 +102,16 @@ class DriveTowardWaypoint(State):
         auto_globals.debug_pub.publish(str(self.linear_error))
 
     def next(self):
-        if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
-            return self._stateMachine.idle
+        if(auto_globals.usLeft or auto_globals.usMid or auto_globals.usRight):
+            return self._stateMachine.objAvoidance
         
+        elif(auto_globals.prev_linear_error < self.linear_error):   # if the rover skips the waypoint and remaining distance starts increasing
+            return self._stateMachine.turnTowardWaypoint
+        
+        elif(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
+            return self._stateMachine.idle
             
         elif(self.linear_error <= auto_globals.LIN_ERROR_THRESHOLD):
             return self._stateMachine.reachedWaypoint
-
-        return self._stateMachine.driveTowardWaypoint
+        else:
+            return self._stateMachine.driveTowardWaypoint

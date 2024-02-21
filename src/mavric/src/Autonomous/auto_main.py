@@ -7,13 +7,14 @@ from types import SimpleNamespace as Namespace
 
 from std_msgs.msg import String, Bool
 from geometry_msgs.msg import Vector3
-from mavric.msg import Drivetrain, Steertrain, GPS#, LED
+from mavric.msg import Drivetrain, Steertrain, GPS, Ultrasonic#, LED
 
 from StateMachine import StateMachine, State
 from IdleState import Idle
 from TurnTowardWaypointState import TurnTowardWaypoint
 from DriveTowardWaypointState import DriveTowardWaypoint
 from ReachedWaypointState import ReachedWaypoint
+from ObjAvoidanceState import ObjAvoidance
 
 # define state machine class
 
@@ -27,6 +28,7 @@ AutonomousStateMachine.idle = Idle(AutonomousStateMachine)
 AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(AutonomousStateMachine)
+AutonomousStateMachine.objAvoidance = ObjAvoidance(AutonomousStateMachine)
 
 # define functions
 
@@ -71,6 +73,11 @@ def imu_cal_cb(data):
     else:
        auto_globals.good_imu = False
 
+def us_cb(data):
+    auto_globals.usLeft = data.left
+    auto_globals.usMid = data.middle
+    auto_globals.usRight = data.right
+
 
 # main loop
 auto = AutonomousStateMachine()
@@ -93,6 +100,7 @@ def main():
     way_sub = rospy.Subscriber("Waypoints", String, waypoint_cb, queue_size=10)
     gps_fix_sub = rospy.Subscriber("GPS_Fix", Bool, gps_fix_cb, queue_size=10)
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
+    us_sub = rospy.Subscriber("Ultrasonic", Ultrasonic, us_cb, queue_size=10)
 
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
     imu_cal_sub = rospy.Subscriber("SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
