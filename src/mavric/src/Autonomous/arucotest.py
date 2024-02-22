@@ -59,25 +59,26 @@ def aruco_detection():
             steer = 0
 
         
-        if markers2:
-            vector1 = py.sqrt((markers2[2][index][0][0])^2 + (markers2[2][index][0][1])^2)
-            vector2 = py.sqrt((markers2[2][index][1][0])^2 + (markers2[2][index][1][1])^2)
+        vector1 = int() 
+        vector2 = int() 
+        distance = int()
+        speed = int()
+        if markers2[2]:
+            vector1 = (py.sqrt((markers2[2][index][0][0])**2 + (markers2[2][index][0][1])**2))
+            vector2 = (py.sqrt((markers2[2][index][1][0])**2 + (markers2[2][index][1][1])**2))
             distance = py.sqrt(vector1**2 + vector2**2)
+            if distance:
+                if distance < 920:
+                    speed = 100
+                if distance > 920:
+                    speed = 0
+            else:
+                speed = 0
         else:
-            print('balls')
-        # speed = int()
-        # if markers2[2]:
-        #     if markers2[2] - markerCorners[-1](2) < 310:
-        #         speed = 100
-        #     if markerCorners[-1](1) - markerCorners[-1](2) > 310:
-        #         speed = 0
-        # else:
-        #     speed = 0
-
-
-
-        #  print(speed)
-        # print(markers2[2])
+            distance = 1000
+      
+        print(distance)
+        print(speed)
         if cv2.waitKey(1) and 0xFF == ord('q'):
             break
 
