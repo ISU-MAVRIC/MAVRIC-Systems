@@ -5,9 +5,9 @@
     </node>
     <node name="Scale_Startups_Drive" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg driveMode)">
         <param name="ShoulderRot"  value="0.50" />
-        <param name="ShoulderPitch" value="0.50" />
+        <param name="ShoulderPitch" value="0.75" />
         <param name="ElbowPitch" value="0.75" />
-        <param name="WristPitch" value="0.75" />
+        <param name="WristPitch" value="0.50" />
         <param name="WristRot" value="0.75" />
     </node>
     <node name="Scale_Startups_Science" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg scienceMode)">

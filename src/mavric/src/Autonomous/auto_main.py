@@ -116,9 +116,7 @@ def main():
 
         # updates the base station list of waypoints. This is done once every 5 seconds to not hammer the waypoints subscriber with "useless" messages
         i = i + 1
-        if i > 10:
-            if len(auto_globals.waypoints) > 0:
-                auto_globals.waypoints.pop(0)
+        if i > 4:
             auto_globals.waypoint_pub.publish(json.dumps(auto_globals.waypoints))
             i = 0
         rate.sleep()
