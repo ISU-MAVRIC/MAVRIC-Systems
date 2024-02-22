@@ -20,24 +20,21 @@ def talker():
         try:
             geo = gps.geo_coords()
             time = gps.date_time()
-            #veh = gps.veh_attitude() 
-            if not geo == None and not time == None:
-                fix_pub.publish(True)
-                nums = GPS()
-                nums.latitude = geo.lat
-                nums.longitude = geo.lon
-                nums.altitude = 0
-                nums.speed = 0
-                nums.heading = geo.headMot
-                nums.num_satellites = 3
-                nums.time_h = int(time.hour)
-                nums.time_m = int(time.min)
-                nums.time_s = float(time.sec)
-                gps_pub.publish(nums)
-                print(nums.latitude, nums.longitude)
-            else:
+            nums = GPS()
+            nums.latitude = geo.lat
+            nums.longitude = geo.lon
+            nums.altitude = geo.height
+            nums.speed = geo.gSpeed
+            nums.heading = geo.headMot
+            nums.num_satellites = geo.numSV
+            nums.time_h = int(time.hour)
+            nums.time_m = int(time.min)
+            nums.time_s = float(time.sec)
+            if geo.flags.gnssFixOK == 0:
                 fix_pub.publish(False)
-                print("Bawls")
+            else:
+                fix_pub.publish(True)
+            gps_pub.publish(nums)
 
         except (ValueError, IOError) as err:
             print(err)
