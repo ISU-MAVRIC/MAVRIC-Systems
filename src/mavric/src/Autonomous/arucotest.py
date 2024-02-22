@@ -3,6 +3,7 @@ import imutils
 import time
 import cv2
 import threading
+import numpy as py
 
 
 dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
@@ -48,7 +49,35 @@ def aruco_detection():
             frame2 = cv2.putText(frame2, "ID: " + str(ID) + " Theta: " + str(int(angles[index])), markers2[2][index][0], cv2.FONT_HERSHEY_SIMPLEX, 0.33, (255, 255, 255), 1, cv2.LINE_AA)
         
         # cv2.imshow('Frame',frame2)
-        print(angles)
+        steer = int()
+        if angles:
+            if int(angles[-1]) > -18:
+                steer = 100
+            if int(angles[-1]) < -18:
+                steer = -100
+        else:
+            steer = 0
+
+        
+        if markers2:
+            vector1 = py.sqrt((markers2[2][index][0][0])^2 + (markers2[2][index][0][1])^2)
+            vector2 = py.sqrt((markers2[2][index][1][0])^2 + (markers2[2][index][1][1])^2)
+            distance = py.sqrt(vector1**2 + vector2**2)
+        else:
+            print('balls')
+        # speed = int()
+        # if markers2[2]:
+        #     if markers2[2] - markerCorners[-1](2) < 310:
+        #         speed = 100
+        #     if markerCorners[-1](1) - markerCorners[-1](2) > 310:
+        #         speed = 0
+        # else:
+        #     speed = 0
+
+
+
+        #  print(speed)
+        # print(markers2[2])
         if cv2.waitKey(1) and 0xFF == ord('q'):
             break
 
@@ -64,12 +93,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         thread._stop()
 
-def aruco_steering(markers2):
-    steer = []
-    if angles >= -18:
-       print(1)
-    else: 
-        print(-1)
 
-# def aruco_speed(markerCorners):
+    
+
 
