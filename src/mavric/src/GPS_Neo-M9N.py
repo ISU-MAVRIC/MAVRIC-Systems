@@ -13,28 +13,28 @@ def talker():
     fix_pub = rospy.Publisher("GPS_Fix", Bool, queue_size=10, latch=True)
     rate = rospy.Rate(1)
 
-    port = serial.Serial('/dev/ttyTHS2', baudrate=38400, timeout=10)
+    port = serial.Serial('/dev/ttyACM0', baudrate=38400, timeout=10)
     gps = UbloxGps(port)
 
     while not rospy.is_shutdown():
         try:
             geo = gps.geo_coords()
-            time = gps.date_time
-            veh = gps.veh_attitude()     
-            if not geo == None and not time == None and not veh == None:
+            time = gps.date_time()
+            #veh = gps.veh_attitude() 
+            if not geo == None and not time == None:
                 fix_pub.publish(True)
-                nums = GPS
+                nums = GPS()
                 nums.latitude = geo.lat
                 nums.longitude = geo.lon
-                nums.altitude = 50
-                nums.speed = 50
+                nums.altitude = 0
+                nums.speed = 0
                 nums.heading = geo.headMot
-                nums.num_satellites
-                nums.time_h = time.hour
-                nums.time_m = time.min
-                nums.time_s = time.sec
+                nums.num_satellites = 3
+                nums.time_h = int(time.hour)
+                nums.time_m = int(time.min)
+                nums.time_s = float(time.sec)
                 gps_pub.publish(nums)
-                print(nums)
+                print(nums.latitude, nums.longitude)
             else:
                 fix_pub.publish(False)
                 print("Bawls")
