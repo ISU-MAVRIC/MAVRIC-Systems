@@ -68,7 +68,7 @@ def imu_cb(data):
 
 def imu_cal_cb(data):
     #auto_globals.good_imu = True # for testing and ignoring calibrations
-    if data.z > 0:
+    if data.z > 2:
        auto_globals.good_imu = True
     else:
        auto_globals.good_imu = False

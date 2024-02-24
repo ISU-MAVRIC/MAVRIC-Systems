@@ -2,6 +2,7 @@
 import rospy
 from mavric.msg import Drivetrain, Steertrain
 
+from std_msgs.msg import Bool
 from imutils.video import VideoStream
 import imutils
 import time
@@ -10,10 +11,11 @@ import threading
 import numpy as py
 from driver import Driver
 
-driveSpeed = 25
-lTheta = -43
-rTheta = -22
+driveSpeed = 7
+lTheta = -45
+rTheta = 12
 driveMath = Driver()
+enable = False
 
 dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
 parameters =  cv2.aruco.DetectorParameters()
@@ -43,9 +45,9 @@ def get_markers_from_frame(frame):
 
 
 def aruco_detection():
-    global drive_pub, steer_pub
-    vs2 = VideoStream(src=0).start()
-    # vs2 = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
+    global drive_pub, steer_pub, enable
+    # vs2 = VideoStream(src=0).start()
+    vs2 = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
     time.sleep(1)
     lastFix = 0
     currentFix = 5
@@ -63,8 +65,7 @@ def aruco_detection():
             frame2 = cv2.rectangle(frame2, markers2[2][index][0], (markers2[2][index][0][0]+100, markers2[2][index][0][1]-20), (0, 0, 0), -1)
             frame2 = cv2.putText(frame2, "ID: " + str(ID) + " Theta: " + str(int(angles[index])), markers2[2][index][0], cv2.FONT_HERSHEY_SIMPLEX, 0.33, (255, 255, 255), 1, cv2.LINE_AA)
         
-        cv2.imshow('Frame',frame2)
-
+        # cv2.imshow('Frame',frame2)
         if len(angles) > 0:
             if fault <= 0:
                 lastFix = time.perf_counter()
@@ -82,10 +83,13 @@ def aruco_detection():
                 elif currentFix - lastFix > 1:
                     steer = 0
                 fault = 5
-
-        lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = driveMath.v_car_steer(drive, steer)
-        drive_pub.publish(lf,lm,lb,rf,rm,rb)
-        steer_pub.publish(lfs,lbs,rfs,rbs)
+        if enable:
+            lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = driveMath.v_car_steer(drive, steer)
+            drive_pub.publish(lf,lm,lb,rf,rm,rb)
+            steer_pub.publish(lfs,lbs,rfs,rbs)
+        else:
+            drive_pub.publish(0,0,0,0,0,0)
+            steer_pub.publish(0,0,0,0)
         if cv2.waitKey(1) and 0xFF == ord('q'):
             break
 
@@ -94,11 +98,19 @@ def aruco_detection():
 def start_aruco_detection():
     thread.start()
 
+def enable_cb(data):
+    global enable
+    if data.data:
+        enable = True
+    else:
+        enable = False
+
 if __name__ == "__main__":
     try:
         rospy.init_node("Aruco")
         drive_pub = rospy.Publisher("/Drive/Drive_Command", Drivetrain, queue_size=10)
         steer_pub = rospy.Publisher("/Drive/Steer_Command", Steertrain, queue_size=10)
+        enable_sub = rospy.Subscriber("/Auto/Enable", Bool, enable_cb)
         thread = threading.Thread(target=aruco_detection)
         thread.start()
     except rospy.ROSInterruptException:
