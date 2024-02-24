@@ -1,10 +1,19 @@
+#!/usr/bin/env python3
+import rospy
+from mavric.msg import Drivetrain, Steertrain
+
 from imutils.video import VideoStream
 import imutils
 import time
 import cv2
 import threading
 import numpy as py
+from driver import Driver
 
+driveSpeed = 25
+lTheta = -43
+rTheta = -22
+driveMath = Driver()
 
 dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
 parameters =  cv2.aruco.DetectorParameters()
@@ -34,9 +43,15 @@ def get_markers_from_frame(frame):
 
 
 def aruco_detection():
-    # vs2 = VideoStream(src=0).start()
-    vs2 = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
+    global drive_pub, steer_pub
+    vs2 = VideoStream(src=0).start()
+    # vs2 = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
     time.sleep(1)
+    lastFix = 0
+    currentFix = 5
+    drive = 0
+    steer = 0
+    fault = 0
     while True:
         frame2 = vs2.read()
         time.sleep(.01)
@@ -48,37 +63,29 @@ def aruco_detection():
             frame2 = cv2.rectangle(frame2, markers2[2][index][0], (markers2[2][index][0][0]+100, markers2[2][index][0][1]-20), (0, 0, 0), -1)
             frame2 = cv2.putText(frame2, "ID: " + str(ID) + " Theta: " + str(int(angles[index])), markers2[2][index][0], cv2.FONT_HERSHEY_SIMPLEX, 0.33, (255, 255, 255), 1, cv2.LINE_AA)
         
-        # cv2.imshow('Frame',frame2)
-        steer = int()
-        if angles:
-            if int(angles[-1]) > -18:
-                steer = 100
-            if int(angles[-1]) < -18:
-                steer = -100
-        else:
-            steer = 0
+        cv2.imshow('Frame',frame2)
 
-        
-        vector1 = int() 
-        vector2 = int() 
-        distance = int()
-        speed = int()
-        if markers2[2]:
-            vector1 = (py.sqrt((markers2[2][index][0][0])**2 + (markers2[2][index][0][1])**2))
-            vector2 = (py.sqrt((markers2[2][index][1][0])**2 + (markers2[2][index][1][1])**2))
-            distance = py.sqrt(vector1**2 + vector2**2)
-            if distance:
-                if distance < 920:
-                    speed = 100
-                if distance > 920:
-                    speed = 0
-            else:
-                speed = 0
+        if len(angles) > 0:
+            if fault <= 0:
+                lastFix = time.perf_counter()
+                fault = 0
+                steer = 100/(rTheta-lTheta) * (angles[0] - (rTheta+lTheta)/2)
+                drive = driveSpeed
+            fault = fault - 1
         else:
-            distance = 1000
-      
-        print(distance)
-        print(speed)
+            currentFix = time.perf_counter()
+            fault = fault + 1
+            if fault >= 5:
+                if currentFix - lastFix > 3:
+                    steer = 0
+                    drive = 0
+                elif currentFix - lastFix > 1:
+                    steer = 0
+                fault = 5
+
+        lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = driveMath.v_car_steer(drive, steer)
+        drive_pub.publish(lf,lm,lb,rf,rm,rb)
+        steer_pub.publish(lfs,lbs,rfs,rbs)
         if cv2.waitKey(1) and 0xFF == ord('q'):
             break
 
@@ -89,9 +96,12 @@ def start_aruco_detection():
 
 if __name__ == "__main__":
     try:
+        rospy.init_node("Aruco")
+        drive_pub = rospy.Publisher("/Drive/Drive_Command", Drivetrain, queue_size=10)
+        steer_pub = rospy.Publisher("/Drive/Steer_Command", Steertrain, queue_size=10)
         thread = threading.Thread(target=aruco_detection)
         thread.start()
-    except KeyboardInterrupt:
+    except rospy.ROSInterruptException:
         thread._stop()
 
 
