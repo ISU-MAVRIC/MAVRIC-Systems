@@ -56,7 +56,7 @@ def gps_fix_cb(data):
 
 def gps_cb(data):
     auto_globals.prev_position = auto_globals.position
-    auto_globals.position = [data.longitude, data.latitude]
+    auto_globals.position = [data.latitude, data.longitude]
     auto_globals.fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
     #auto_globals.heading = data.heading
 
@@ -68,10 +68,10 @@ def imu_cb(data):
 
 def imu_cal_cb(data):
     #auto_globals.good_imu = True # for testing and ignoring calibrations
-    if data.z > 2:
+    if data.z > 0:
        auto_globals.good_imu = True
     else:
-       auto_globals.good_imu = False
+       auto_globals.good_imu = True
 
 def us_cb(data):
     auto_globals.usLeft = data.left

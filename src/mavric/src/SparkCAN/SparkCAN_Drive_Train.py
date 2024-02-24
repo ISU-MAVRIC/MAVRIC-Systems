@@ -47,7 +47,7 @@ c_rbDir = -1
 c_str_lfDir = 1
 c_str_lbDir = 1
 c_str_rfDir = 1
-c_str_rbDir = 1
+c_str_rbDir = 0.9
 # Arm Directions
 c_ShoulderRotDir = 1        
 c_ShoulderPitchDir = 1     # If axis is moving wrong way, invert these 

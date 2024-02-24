@@ -29,7 +29,7 @@ class TurnTowardWaypoint(State):
         lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(0)
         auto_globals.drive_pub.publish(0,0,0,0,0,0)
         auto_globals.steer_pub.publish(lfs, lbs, rfs, rbs)
-        time.sleep(1)
+        time.sleep(3)
 
     def run(self):
         auto_globals.prev_fix_time = auto_globals.fix_time  #update in gps_cb
@@ -49,9 +49,11 @@ class TurnTowardWaypoint(State):
         self.desired_heading = geod['azi1']
 
         start_time = time.time()
-        #auto_globals.debug_pub.publish(str(tgt))
-        #auto_globals.debug_pub.publish(str(pos))
-        #auto_globals.debug_pub.publish(str(geod))
+        auto_globals.debug_pub.publish(str(tgt))
+        auto_globals.debug_pub.publish(str(pos))
+        auto_globals.debug_pub.publish(str(geod))
+
+
         while abs(self.get_angular_error()) > auto_globals.ANG_ERROR_THRESHOLD and auto_globals.enabled:
             auto_globals.debug_pub.publish(str(self.get_ramped_turn_speed()))
             lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())
@@ -67,6 +69,10 @@ class TurnTowardWaypoint(State):
             return self._stateMachine.idle
 
         if(abs(self.get_angular_error()) < auto_globals.ANG_ERROR_THRESHOLD):
+            auto_globals.drive_pub.publish(0,0,0,0,0,0)
+            time.sleep(2)
+            auto_globals.steer_pub.publish(0,0,0,0)
+            time.sleep(2)
             auto_globals.debug_pub.publish("Exiting TurnTowardWaypointState.py")
             return self._stateMachine.driveTowardWaypoint
 
