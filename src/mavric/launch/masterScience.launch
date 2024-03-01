@@ -4,6 +4,7 @@
     </include>
     <arg name="scienceMode" value="true"/>
     <arg name="driveMode" value="false"/>
+    <arg name="autoMode" value="false"/>
     <include file="$(find mavric)/launch/Drive.launch" pass_all_args="true" />
     <include file="$(find mavric)/launch/Sensors.launch"/>
     <include file="$(find mavric)/launch/Cameras.launch"/>

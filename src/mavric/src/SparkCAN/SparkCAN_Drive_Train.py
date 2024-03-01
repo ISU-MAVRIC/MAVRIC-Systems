@@ -27,7 +27,7 @@ from SparkCAN import SparkBus
 
 
 # Drive Scales
-c_Scale_Max = 1.4*20
+c_Scale_Max = 1.2*20
 c_Scale = c_Scale_Max
 c_str_Scale = 0.15
 # Arm Scales
