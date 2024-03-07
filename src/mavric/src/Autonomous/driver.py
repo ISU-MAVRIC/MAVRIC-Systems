@@ -46,7 +46,7 @@ class Driver():
 	"""
 
     def v_car_steer(self, drive, steer):
-        if drive < self.threshold:  # check if drive throttle is less than threshold
+        if drive < self.threshold and drive != 0:  # check if drive throttle is less than threshold and greater than zero
             drive = math.copysign(self.threshold, drive)    #if less, set to threshold with same sign as input
         if not steer == 0:  # if the steer is actually trying to turn (prevents divide by zero)
             steer_angle = abs(steer)*self.max_steer_angle*0.01 # convert steering command (-100 to 100) into a steering angle

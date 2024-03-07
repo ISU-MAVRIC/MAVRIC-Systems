@@ -27,9 +27,9 @@ from SparkCAN import SparkBus
 
 
 # Drive Scales
-c_Scale_Max = 1.15*20
+c_Scale_Max = 1.2*20
 c_Scale = c_Scale_Max
-c_str_Scale = 0.08
+c_str_Scale = 0.15
 # Arm Scales
 c_ShoulderPitch = 1         # Define individual arm rates
 c_ShoulderRot = 1           # If one axis is faster/slower than the others, change these values
@@ -38,16 +38,16 @@ c_WristPitch = 1
 c_WristRot = 1
 
 # Drive Directions
-c_lfDir = -1
-c_lmDir = -1
-c_lbDir = -1
-c_rfDir = 1
-c_rmDir = 1
-c_rbDir = 1
+c_lfDir = 1
+c_lmDir = 1
+c_lbDir = 1
+c_rfDir = -1
+c_rmDir = -1
+c_rbDir = -1
 c_str_lfDir = 1
 c_str_lbDir = 1
 c_str_rfDir = 1
-c_str_rbDir = 1
+c_str_rbDir = 0.9
 # Arm Directions
 c_ShoulderRotDir = 1        
 c_ShoulderPitchDir = 1     # If axis is moving wrong way, invert these 

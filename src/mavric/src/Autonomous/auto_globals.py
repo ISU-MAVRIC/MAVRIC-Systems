@@ -18,6 +18,11 @@ position = [0, 0]
 prev_position = [0, 0]
 waypoints = []
 
+#ultrasonic sensor
+usLeft = False
+usMid = False
+usRight = False
+
 heading = 0
 
 prev_angular_error = ANG_ERROR_THRESHOLD * 2
@@ -37,4 +42,5 @@ drive_pub = None
 steer_pub = None
 debug_pub = None
 indicator_pub = None
-state_ind = None
+state_pub = None
+waypoint_pub = None

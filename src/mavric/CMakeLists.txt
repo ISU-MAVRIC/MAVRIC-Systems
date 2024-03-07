@@ -66,8 +66,6 @@ add_message_files(
   Steer.msg
   GPS.msg
   Arm.msg
-  Autonomous.msg
-  Waypoint.msg
   LED.msg
   Auto_Status.msg
   Aruco.msg
@@ -77,6 +75,7 @@ add_message_files(
   ArmData.msg
   Voltage.msg
   ArmData.msg
+  Ultrasonic.msg
 )
 
 ## Generate services in the 'srv' folder

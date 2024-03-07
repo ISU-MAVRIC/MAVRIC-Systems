@@ -13,15 +13,14 @@ class DriveTowardWaypoint(State):
 
     def enter(self):
         self.linear_error = auto_globals.LIN_ERROR_THRESHOLD * 2
-        auto_globals.state_ind.publish("Entering DriveTowardWaypointState")
 
     def run(self):
         auto_globals.prev_fix_time = auto_globals.fix_time
 
         #set first waypoint in array as target
         tgt = [0, 0]
-        tgt[1] = auto_globals.waypoints[0][0]
-        tgt[0] = auto_globals.waypoints[0][1]
+        tgt[0] = auto_globals.waypoints[0][0]
+        tgt[1] = auto_globals.waypoints[0][1]
 
         #capture position in case it changes later
         pos = auto_globals.position
@@ -30,7 +29,7 @@ class DriveTowardWaypoint(State):
         #The inverse function returns an array of data regarding the soltion of the geodesic problem, more can be read about it above
         #solve the geodesic problem corresponding to these lat-lon values
         #   assumes WGS-84 ellipsoid model
-        geod = Geodesic.WGS84.Inverse(pos[1], pos[0], tgt[1], tgt[0])
+        geod = Geodesic.WGS84.Inverse(pos[0], pos[1], tgt[0], tgt[1])
 
         #get linear error in meters
         self.linear_error = geod['s12']
@@ -99,17 +98,20 @@ class DriveTowardWaypoint(State):
         #remember linear error for the next cycle
         auto_globals.prev_linear_error = self.linear_error
 
-	auto_globals.debug_pub.publish("lin error")
-	auto_globals.debug_pub.publish(str(self.linear_error))
+        auto_globals.debug_pub.publish("lin error")
+        auto_globals.debug_pub.publish(str(self.linear_error))
 
     def next(self):
-        if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
-            auto_globals.state_ind.publish("Leaving DriveTowardWaypointState attempting to enter IdleState")
-            return self._stateMachine.idle
+        if(auto_globals.usLeft or auto_globals.usMid or auto_globals.usRight):
+            return self._stateMachine.objAvoidance
         
+        elif(auto_globals.prev_linear_error < self.linear_error):   # if the rover skips the waypoint and remaining distance starts increasing
+            return self._stateMachine.turnTowardWaypoint
+        
+        elif(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
+            return self._stateMachine.idle
             
         elif(self.linear_error <= auto_globals.LIN_ERROR_THRESHOLD):
-            auto_globals.state_ind.publish("Leaving DriveTowardWaypointState attempting to enter ReachedWaypointState")
             return self._stateMachine.reachedWaypoint
-
-        return self._stateMachine.driveTowardWaypoint
+        else:
+            return self._stateMachine.driveTowardWaypoint
