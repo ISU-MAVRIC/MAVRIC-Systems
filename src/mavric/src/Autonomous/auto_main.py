@@ -5,7 +5,7 @@ import auto_globals, rospy, json
 
 from types import SimpleNamespace as Namespace
 
-from std_msgs.msg import String, Bool
+from std_msgs.msg import String, Bool, Float64
 from geometry_msgs.msg import Vector3
 from mavric.msg import Drivetrain, Steertrain, GPS, Ultrasonic#, LED
 
@@ -67,11 +67,10 @@ def imu_cb(data):
 
 
 def imu_cal_cb(data):
-    #auto_globals.good_imu = True # for testing and ignoring calibrations
-    if data.z > 0:
+    if data > 0:
        auto_globals.good_imu = True
     else:
-       auto_globals.good_imu = True
+       auto_globals.good_imu = False
 
 def us_cb(data):
     auto_globals.usLeft = data.left
@@ -103,7 +102,7 @@ def main():
     us_sub = rospy.Subscriber("Ultrasonic", Ultrasonic, us_cb, queue_size=10)
 
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
-    imu_cal_sub = rospy.Subscriber("SensorCalibrations", Vector3, imu_cal_cb, queue_size=10)
+    imu_cal_sub = rospy.Subscriber("SensorCalibrations", Float64, imu_cal_cb, queue_size=10)
 
     auto_globals.Scale = rospy.get_param("~Range", 0.5)
     auto_globals.Rover_Width = rospy.get_param("~Rover_Width", 1)

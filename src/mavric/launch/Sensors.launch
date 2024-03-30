@@ -1,6 +1,8 @@
 <launch>
     <group ns="HW">
-        <node name="BNO055" pkg="mavric" type="BNO055_IMU.py" respawn="true"/>
+        <node name="BNO085" pkg="mavric" type="BNO085_IMU.py" respawn="true" output="screen">
+            <param name="calibration_enabled" value="False"/>
+        </node>
         <node name="GPS" pkg="mavric" type="GPS_Neo-M9N.py" respawn="true"/>
         <node name="ADC" pkg="mavric" type="Battery_Voltage.py" respawn="true"/>
     </group>
