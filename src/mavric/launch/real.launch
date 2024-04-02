@@ -1,3 +1,9 @@
 <launch>
-    <include file="$(find realsense2_camera)/launch/rs_camera.launch"/>
+    <group ns="RS">
+        <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+            <arg name="enable_pointcloud" value="true"/>
+            <arg name="enable_sync" value="true"/>
+        </include>
+    </group>
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find realsense2_camera)/rviz/pointcloud.rvizd.rviz" required="true" /> -->
 </launch>
