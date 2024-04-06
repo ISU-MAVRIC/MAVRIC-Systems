@@ -297,16 +297,16 @@ def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
 This function is used in science system to "snap" the swab holder's position 
 whenever it gets close to some specified swab positions.
 '''   
-def snap_function(input):
+def snap_function(publisher,input):
     snap_points = [9.405, 4.214, -1.07, -5.714, -10.214, -15, -19.19, -23.618]
     if input == 0:
-        closest = min(snap_points, key=lambda x:abs(x-spark_wristRot.position))
-        if abs(spark_wristRot.position - closest) < 3:
-            spark_wristRot.position_output(closest)
+        closest = min(snap_points, key=lambda x:abs(x-publisher.position))
+        if abs(publisher.position - closest) < 3:
+            publisher.position_output(closest)
         else:
-            spark_wristRot.percent_output(input)
+            publisher.percent_output(input)
     else:
-        spark_wristRot.percent_output(input)
+        publisher.percent_output(input)
 
 def talker():
     global str_pub, lf, lm, lb, rf, rm, rb, c_Scale, c_str_Scale
@@ -315,7 +315,10 @@ def talker():
     global Pos_pub, Vel_pub
     global snapping, snap_points, snap_status
     rospy.init_node("CAN_DTS")
-    snapping = True
+    if rospy.get_param('~Snapping', 0.0) > 0:
+        snapping = True
+    else:
+        snapping = False
 
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
@@ -343,8 +346,7 @@ def talker():
         spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch * c_ElbowPitchDir/100)
         spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir/100)
         if snapping:
-            snap_function(c_WristRot * WristRot * c_WristRotDir/100)
-            current_pos = spark_wristRot.position
+            snap_function(spark_wristRot, c_WristRot * WristRot * c_WristRotDir/100)
         else:
             spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
         
