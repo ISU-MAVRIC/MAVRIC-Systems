@@ -2,7 +2,6 @@
     <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" respawn="true">
         <remap from="Drive_Train" to="Drive/Drive_Command" />
         <remap from="Steer_Train" to="Drive/Steer_Command" />
-        <param name="Snapping" value="True" />
     </node>
     <node name="Scale_Startups_Drive" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg driveMode)">
         <param name="ShoulderRot"  value="0.25" />

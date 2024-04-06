@@ -108,17 +108,17 @@ def arm_feedback():
     Pos_msg = ArmData()
     Vel_msg = ArmData()
 
-    Pos_msg.ShoulderRot = Float64(spark_shoulderRot.position)
-    Pos_msg.ShoulderPitch = Float64(spark_shoulderPitch.position)
-    Pos_msg.ElbowPitch = Float64(spark_elbowPitch.position)
-    Pos_msg.WristPitch = Float64(spark_wristPitch.position)
-    Pos_msg.WristRot = Float64(spark_wristRot.position)
+    Pos_msg.ShoulderRot = spark_shoulderRot.position
+    Pos_msg.ShoulderPitch = spark_shoulderPitch.position
+    Pos_msg.ElbowPitch = spark_elbowPitch.position
+    Pos_msg.WristPitch = spark_wristPitch.position
+    Pos_msg.WristRot = spark_wristRot.position
 
-    Vel_msg.ShoulderRot = Float64(spark_shoulderRot.velocity)
-    Vel_msg.ShoulderPitch = Float64(spark_shoulderPitch.velocity)
-    Vel_msg.ElbowPitch = Float64(spark_elbowPitch.velocity)
-    Vel_msg.WristPitch = Float64(spark_wristPitch.velocity)
-    Vel_msg.WristRot = Float64(spark_wristRot.velocity)
+    Vel_msg.ShoulderRot = spark_shoulderRot.velocity
+    Vel_msg.ShoulderPitch = spark_shoulderPitch.velocity
+    Vel_msg.ElbowPitch = spark_elbowPitch.velocity
+    Vel_msg.WristPitch = spark_wristPitch.velocity
+    Vel_msg.WristRot = spark_wristRot.velocity
 
     Pos_pub.publish(Pos_msg)
     Vel_pub.publish(Vel_msg)
@@ -292,15 +292,30 @@ def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
 	spark_str_rf.position_output(str_rf * c_str_rfDir * c_str_Scale)
 	spark_str_rb.position_output(str_rb * c_str_rbDir * c_str_Scale)
 
+'''
+### SNAPPING FUNCTION ###
+This function is used in science system to "snap" the swab holder's position 
+whenever it gets close to some specified swab positions.
+'''   
+def snap_function(input):
+    snap_points = [9.405, 4.214, -1.07, -5.714, -10.214, -15, -19.19, -23.618]
+    if input == 0:
+        closest = min(snap_points, key=lambda x:abs(x-spark_wristRot.position))
+        if abs(spark_wristRot.position - closest) < 3:
+            spark_wristRot.position_output(closest)
+        else:
+            spark_wristRot.percent_output(input)
+    else:
+        spark_wristRot.percent_output(input)
 
 def talker():
     global str_pub, lf, lm, lb, rf, rm, rb, c_Scale, c_str_Scale
     global c_lfDir, c_lmDir, c_lbDir, c_rfDir, c_rmDir, c_rbDir
     global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot
     global Pos_pub, Vel_pub
+    global snapping, snap_points, snap_status
     rospy.init_node("CAN_DTS")
-    snapping = rospy.get_param('~Snapping', False)
-    print(snapping)
+    snapping = True
 
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
@@ -327,7 +342,12 @@ def talker():
         spark_shoulderPitch.percent_output(c_ShoulderPitch * ShoulderPitch * c_ShoulderPitchDir/100)
         spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch * c_ElbowPitchDir/100)
         spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir/100)
-        spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
+        if snapping:
+            snap_function(c_WristRot * WristRot * c_WristRotDir/100)
+            current_pos = spark_wristRot.position
+        else:
+            spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
+        
         arm_feedback()
         rosRate.sleep()
 
