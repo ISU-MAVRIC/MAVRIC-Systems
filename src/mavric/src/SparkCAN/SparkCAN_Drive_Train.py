@@ -104,7 +104,7 @@ def strpub():
   steerMsg.rb = int(spark_str_rb.position)
   str_pub.publish(steerMsg)
 
-def feedback():
+def arm_feedback():
     Pos_msg = ArmData()
     Vel_msg = ArmData()
 
@@ -299,6 +299,8 @@ def talker():
     global ShoulderRot, ShoulderPitch, ElbowPitch, WristPitch, WristRot
     global Pos_pub, Vel_pub
     rospy.init_node("CAN_DTS")
+    snapping = rospy.get_param('~Snapping', False)
+    print(snapping)
 
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
@@ -326,7 +328,7 @@ def talker():
         spark_elbowPitch.percent_output(c_ElbowPitch * ElbowPitch * c_ElbowPitchDir/100)
         spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir/100)
         spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
-        feedback()
+        arm_feedback()
         rosRate.sleep()
 
 if __name__ == '__main__':
