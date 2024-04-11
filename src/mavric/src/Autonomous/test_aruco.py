@@ -11,6 +11,7 @@ if __name__ == "__main__":
             frame = aruco.grab_frame()
             markers = aruco.get_markers(frame)
             print(markers)
+            print(len(markers[0]))
             aruco.showframe()
     except KeyboardInterrupt:
         loop = False

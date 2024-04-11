@@ -3,6 +3,7 @@ from StateMachine import State
 from ArucoClass import Aruco
 from driver import Driver
 from math import copysign
+import time
 
 class TagFinder(State):
     def __init__(self, stateMachine):
@@ -19,13 +20,35 @@ class TagFinder(State):
         return copysign(turn_speed, self.get_angular_error())
 
     def enter(self):
+        # Put ourselves in turn mode and wait for motors to adjust
         lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(0)
         auto_globals.drive_pub.publish(0,0,0,0,0,0)
         auto_globals.steer_pub.publish(lfs, lbs, rfs, rbs)
+        time.sleep(3)
+        # get tag data in ([ID],[MARKER_CENTER],[MARKER_CORNER]) format
+        self.detected_tags = self.Aruco.get_markers()
     
     def run(self):
+        if len(self.detected_tags[0]) == 0:
+            # if tag is not detected, set desired heading to 15 degrees clockwise
+            self.desired_heading = (auto_globals.heading + 15) % 360
+            # angular error turn from turn toward waypoint 
+            while abs(self.get_angular_error()) > auto_globals.ANG_ERROR_THRESHOLD and auto_globals.enabled:
+                lf, lm, lb, rf, rm, rb, lfs, lbs, rfs, rbs = self.D.v_point_steer(self.get_ramped_turn_speed())
+                auto_globals.drive_pub.publish(lf, lm, lb, rf, rm, rb)
+                auto_globals.steer_pub.publish(lfs, lbs, rfs, rbs)
         
+        # once done, stop movement
+        auto_globals.drive_pub.publish(0,0,0,0,0,0)
 
     def next(self):
-
+        self.detected_tags = self.Aruco.get_markers()
+        if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
+            return self._stateMachine.idle
+        
+        if len(self.detected_tags[0]) > 0:
+            # TODO add drivetowardtag state
+            # return self._stateMachine.DriveTowardTagState
+            return self._stateMachine.idle
+        
         return self._stateMachine.TagFinderState
