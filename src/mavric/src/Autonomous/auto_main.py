@@ -14,7 +14,7 @@ from IdleState import Idle
 from TurnTowardWaypointState import TurnTowardWaypoint
 from DriveTowardWaypointState import DriveTowardWaypoint
 from ReachedWaypointState import ReachedWaypoint
-from ObjAvoidanceState import ObjAvoidance
+from TagFinderState import TagFinder
 
 # define state machine class
 
@@ -28,15 +28,14 @@ AutonomousStateMachine.idle = Idle(AutonomousStateMachine)
 AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(AutonomousStateMachine)
-AutonomousStateMachine.objAvoidance = ObjAvoidance(AutonomousStateMachine)
+AutonomousStateMachine.tagFinder = TagFinder(AutonomousStateMachine)
+
 
 # define functions
-
 
 def hms_to_s(h, m, s):
     # convert from hours-minutes-seconds to seconds
     return (h * 60 * 60) + (m * 60) + s
-
 
 def cmd_cb(data):
     # enable/disable autonomous
@@ -72,11 +71,6 @@ def imu_cal_cb(data):
     else:
        auto_globals.good_imu = False
 
-def us_cb(data):
-    auto_globals.usLeft = data.left
-    auto_globals.usMid = data.middle
-    auto_globals.usRight = data.right
-
 
 # main loop
 auto = AutonomousStateMachine()
@@ -99,7 +93,6 @@ def main():
     way_sub = rospy.Subscriber("Waypoints", String, waypoint_cb, queue_size=10)
     gps_fix_sub = rospy.Subscriber("GPS_Fix", Bool, gps_fix_cb, queue_size=10)
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
-    us_sub = rospy.Subscriber("Ultrasonic", Ultrasonic, us_cb, queue_size=10)
 
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
     imu_cal_sub = rospy.Subscriber("SensorCalibrations", Float64, imu_cal_cb, queue_size=10)
@@ -107,7 +100,7 @@ def main():
     auto_globals.Scale = rospy.get_param("~Range", 0.5)
     auto_globals.Rover_Width = rospy.get_param("~Rover_Width", 1)
     auto_globals.Rover_MinTurnRadius = rospy.get_param("~Rover_MinTurnRadius", 2)
-
+    
     rate = rospy.Rate(2)  # 2 Hz
     i = 0
     while not rospy.is_shutdown():
