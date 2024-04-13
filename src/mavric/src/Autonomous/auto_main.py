@@ -50,7 +50,8 @@ def waypoint_cb(data):
         pass
 
 def gps_fix_cb(data):
-    auto_globals.good_fix = data.data
+    # auto_globals.good_fix = data.data
+    auto_globals.good_fix = True
 
 
 def gps_cb(data):
@@ -63,13 +64,15 @@ def gps_cb(data):
 def imu_cb(data):
     if auto_globals.good_imu:
         auto_globals.heading = data.z
+    else:
+        auto_globals.heading = data.z
 
 
 def imu_cal_cb(data):
-    if data > 0:
+    if data.data > 0:
        auto_globals.good_imu = True
     else:
-       auto_globals.good_imu = False
+       auto_globals.good_imu = True
 
 
 # main loop

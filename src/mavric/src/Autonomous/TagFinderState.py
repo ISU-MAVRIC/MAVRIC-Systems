@@ -26,7 +26,8 @@ class TagFinder(State):
         auto_globals.steer_pub.publish(lfs, lbs, rfs, rbs)
         time.sleep(3)
         # get tag data in ([ID],[MARKER_CENTER],[MARKER_CORNER]) format
-        self.detected_tags = self.Aruco.get_markers()
+        frame = self.Aruco.grab_frame()
+        self.detected_tags = self.Aruco.get_markers(frame)
     
     def run(self):
         if len(self.detected_tags[0]) == 0:
@@ -42,13 +43,14 @@ class TagFinder(State):
         auto_globals.drive_pub.publish(0,0,0,0,0,0)
 
     def next(self):
-        self.detected_tags = self.Aruco.get_markers()
-        if(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
+        frame = self.Aruco.grab_frame()
+        self.detected_tags = self.Aruco.get_markers(frame)
+        if not auto_globals.enabled:
             return self._stateMachine.idle
         
         if len(self.detected_tags[0]) > 0:
             # TODO add drivetowardtag state
             # return self._stateMachine.DriveTowardTagState
-            return self._stateMachine.idle
+            return self._stateMachine.reachedWaypoint
         
-        return self._stateMachine.TagFinderState
+        return self._stateMachine.tagFinder

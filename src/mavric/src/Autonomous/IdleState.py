@@ -19,5 +19,7 @@ class Idle(State):
         #Checks for condition needed to turn
         if(auto_globals.enabled and len(auto_globals.waypoints) > 0 and auto_globals.good_fix and auto_globals.good_imu and not auto_globals.fix_timeout):
             return self._stateMachine.turnTowardWaypoint
+        elif auto_globals.enabled:
+            return self._stateMachine.tagFinder
 
         return self._stateMachine.idle

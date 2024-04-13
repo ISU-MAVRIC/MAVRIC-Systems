@@ -9,8 +9,8 @@ class Aruco():
         self.dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
         self.parameters = cv2.aruco.DetectorParameters()
         self.detector = cv2.aruco.ArucoDetector(self.dictionary,self.parameters)
-        #self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
-        self.vs = VideoStream(src=0).start()
+        self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
+        #self.vs = VideoStream(src=0).start()
         self.idtimes = [0,0,0,0,0,0,0,0,0,0]
 
     def aruco_detection(self):
@@ -57,5 +57,8 @@ class Aruco():
                 markerCorners.append((topLeft, bottomRight))
         return (markerIds, markerLocations, markerCorners)
     
+    def get_dist(self, markers):
+        data = markers[0]
+
     def __del__(self):
         self.vs.stop()
