@@ -1,0 +1,15 @@
+from pygrabber.dshow_graph import FilterGraph
+import cv2
+
+graph = FilterGraph()
+
+print(graph.get_input_devices())# list of camera device 
+
+try:
+    device =graph.get_input_devices().index("name camera that I want to use it ")
+
+except ValueError as e:
+
+    device = graph.get_input_devices().index("Integrated Webcam")#use default camera if the name of the camera that I want to use is not in my list
+
+vid=cv2.VideoCapture(device)

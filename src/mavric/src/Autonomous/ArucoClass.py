@@ -1,16 +1,16 @@
 from imutils.video import VideoStream
 import cv2
 import time
-
+import numpy as py
 
 class Aruco():
-    def __init__(self,display=False):
+    def __init__(self,display=True):
         self.print = display
         self.dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
         self.parameters = cv2.aruco.DetectorParameters()
         self.detector = cv2.aruco.ArucoDetector(self.dictionary,self.parameters)
-        self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
-        #self.vs = VideoStream(src=0).start()
+        #self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
+        self.vs = VideoStream(src=0).start()
         self.idtimes = [0,0,0,0,0,0,0,0,0,0]
 
     def aruco_detection(self):
@@ -59,6 +59,11 @@ class Aruco():
     
     def get_dist(self, markers):
         data = markers[0]
+        vector1 = (py.sqrt((markers[2][0][0])**2 - (markers[2][0][1])**2))
+        vector2 = (py.sqrt((markers[2][1][0])**2 - (markers[2][1][1])**2))
+        distance = 1/abs(vector1-vector2)
+        return distance
+
 
     def __del__(self):
         self.vs.stop()

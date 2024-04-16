@@ -34,8 +34,8 @@ def get_markers_from_frame(frame):
 
 
 def aruco_detection():
-    # vs2 = VideoStream(src=0).start()
-    vs2 = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
+    vs2 = VideoStream(src=0).start()
+    #vs2 = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
     time.sleep(1)
     while True:
         frame2 = vs2.read()
