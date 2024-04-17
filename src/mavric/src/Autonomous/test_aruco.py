@@ -10,9 +10,8 @@ if __name__ == "__main__":
         while loop:
             frame = aruco.grab_frame()
             markers = aruco.get_markers(frame)
-            print(markers)
-            print(len(markers[0]))
-            aruco.showframe()
+            angles = aruco.get_angles(markers)
+            print(angles)
     except KeyboardInterrupt:
         loop = False
 

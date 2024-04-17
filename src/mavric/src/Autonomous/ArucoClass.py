@@ -11,7 +11,8 @@ class Aruco():
         self.detector = cv2.aruco.ArucoDetector(self.dictionary,self.parameters)
         #self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
         self.vs = VideoStream(src=0).start()
-        self.idtimes = [0,0,0,0,0,0,0,0,0,0]
+        self.frame = self.vs.read()
+        self.height, self.width = self.frame.shape[:2]
 
     def aruco_detection(self):
         self.frame = self.vs.read()
@@ -28,14 +29,22 @@ class Aruco():
         return(angles)
     
     def grab_frame(self):
+        '''
+        Returns new frame data from the self.vs source
+        '''
         return self.vs.read()
     
-    def showframe(self):
-        frame = self.vs.read()
+    def showframe(self, frame):
+        '''
+        Shows the input frame in a window
+        '''
         cv2.imshow("Frame",frame)
         cv2.waitKey(1)
 
     def get_markers(self, frame):
+        '''
+        Returns the marker information, such as ID, center coordinate, and corner coordinates
+        '''
         markerLocations = []
         markerIds = []
         markerCorners= []
@@ -58,11 +67,30 @@ class Aruco():
         return (markerIds, markerLocations, markerCorners)
     
     def get_dist(self, markers):
+        '''
+        Returns the calculated distance from the tag assuming that it's about 250 mm across.
+        '''
         data = markers[0]
         vector1 = (py.sqrt((markers[2][0][0])**2 - (markers[2][0][1])**2))
         vector2 = (py.sqrt((markers[2][1][0])**2 - (markers[2][1][1])**2))
         distance = 1/abs(vector1-vector2)
         return distance
+    
+    def get_angles(self, markers):
+        '''
+        Returns the angle from -45 (left) to 45 (right) given the markers from a frame
+        '''
+        angles = []
+        for index, ID in enumerate(markers[0]):
+            '''
+            mathwise this is a little bad, but really not that bad
+            it takes the marker x coordinate and centers it, ie (position - frameWidth/2)
+            so a center value at half the frame's width would return 0
+            The next part maps it from pixels to arbitrary degrees.
+            We don't acctually have the real angle to the rover, it's just an estimate anyways
+            '''
+            angles.append(90/self.width * (markers[1][index][0] - self.width/2))
+        return angles
 
 
     def __del__(self):
