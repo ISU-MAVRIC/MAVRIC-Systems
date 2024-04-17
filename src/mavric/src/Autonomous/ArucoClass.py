@@ -1,7 +1,7 @@
 from imutils.video import VideoStream
 import cv2
 import time
-import numpy as py
+import numpy as np
 
 class Aruco():
     def __init__(self,display=True):
@@ -9,8 +9,25 @@ class Aruco():
         self.dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
         self.parameters = cv2.aruco.DetectorParameters()
         self.detector = cv2.aruco.ArucoDetector(self.dictionary,self.parameters)
-        #self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
-        self.vs = VideoStream(src=0).start()
+        self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
+        self.mtx = np.array([[783.2520337429364,0.0,639.6473958102106],
+                    [0.0,585.2162351288066,371.20009620432825],
+                    [0.0,0.0,1.0]])
+        self.dist = np.array([[-0.35652612625179947],
+                     [0.12085730057198203],
+                     [0.0018833852883372265],
+                     [0.0018833852883372265],
+                     [0.0018833852883372265],
+                     [0.0018833852883372265],
+                     [0.0017426867363701422],
+                     [-0.017489950007839372]])
+        # self.vs = VideoStream(src=0).start()
+        self.markerSize = .15 # meters
+        # marker point location (center) for solvePNP
+        self.marker_points = np.array([[-self.markerSize / 2, self.markerSize / 2, 0],
+                              [self.markerSize / 2, self.markerSize / 2, 0],
+                              [self.markerSize / 2, -self.markerSize / 2, 0],
+                              [-self.markerSize / 2, -self.markerSize / 2, 0]], dtype=np.float32)
         self.frame = self.vs.read()
         self.height, self.width = self.frame.shape[:2]
 
@@ -66,15 +83,22 @@ class Aruco():
                 markerCorners.append((topLeft, bottomRight))
         return (markerIds, markerLocations, markerCorners)
     
-    def get_dist(self, markers):
+    def get_dist(self, frame):
         '''
-        Returns the calculated distance from the tag assuming that it's about 250 mm across.
-        '''
-        data = markers[0]
-        vector1 = (py.sqrt((markers[2][0][0])**2 - (markers[2][0][1])**2))
-        vector2 = (py.sqrt((markers[2][1][0])**2 - (markers[2][1][1])**2))
-        distance = 1/abs(vector1-vector2)
-        return distance
+        Returns the distance from the tag in meters'''
+        (corners, ids, rejected) = self.detector.detectMarkers(frame)
+        rvecs = []
+        tvecs = []
+        trash = []
+        for c in corners:
+            nada, R, t = cv2.solvePnP(self.marker_points, c, self.mtx, self.dist, False, cv2.SOLVEPNP_IPPE_SQUARE)
+            rvecs.append(R)
+            tvecs.append(t)
+            trash.append(nada)
+        if len(tvecs) > 0:
+            return tvecs[0][2]
+        else:
+            return tvecs
     
     def get_angles(self, markers):
         '''
