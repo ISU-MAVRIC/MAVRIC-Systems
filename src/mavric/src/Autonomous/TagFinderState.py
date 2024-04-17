@@ -49,8 +49,6 @@ class TagFinder(State):
             return self._stateMachine.idle
         
         if len(self.detected_tags[0]) > 0:
-            # TODO add drivetowardtag state
-            # return self._stateMachine.DriveTowardTagState
-            return self._stateMachine.reachedWaypoint
+            return self._stateMachine.driveTowardTag
         
         return self._stateMachine.tagFinder

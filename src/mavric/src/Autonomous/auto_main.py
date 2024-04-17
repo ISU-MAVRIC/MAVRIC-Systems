@@ -7,7 +7,7 @@ from types import SimpleNamespace as Namespace
 
 from std_msgs.msg import String, Bool, Float64
 from geometry_msgs.msg import Vector3
-from mavric.msg import Drivetrain, Steertrain, GPS, Ultrasonic#, LED
+from mavric.msg import Drivetrain, Steertrain, GPS#, LED
 
 from StateMachine import StateMachine, State
 from IdleState import Idle
@@ -15,6 +15,7 @@ from TurnTowardWaypointState import TurnTowardWaypoint
 from DriveTowardWaypointState import DriveTowardWaypoint
 from ReachedWaypointState import ReachedWaypoint
 from TagFinderState import TagFinder
+from DriveTowardTagState import DriveTowardTag
 
 # define state machine class
 
@@ -29,6 +30,7 @@ AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(AutonomousStateMa
 AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.tagFinder = TagFinder(AutonomousStateMachine)
+AutonomousStateMachine.driveTowardTag = DriveTowardTag(AutonomousStateMachine)
 
 
 # define functions

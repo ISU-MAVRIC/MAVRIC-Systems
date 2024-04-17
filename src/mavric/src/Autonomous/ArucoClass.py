@@ -83,11 +83,10 @@ class Aruco():
         angles = []
         for index, ID in enumerate(markers[0]):
             '''
-            mathwise this is a little bad, but really not that bad
-            it takes the marker x coordinate and centers it, ie (position - frameWidth/2)
+            this math takes the marker x coordinate and centers it, ie (position - frameWidth/2)
             so a center value at half the frame's width would return 0
-            The next part maps it from pixels to arbitrary degrees.
-            We don't acctually have the real angle to the rover, it's just an estimate anyways
+            The next part maps it from pixels to arbitrary degrees. "90(deg) / width (pixels)" conversion factor
+            We don't actually have the real angle to the rover, it's just an estimate anyways
             '''
             angles.append(90/self.width * (markers[1][index][0] - self.width/2))
         return angles

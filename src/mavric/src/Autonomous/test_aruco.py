@@ -11,7 +11,8 @@ if __name__ == "__main__":
             frame = aruco.grab_frame()
             markers = aruco.get_markers(frame)
             angles = aruco.get_angles(markers)
-            print(angles)
+            distance = aruco.get_dist(markers)
+            print(distance)
     except KeyboardInterrupt:
         loop = False
 
