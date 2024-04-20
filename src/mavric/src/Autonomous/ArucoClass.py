@@ -10,17 +10,14 @@ class Aruco():
         self.parameters = cv2.aruco.DetectorParameters()
         self.detector = cv2.aruco.ArucoDetector(self.dictionary,self.parameters)
         self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
-        self.mtx = np.array([[783.2520337429364,0.0,639.6473958102106],
-                    [0.0,585.2162351288066,371.20009620432825],
+        self.mtx = np.array([[804.2407094122474,0.0,655.2968321471155],
+                    [0.0,604.6146425598054,390.59235798964],
                     [0.0,0.0,1.0]])
-        self.dist = np.array([[-0.35652612625179947],
-                     [0.12085730057198203],
-                     [0.0018833852883372265],
-                     [0.0018833852883372265],
-                     [0.0018833852883372265],
-                     [0.0018833852883372265],
-                     [0.0017426867363701422],
-                     [-0.017489950007839372]])
+        self.dist = np.array([[-0.3886330327215799],
+                     [0.16066353213563878],
+                     [0.00035959739453100484],
+                     [0.0004673255241284877],
+                     [-0.031451585397011546]])
         # self.vs = VideoStream(src=0).start()
         self.markerSize = .15 # meters
         # marker point location (center) for solvePNP
