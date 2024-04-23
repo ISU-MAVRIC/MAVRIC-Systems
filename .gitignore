@@ -45,3 +45,5 @@ logs/
 */logs/*
 .catkin_tools
 */.catkin_tools/*
+
+src/mavric/src/PTZ_Control/PTZ_Photos
