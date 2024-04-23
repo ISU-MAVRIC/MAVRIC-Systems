@@ -25,3 +25,5 @@ class ReachedWaypoint(State):
         elif(len(auto_globals.waypoints) > 0):
             auto_globals.waypoints.pop(0)
             return self._stateMachine.idle
+        else:
+            return self._stateMachine.idle
