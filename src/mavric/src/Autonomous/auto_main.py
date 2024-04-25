@@ -7,7 +7,7 @@ from types import SimpleNamespace as Namespace
 
 from std_msgs.msg import String, Bool, Float64
 from geometry_msgs.msg import Vector3
-from mavric.msg import Drivetrain, Steertrain, GPS#, LED
+from mavric.msg import Drivetrain, Steertrain, GPS
 
 from StateMachine import StateMachine, State
 from IdleState import Idle
@@ -17,9 +17,7 @@ from ReachedWaypointState import ReachedWaypoint
 from TagFinderState import TagFinder
 from DriveTowardTagState import DriveTowardTag
 
-# define state machine class
-
-
+# ----- define state machine class -----
 class AutonomousStateMachine(StateMachine):
     def __init__(self):
         StateMachine.__init__(self, AutonomousStateMachine.idle)
@@ -33,7 +31,7 @@ AutonomousStateMachine.tagFinder = TagFinder(AutonomousStateMachine)
 AutonomousStateMachine.driveTowardTag = DriveTowardTag(AutonomousStateMachine)
 
 
-# define functions
+# ----- define functions -----
 
 def hms_to_s(h, m, s):
     # convert from hours-minutes-seconds to seconds
@@ -55,20 +53,17 @@ def gps_fix_cb(data):
     # auto_globals.good_fix = data.data
     auto_globals.good_fix = True
 
-
 def gps_cb(data):
     auto_globals.prev_position = auto_globals.position
     auto_globals.position = [data.latitude, data.longitude]
     auto_globals.fix_time = hms_to_s(data.time_h, data.time_m, data.time_s)
     #auto_globals.heading = data.heading
 
-
 def imu_cb(data):
     if auto_globals.good_imu:
         auto_globals.heading = data.z
     else:
         auto_globals.heading = data.z
-
 
 def imu_cal_cb(data):
     if data.data > 0:
@@ -85,20 +80,17 @@ def main():
     # setup ROS node
     rospy.init_node("ANS")
 
-    #init publishers
+    # init publishers
     auto_globals.drive_pub = rospy.Publisher("Drive_Train", Drivetrain, queue_size=10)
     auto_globals.steer_pub = rospy.Publisher("Steer_Train", Steertrain, queue_size=10)
     auto_globals.debug_pub = rospy.Publisher("Debug", String, queue_size=10)
     auto_globals.state_pub = rospy.Publisher("State", String, queue_size=10)
     auto_globals.waypoint_pub = rospy.Publisher("Waypoints", String, queue_size=10) 
-    #auto_globals.indicator_pub = rospy.Publisher("/indicators/light_pole", LED, queue_size=10)
-
-
+    # init Subscribers
     cmd_sub = rospy.Subscriber("Enable", Bool, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Waypoints", String, waypoint_cb, queue_size=10)
     gps_fix_sub = rospy.Subscriber("GPS_Fix", Bool, gps_fix_cb, queue_size=10)
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
-
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
     imu_cal_sub = rospy.Subscriber("SensorCalibrations", Float64, imu_cal_cb, queue_size=10)
 

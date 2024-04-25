@@ -48,7 +48,9 @@ class TagFinder(State):
         if not auto_globals.enabled:
             return self._stateMachine.idle
         
-        if len(self.detected_tags[0]) > 0:
+        elif len(self.detected_tags[0]) > 0:
+            auto_globals.steer_pub.publish(0,0,0,0)
+            time.sleep(3)
             return self._stateMachine.driveTowardTag
         
         return self._stateMachine.tagFinder

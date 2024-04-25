@@ -66,13 +66,10 @@ class DriveTowardTag(State):
         markers = self.Aruco.get_markers(frame)
         if len(markers[0]) == 0:
             self.failures = self.failures + 1
-            if self.failures > 4:
+            if self.failures > 3:
                 return self._stateMachine.tagFinder
             else:
                 return self._stateMachine.driveTowardTag
-        
-        if(auto_globals.prev_linear_error < self.linear_error):   # if the rover skips the waypoint and remaining distance starts increasing
-            return self._stateMachine.tagFinder
         
         elif(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
             return self._stateMachine.idle
