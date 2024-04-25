@@ -1,5 +1,5 @@
-float64 ShoulderRot
-float64 ShoulderPitch
-float64 ElbowPitch
-float64 WristPitch
-float64 WristRot
+float32 ShoulderRot
+float32 ShoulderPitch
+float32 ElbowPitch
+float32 WristPitch
+float32 WristRot
