@@ -6,7 +6,6 @@ import cv2
 from onvif import ONVIFCamera
 import zeep
 
-
 dir_save = "/home/mavric/MAVRIC-Systems/src/mavric/src/PTZ_Control/PTZ_Photos/"
 
 vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
@@ -17,7 +16,7 @@ XMIN = -1
 YMAX = 1
 YMIN = -1
 
-  
+
 
 def zeep_pythonvalue(self, xmlvalue):
     return xmlvalue
@@ -32,21 +31,21 @@ def perform_move(ptz, request, timeout):
     ptz.Stop({'ProfileToken': request.ProfileToken})
 
 
-def move_up(ptz, request, timeout=1):
+def move_up(ptz, request, timeout):
     print('move up...')
     request.Velocity.PanTilt.x = 0
     request.Velocity.PanTilt.y = YMAX
     perform_move(ptz, request, timeout)
 
 
-def move_down(ptz, request, timeout=1):
+def move_down(ptz, request, timeout):
     print('move down...')
     request.Velocity.PanTilt.x = 0
     request.Velocity.PanTilt.y = YMIN
     perform_move(ptz, request, timeout)
 
 
-def move_right(ptz, request, timeout=1):
+def move_right(ptz, request, timeout):
     print('move right...')
     request.Velocity.PanTilt.x = XMAX
     request.Velocity.PanTilt.y = 0
@@ -54,22 +53,22 @@ def move_right(ptz, request, timeout=1):
     perform_move(ptz, request, timeout)
 
 
-def move_left(ptz, request, timeout=1):
+def move_left(ptz, request, timeout):
     print('move left...')
     request.Velocity.PanTilt.x = XMIN
     request.Velocity.PanTilt.y = 0
     perform_move(ptz, request, timeout)
 
 
-def zoom_up(ptz,request,timeout=1):
+def zoom_up(ptz,request, timeout):
     print('zoom up')
     request.Velocity.Zoom.x = 1
     request.Velocity.PanTilt.x = 0
     request.Velocity.PanTilt.y = 0
-    perform_move(ptz,request,timeout)
+    perform_move(ptz,request, timeout)
 
 
-def zoom_dowm(ptz,request,timeout=1):
+def zoom_dowm(ptz,request, timeout):
     print('zoom down')
     request.Velocity.Zoom.x = -1
     request.Velocity.PanTilt.x = 0
@@ -113,11 +112,7 @@ def Pano():
 
     # Rotate camera and take a picture 5 times
 
-
-
     for i in range(2):
-        move_left(ptz, request)
-    for i in range(7):
 
         sleep(3)
 
@@ -125,13 +120,17 @@ def Pano():
         filename = dir_save + "Picture" + str(i+1) + ".jpg"
         cv2.imwrite(filename, frame)
 
-        move_right(ptz, request)
+        move_right(ptz, request, 0.8)
 
 
     # Rotate camera back to original position
 
-    for i in range(7):
-        move_left(ptz, request)
+    move_left(ptz, request, 3)
 
 if __name__ == '__main__':
-    Pano()
+    try:
+        Pano()
+    except KeyboardInterrupt:
+
+        vs.stop()
+        cv2.destroyAllWindows()
