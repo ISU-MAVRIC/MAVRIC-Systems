@@ -16,6 +16,7 @@ from DriveTowardWaypointState import DriveTowardWaypoint
 from ReachedWaypointState import ReachedWaypoint
 from TagFinderState import TagFinder
 from DriveTowardTagState import DriveTowardTag
+from TeleopState import Teleop
 
 # ----- define state machine class -----
 class AutonomousStateMachine(StateMachine):
@@ -27,8 +28,9 @@ AutonomousStateMachine.idle = Idle(AutonomousStateMachine)
 AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(AutonomousStateMachine)
-AutonomousStateMachine.tagFinder = TagFinder(AutonomousStateMachine)
-AutonomousStateMachine.driveTowardTag = DriveTowardTag(AutonomousStateMachine)
+# AutonomousStateMachine.tagFinder = TagFinder(AutonomousStateMachine)
+# AutonomousStateMachine.driveTowardTag = DriveTowardTag(AutonomousStateMachine)
+AutonomousStateMachine.teleop = Teleop(AutonomousStateMachine)
 
 
 # ----- define functions -----
@@ -71,6 +73,9 @@ def imu_cal_cb(data):
     else:
        auto_globals.good_imu = True
 
+def teleop_cp(data):
+    auto_globals.teleop = data.data
+
 
 # main loop
 auto = AutonomousStateMachine()
@@ -93,6 +98,7 @@ def main():
     gps_sub = rospy.Subscriber("GPS", GPS, gps_cb, queue_size=10)
     imu_sub = rospy.Subscriber("FusedAngle", Vector3, imu_cb, queue_size=10)
     imu_cal_sub = rospy.Subscriber("SensorCalibrations", Float64, imu_cal_cb, queue_size=10)
+    teleop_sub = rospy.Subscriber("Teleop", Bool, teleop_cp, queue_size=10)
 
     auto_globals.Scale = rospy.get_param("~Range", 0.5)
     auto_globals.Rover_Width = rospy.get_param("~Rover_Width", 1)

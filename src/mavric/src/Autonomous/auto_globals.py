@@ -12,6 +12,7 @@ enabled = False
 good_fix = False
 good_imu = True
 fix_timeout = False   #unnecessary?
+teleop = False
 
 #location data
 position = [0, 0]

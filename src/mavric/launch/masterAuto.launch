@@ -7,8 +7,8 @@
     <arg name="scienceMode" value="false"/>
     <arg name="driveMode" value="false"/>
     <arg name="autoMode" value="true"/>
-    <include file="$(find mavric)/launch/Drive.launch" pass_all_args="true" />
-    <include file="$(find mavric)/launch/Sensors.launch" />
+    <!-- <include file="$(find mavric)/launch/Drive.launch" pass_all_args="true" />
+    <include file="$(find mavric)/launch/Sensors.launch" /> -->
     <group ns="Auto">
         <node name="Auto_System" pkg="mavric" type="auto_main.py" respawn="true">
             <remap from="GPS_Fix" to="/HW/GPS_Fix" />
@@ -18,6 +18,6 @@
             <remap from="Drive_Train" to="/Drive/Drive_Command" />
             <remap from="Steer_Train" to="/Drive/Steer_Command" />
         </node>
-        <node name="LED_Strip" pkg="mavric" type="LED_Strip.py" respawn="true"/>
+        <!-- <node name="LED_Strip" pkg="mavric" type="LED_Strip.py" respawn="true"/> -->
     </group>
 </launch>
