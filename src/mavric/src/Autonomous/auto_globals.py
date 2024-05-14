@@ -18,11 +18,7 @@ position = [0, 0]
 prev_position = [0, 0]
 waypoints = []
 
-#ultrasonic sensor
-usLeft = False
-usMid = False
-usRight = False
-
+#IMU data
 heading = 0
 
 prev_angular_error = ANG_ERROR_THRESHOLD * 2

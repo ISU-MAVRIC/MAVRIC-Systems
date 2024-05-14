@@ -53,6 +53,9 @@ def listener():
                 strip.fill(0)
                 time.sleep(0.25)
 
+        elif state == "TagFinder":
+            strip.fill(blue)
+
         else:
             strip.fill(0)
         rate.sleep()
