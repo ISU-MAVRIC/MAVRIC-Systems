@@ -76,6 +76,7 @@ add_message_files(
   Voltage.msg
   ArmData.msg
   Ultrasonic.msg
+  Cam.msg
 )
 
 ## Generate services in the 'srv' folder
