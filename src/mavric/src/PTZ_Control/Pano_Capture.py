@@ -6,14 +6,12 @@ from mavric.msg import Cam
 
 commandTopic = "/Camera/Mast"
 fbTopic = "/Camera/Mast_Feedback"
-dir_save = "/home/nathan/MAVRIC-Systems/src/mavric/src/PTZ_Control/PTZ_Photos/"
-positions = np.linspace(-0.5,0.5,10)
+dir_save = "/home/mavric/MAVRIC-Systems/src/mavric/src/PTZ_Control/PTZ_Photos/"
+positions = np.linspace(-0.5,0.55,12)
 # positions = [-0.5, -0.25, 0, 0.25, 0.5]
-ylevel = 0.518222
-error = 0.02
+ylevel = 0.3 #0.518222
 X = 0
 Y = 0
-aspectRatio = 16/9
 
 vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
 
@@ -30,33 +28,37 @@ time.sleep(1)
 
 def capture():
     global positions
+    lastPos = [X,Y]
     print("Capturing Photos")
     os.chdir(dir_save)
     for file in glob.glob("*.jpg"):
         os.remove(file)
     n = 0
-    positions = np.around(positions, 4)
     for pos in positions:
         request = Cam(pos,ylevel)
         command.publish(request)
-        while abs(pos-X) > error and not rospy.is_shutdown():
-            time.sleep(0.25)
-        time.sleep(2)
+        time.sleep(4)
         frame = vs.read()
         cv2.imwrite(dir_save + str(n) + ".jpg", frame)
         n = n + 1
+        
+    command.publish(Cam(lastPos[0],lastPos[1]))
     print("Finished Captures")
 
 def stitcher():
     print("Stitching Photos")
     os.chdir(dir_save)
     imgs = []
-    for file in glob.glob("*.jpg"):
+    usedFiles = []
+    for file in sorted(glob.glob("*.jpg")):
+        usedFiles.append(file)
         imgs.append(cv2.imread(file))
-    stitch = cv2.Stitcher.create()
-    (dummy,output) = stitch.stitch(imgs)
+    print(usedFiles)
+    stitch = cv2.Stitcher.create(mode=cv2.Stitcher_PANORAMA)
+    (status,output) = stitch.stitch(imgs)
+    print("Stitching status: ", status)
     height, width, layers = output.shape
-    output = cv2.resize(output, (round(width/6),height),interpolation=cv2.INTER_AREA)
+    output = cv2.resize(output, (round(width/5),height),interpolation=cv2.INTER_AREA)
     cv2.imwrite(dir_save + "FINAL.jpg", output)
     print("Finished Stitching")
 
@@ -64,7 +66,8 @@ if __name__ == '__main__':
     try:
         capture()
         vs.stop()
-        stitcher()
+        if not rospy.is_shutdown():
+            stitcher()
 
     except rospy.ROSInterruptException:
         vs.stop()
