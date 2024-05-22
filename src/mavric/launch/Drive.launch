@@ -1,5 +1,5 @@
 <launch>
-    <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" respawn="true" if="$(arg driveMode)">
+    <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" respawn="true" if="$(eval arg('scienceMode') == false)">
         <remap from="Drive_Train" to="Drive/Drive_Command" />
         <remap from="Steer_Train" to="Drive/Steer_Command" />
     </node>

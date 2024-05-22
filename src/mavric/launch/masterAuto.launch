@@ -2,8 +2,6 @@
     <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
         <arg name="port" value="9090"/>
     </include>
-    <arg name="nosim" default="true" />
-    <arg name="nogps" default="false" />
     <arg name="scienceMode" value="false"/>
     <arg name="driveMode" value="false"/>
     <arg name="autoMode" value="true"/>
