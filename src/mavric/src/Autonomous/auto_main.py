@@ -28,8 +28,8 @@ AutonomousStateMachine.idle = Idle(AutonomousStateMachine)
 AutonomousStateMachine.turnTowardWaypoint = TurnTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.driveTowardWaypoint = DriveTowardWaypoint(AutonomousStateMachine)
 AutonomousStateMachine.reachedWaypoint = ReachedWaypoint(AutonomousStateMachine)
-# AutonomousStateMachine.tagFinder = TagFinder(AutonomousStateMachine)
-# AutonomousStateMachine.driveTowardTag = DriveTowardTag(AutonomousStateMachine)
+AutonomousStateMachine.tagFinder = TagFinder(AutonomousStateMachine)
+AutonomousStateMachine.driveTowardTag = DriveTowardTag(AutonomousStateMachine)
 AutonomousStateMachine.teleop = Teleop(AutonomousStateMachine)
 
 
