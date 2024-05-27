@@ -54,7 +54,19 @@ def listener():
                 time.sleep(0.25)
 
         elif state == "TagFinder":
-            strip.fill(blue)
+            for i in range(3):
+                strip.fill(red)
+                time.sleep(0.1)
+                strip.fill(0)
+                time.sleep(0.1)
+            time.sleep(0.5)
+        elif state == "DriveTowardTag":
+            for i in range(3):
+                strip.fill(red)
+                time.sleep(0.2)
+                strip.fill(0)
+                time.sleep(0.2)
+            time.sleep(0.5)
 
         else:
             strip.fill(0)

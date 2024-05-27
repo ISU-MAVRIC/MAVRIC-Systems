@@ -10,7 +10,7 @@ import driveMath
 from mavric.msg import Drivetrain
 from mavric.msg import Steertrain
 
-port = '/dev/ttyACM0'
+port = '/dev/ttyACM1'
 
 # Defaults and beginning values
 drive = 0.0

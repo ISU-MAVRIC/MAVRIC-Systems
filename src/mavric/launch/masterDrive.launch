@@ -5,7 +5,7 @@
     <arg name="scienceMode" value="false"/>
     <arg name="driveMode" value="true"/>
     <arg name="autoMode" value="false"/>
-    <arg name="LoRa_On" value="false" />
+    <arg name="LoRa_On" value="true" />
     <include file="$(find mavric)/launch/Drive.launch" pass_all_args="true" />
     <include file="$(find mavric)/launch/Sensors.launch" />
     <include file="$(find mavric)/launch/Cameras.launch" />
