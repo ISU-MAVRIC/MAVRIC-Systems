@@ -77,6 +77,7 @@ add_message_files(
   ArmData.msg
   Ultrasonic.msg
   Cam.msg
+  ScaleFeedback.msg
 )
 
 ## Generate services in the 'srv' folder
