@@ -20,6 +20,9 @@ class Idle(State):
         if(auto_globals.enabled and len(auto_globals.waypoints) > 0 and auto_globals.good_fix and auto_globals.good_imu and not auto_globals.fix_timeout):
             return self._stateMachine.turnTowardWaypoint
         
+        elif auto_globals.enabled and len(auto_globals.waypoints) == 0:
+            return self._stateMachine.tagFinder
+        
         elif auto_globals.teleop:
             return self._stateMachine.teleop
 

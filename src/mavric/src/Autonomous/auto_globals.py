@@ -41,3 +41,4 @@ debug_pub = None
 indicator_pub = None
 state_pub = None
 waypoint_pub = None
+reached_pub = None

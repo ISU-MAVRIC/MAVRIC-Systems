@@ -91,6 +91,7 @@ def main():
     auto_globals.debug_pub = rospy.Publisher("Debug", String, queue_size=10)
     auto_globals.state_pub = rospy.Publisher("State", String, queue_size=10)
     auto_globals.waypoint_pub = rospy.Publisher("Waypoints", String, queue_size=10) 
+    auto_globals.reached_pub = rospy.Publisher("Success", Bool, queue_size=10)
     # init Subscribers
     cmd_sub = rospy.Subscriber("Enable", Bool, cmd_cb, queue_size=10)
     way_sub = rospy.Subscriber("Waypoints", String, waypoint_cb, queue_size=10)
