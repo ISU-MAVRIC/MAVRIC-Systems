@@ -1,5 +1,5 @@
 #global constants
-LIN_ERROR_THRESHOLD = 1     #arbitrary, meters
+LIN_ERROR_THRESHOLD = 2     #arbitrary, meters
 ANG_ERROR_THRESHOLD = 5    #arbitrary, degrees
 ANG_POINT_STEER_MAX = 20 #between 1-100 (inclusive)
 ANG_POINT_STEER_MIN = 2 

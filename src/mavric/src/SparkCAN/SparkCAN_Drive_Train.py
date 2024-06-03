@@ -58,7 +58,7 @@ c_ElbowPitchDir = -1
 c_WristPitchDir = -1
 c_WristRotDir = 1
 # Science Directions
-c_DrillDir = 1
+c_DrillDir = -1
 c_DrillActuatorDir = 1
 
 #set up globals for spark outputs. These should be zero
@@ -359,9 +359,8 @@ def talker():
     arm_sens = rospy.Subscriber("Arm/Arm_Sensitivity", ArmData, armSens_cb, queue_size=10)
     Pos_pub = rospy.Publisher("Arm/JointPosition", ArmData, queue_size=10)
     Vel_pub = rospy.Publisher("Arm/JointVelocity", ArmData, queue_size=10)
-    if snapping:
-        Drill_sub = rospy.Subscriber("Science/Drill", Float64, Drill_cb, queue_size=10)
-        DrillActuator_sub = rospy.Subscriber("Science/DrillActuator", Float64, DrillActuator_cb, queue_size=10)
+    Drill_sub = rospy.Subscriber("Science/Drill", Float64, Drill_cb, queue_size=10)
+    DrillActuator_sub = rospy.Subscriber("Science/DrillActuator", Float64, DrillActuator_cb, queue_size=10)
 
     setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
@@ -376,10 +375,10 @@ def talker():
         spark_wristPitch.percent_output(c_WristPitch * WristPitch * c_WristPitchDir/100)
         if snapping:
             snap_function(spark_wristRot, c_WristRot * WristRot * c_WristRotDir/100)
-            spark_Drill.percent_output(c_Drill * Drill * c_DrillDir/100)
-            spark_DrillActuator.percent_output(c_DrillActuator * DrillActuator * c_DrillActuator/100)
         else:
             spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
+        spark_Drill.percent_output(c_Drill * Drill * c_DrillDir/100)
+        spark_DrillActuator.percent_output(c_DrillActuator * DrillActuator * c_DrillActuator/100)
         
         arm_feedback()
         rosRate.sleep()

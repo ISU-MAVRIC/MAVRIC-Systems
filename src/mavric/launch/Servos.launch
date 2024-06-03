@@ -3,18 +3,20 @@
     <arg name="LuminometerPWM_CH" value="/SlowPWM/CH4" />
     <arg name="ButtonPWM_CH" value="/SlowPWM/CH5" />
     <arg name="LidPWM_CH" value="/SlowPWM/CH6" />
+    <arg name="Sample_CH" value="/SlowPWM/CH7" />
     <arg name="Luminometer_Scale" value="1.0" />
     <arg name="Button_Scale" value="1.0" />
     <arg name="ClawActuation_Scale" value="1.0" />
     <arg name="Lid_Scale" value="1.0" />
+    <arg name="Sample_Scale" value="1.0" />
     <group ns="Servo" if="$(arg driveMode)">
         <node name="ClawActuation_Scale" pkg="mavric" type="LinearMapping.py">
             <param name="inputs"  value="ClawActuation" />
             <param name="outputs" value="$(arg ClawActuationPWM_CH)" />
             <param name="slopes"      value="$(eval ClawActuation_Scale*0.001/100)" />
             <param name="intercepts"  value="0.0015" />
-            <param name="lowLimit" value="-100" />
-            <param name="highLimit" value="100" />
+            <param name="lowLimit" value="-20" />
+            <param name="highLimit" value="20" />
             <!-- mode = 0 for normal operation, mode = 1 for science system operation-->
         </node>
     </group>
@@ -53,6 +55,15 @@
             <param name="intercepts"  value="0.0015" />
             <param name="lowLimit" value="-100" />
             <param name="highLimit" value="20" />
+            <!-- mode = 0 for normal operation, mode = 1 for science system operation-->
+        </node>
+        <node name="Sample" pkg="mavric" type="LinearMapping.py">
+            <param name="inputs"  value="Sample" />
+            <param name="outputs" value="$(arg Sample_CH)" />
+            <param name="slopes"      value="$(eval Sample_Scale*0.001/100)" />
+            <param name="intercepts"  value="0.0015" />
+            <param name="lowLimit" value="-100" />
+            <param name="highLimit" value="60" />
             <!-- mode = 0 for normal operation, mode = 1 for science system operation-->
         </node>
     </group>

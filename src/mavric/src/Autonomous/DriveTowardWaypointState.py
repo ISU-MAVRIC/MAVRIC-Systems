@@ -78,7 +78,7 @@ class DriveTowardWaypoint(State):
         
         #TODO should the wheel turn angle just literally be the offset? or the opposite of the offset?
         #TODO, do we need to ramp this value somehow, or scale it base on the offset?
-        wheel_angle = turn_error
+        wheel_angle = turn_error*1.1
         
         
         #given some steering data, return vector of motor data
