@@ -24,7 +24,7 @@ class ReachedWaypoint(State):
         # at last waypoint, use tagfinder
         elif(len(auto_globals.waypoints) > 0):
             auto_globals.waypoints.pop(0)
-            auto_globals.reached_pub.publish(True)
+            auto_globals.reached_pub.publish(True)  # a quick fix to prevent double flashing the reached waypoint light
             return self._stateMachine.tagFinder
         else:
             auto_globals.reached_pub.publish(True)

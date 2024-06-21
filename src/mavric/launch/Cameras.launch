@@ -1,17 +1,20 @@
 <launch>
     <group ns='Camera'>
+        <!-- Arm Camera -->
         <node name='arm_camera1' pkg='mavric' type='HTTP_Cam.py'>
             <param name="resolution" value="1280x720"/>
             <param name="frame_rate" value="30"/>
             <param name="port" value="8097"/>
             <param name="video_device" value="0"/>
         </node>
+        <!-- Realsense Camera -->
         <node name='realsense' pkg='mavric' type='HTTP_Cam.py'>
             <param name="resolution" value="1280x720"/>
             <param name="frame_rate" value="30"/>
             <param name="port" value="8098"/>
             <param name="video_device" value="3"/>
         </node>
+        <!-- Mast Camera PTZ Control -->
         <node name='mast' pkg='mavric' type='PTZ_Control.py'/>
     </group>
 </launch>

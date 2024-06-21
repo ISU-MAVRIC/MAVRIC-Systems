@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+'''
+THIS SCRIPT IS FOR THE ADAFRUIT ULTIMATE GPS BREAKOUT. IT IS NOT IMPLEMENTED IN THE CURRENT ROVER
+THIS IS LEFT AS A BACKUP IN CASE THE NEO_M9N BREAKS
+'''
 import time
 import serial
 import adafruit_gps

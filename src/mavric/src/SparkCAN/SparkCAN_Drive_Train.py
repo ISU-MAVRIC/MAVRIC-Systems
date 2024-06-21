@@ -346,11 +346,13 @@ def talker():
     else:
         snapping = False
 
+    # Subscribers for drivetrain
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
     drive_sens = rospy.Subscriber("Drive/Drive_Sensitivity", Float64, driveSens_cb, queue_size=10)
     str_pub = rospy.Publisher("Drive/Steer_Feedback", Steer, queue_size=10)
 
+    # Subscribers for Armtrain
     SR_sub = rospy.Subscriber("Arm/ShoulderRot", Float64, SR_cb, queue_size=10)
     SP_sub = rospy.Subscriber("Arm/ShoulderPitch", Float64, SP_cb, queue_size=10)
     EP_sub = rospy.Subscriber("Arm/ElbowPitch", Float64, EP_cb, queue_size=10)
@@ -359,12 +361,14 @@ def talker():
     arm_sens = rospy.Subscriber("Arm/Arm_Sensitivity", ArmData, armSens_cb, queue_size=10)
     Pos_pub = rospy.Publisher("Arm/JointPosition", ArmData, queue_size=10)
     Vel_pub = rospy.Publisher("Arm/JointVelocity", ArmData, queue_size=10)
+
+    # Subscribers for Drill and Drill actuator for science.
     Drill_sub = rospy.Subscriber("Science/Drill", Float64, Drill_cb, queue_size=10)
     DrillActuator_sub = rospy.Subscriber("Science/DrillActuator", Float64, DrillActuator_cb, queue_size=10)
 
     setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-    rosRate = rospy.Rate(30)
+    rosRate = rospy.Rate(30)    # hz
 
     while not rospy.is_shutdown():
         setOutputs(lf, lm, lb, rf, rm, rb, slf, slb, srf, srb)

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+'''
+A script that can be run on the rover to capture a panoramic photograph of a site
+This was used for the science mission
+'''
 
 import rospy, time, cv2, os, glob, numpy as np
 from imutils.video import VideoStream

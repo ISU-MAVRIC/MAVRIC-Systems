@@ -5,10 +5,14 @@ import numpy as np
 
 class Aruco():
     def __init__(self,display=True):
-        self.print = display
+        self.print = display    # Check for if a display is connected. (usually isn't)
+
+        # Aruco Tag Dictionary Setup
         self.dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_250)
         self.parameters = cv2.aruco.DetectorParameters()
         self.detector = cv2.aruco.ArucoDetector(self.dictionary,self.parameters)
+        
+        # Video Stream Soruce from rtsp and calibration values.
         self.vs = VideoStream('rtsp://admin:mavric-camera@192.168.1.64:554/out.h264').start()
         self.mtx = np.array([[804.2407094122474,0.0,655.2968321471155],
                     [0.0,604.6146425598054,390.59235798964],
@@ -18,17 +22,22 @@ class Aruco():
                      [0.00035959739453100484],
                      [0.0004673255241284877],
                      [-0.031451585397011546]])
-        # self.vs = VideoStream(src=0).start()
         self.markerSize = .15 # meters
+
         # marker point location (center) for solvePNP
         self.marker_points = np.array([[-self.markerSize / 2, self.markerSize / 2, 0],
                               [self.markerSize / 2, self.markerSize / 2, 0],
                               [self.markerSize / 2, -self.markerSize / 2, 0],
                               [-self.markerSize / 2, -self.markerSize / 2, 0]], dtype=np.float32)
+        
+        # Read a single frame to gather height and width for calculations.
         self.frame = self.vs.read()
         self.height, self.width = self.frame.shape[:2]
 
     def aruco_detection(self):
+        '''
+        USED TO DETECT A FRAME AND DISPLAY IT. NOT REALLY USED MUCH IN AUTONOMOUS, BUT GREAT FOR WEBCAM TESTING
+        '''
         self.frame = self.vs.read()
         markers = self.get_markers(self.frame)
         angles = []

@@ -8,16 +8,22 @@ from ublox_gps import UbloxGps
 # https://github.com/sparkfun/Qwiic_Ublox_Gps_Py/tree/master/examples
 
 def talker():
+    # ros setup stuff
     rospy.init_node("GPS_Streamer")
     gps_pub = rospy.Publisher("GPS_Data", GPS, queue_size=10, latch=True)
     fix_pub = rospy.Publisher("GPS_Fix", Bool, queue_size=10, latch=True)
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(1)    # hz
 
+    # Connect the GPS to ublox driver
     port = serial.Serial('/dev/ttyACM0', baudrate=38400, timeout=10)
     gps = UbloxGps(port)
 
     while not rospy.is_shutdown():
         try:
+            '''
+            The gps.geo_coords() and gps.date_time() spit out a lotta details, print it if you want 
+            to see what else you can grab from the gps
+            '''
             geo = gps.geo_coords()
             time = gps.date_time()
             nums = GPS()

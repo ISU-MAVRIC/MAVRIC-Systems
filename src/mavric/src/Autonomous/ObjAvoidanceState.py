@@ -3,6 +3,11 @@ from math import copysign
 from StateMachine import State
 from driver import Driver
 
+'''
+THIS WAS NEVER USED BY THE MAVRIC 2024 TEAM.
+Object detection was not needed during competition.
+'''
+
 class ObjAvoidance(State):
     def __init__(self, stateMachine):
         self._stateMachine = stateMachine
