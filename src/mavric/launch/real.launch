@@ -1,4 +1,5 @@
 <launch>
+<!-- This is for testing the realsense point cloud -->
     <group ns="RS">
         <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
             <arg name="enable_pointcloud" value="true"/>

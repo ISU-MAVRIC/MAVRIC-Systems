@@ -1,5 +1,5 @@
 #global constants
-LIN_ERROR_THRESHOLD = 1     #arbitrary, meters
+LIN_ERROR_THRESHOLD = 2     #arbitrary, meters
 ANG_ERROR_THRESHOLD = 5    #arbitrary, degrees
 ANG_POINT_STEER_MAX = 20 #between 1-100 (inclusive)
 ANG_POINT_STEER_MIN = 2 
@@ -12,6 +12,7 @@ enabled = False
 good_fix = False
 good_imu = True
 fix_timeout = False   #unnecessary?
+teleop = False
 
 #location data
 position = [0, 0]
@@ -40,3 +41,4 @@ debug_pub = None
 indicator_pub = None
 state_pub = None
 waypoint_pub = None
+reached_pub = None

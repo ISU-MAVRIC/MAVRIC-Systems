@@ -41,6 +41,7 @@ class TagFinder(State):
         
         # once done, stop movement
         auto_globals.drive_pub.publish(0,0,0,0,0,0)
+        time.sleep(2)
 
     def next(self):
         frame = self.Aruco.grab_frame()
@@ -50,7 +51,7 @@ class TagFinder(State):
         
         elif len(self.detected_tags[0]) > 0:
             auto_globals.steer_pub.publish(0,0,0,0)
-            time.sleep(3)
+            time.sleep(2)
             return self._stateMachine.driveTowardTag
         
         return self._stateMachine.tagFinder

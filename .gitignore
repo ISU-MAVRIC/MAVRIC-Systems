@@ -23,6 +23,7 @@ _autosave-*
 **/gerber/**
 Electrical/~$PowerBudget.xlsx
 
+# ROS build and development folders that do not need to be tracked
 */build/*
 build/*
 */devel/*
@@ -39,11 +40,15 @@ rospy
 *~
 *.DS_Store
 
+# VScode settings
 .idea
 /.vscode/
 logs/
 */logs/*
+
+# Catkin leftovers
 .catkin_tools
 */.catkin_tools/*
 
-src/mavric/src/PTZ_Control/PTZ_Photos
+# PTZ Camera Storage Folder
+src/mavric/src/PTZ_Control/PTZ_Photos/*

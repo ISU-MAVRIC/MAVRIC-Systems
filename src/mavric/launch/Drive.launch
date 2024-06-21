@@ -1,9 +1,10 @@
 <launch>
-    <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" respawn="true" if="$(arg driveMode)">
+    <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" respawn="true" if="$(eval arg('scienceMode') == false)">
         <remap from="Drive_Train" to="Drive/Drive_Command" />
         <remap from="Steer_Train" to="Drive/Steer_Command" />
     </node>
     <node name="Scale_Startups_Drive" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg driveMode)">
+        <param name="Drive_Sens" value="1.0" />
         <param name="ShoulderRot"  value="0.25" />
         <param name="ShoulderPitch" value="0.75" />
         <param name="ElbowPitch" value="0.75" />
@@ -13,7 +14,6 @@
     <node name="Drivetrain_Control" pkg="mavric" type="SparkCAN_Drive_Train.py" respawn="true" if="$(arg scienceMode)">
         <remap from="Drive_Train" to="Drive/Drive_Command" />
         <remap from="Steer_Train" to="Drive/Steer_Command" />
-        <param name="Snapping" value="1.0" />
     </node>
     <node name="Scale_Startups_Science" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg scienceMode)">
         <param name="ShoulderRot"  value="0.25" />
@@ -23,6 +23,7 @@
         <param name="WristRot" value="0.05" />
     </node>
     <node name="Scale_Startups_Auto" pkg="mavric" type="Scale_Startups.py" respawn="false" if="$(arg autoMode)">
+        <param name="Drive_Sens" value="1.0" />
         <param name="ShoulderRot"  value="0" />
         <param name="ShoulderPitch" value="0" />
         <param name="ElbowPitch" value="0" />

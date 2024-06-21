@@ -36,6 +36,9 @@ c_ShoulderRot = 1           # If one axis is faster/slower than the others, chan
 c_ElbowPitch = 1
 c_WristPitch = 1
 c_WristRot = 1
+# Science Scales
+c_Drill = 1
+c_DrillActuator = 1
 
 # Drive Directions
 c_lfDir = 1
@@ -54,6 +57,9 @@ c_ShoulderPitchDir = 1     # If axis is moving wrong way, invert these
 c_ElbowPitchDir = -1
 c_WristPitchDir = -1
 c_WristRotDir = 1
+# Science Directions
+c_DrillDir = -1
+c_DrillActuatorDir = 1
 
 #set up globals for spark outputs. These should be zero
 lf = 0
@@ -71,6 +77,8 @@ ShoulderPitch = 0
 ElbowPitch = 0
 WristPitch = 0
 WristRot = 0
+Drill = 0
+DrillActuator = 0
 
 
 # Setup Sparkmax on can bus
@@ -93,6 +101,9 @@ spark_shoulderRot = sparkBus.init_controller(12)
 spark_elbowPitch = sparkBus.init_controller(13)
 spark_wristPitch = sparkBus.init_controller(14)
 spark_wristRot = sparkBus.init_controller(15)
+# Science
+spark_Drill = sparkBus.init_controller(16)
+spark_DrillActuator = sparkBus.init_controller(17)
 
 
 # Axis Feedback Publishers
@@ -278,6 +289,21 @@ def armSens_cb(data):
     elif c_WristRot < 0:
         c_WristRot = 0
 
+def Drill_cb(data):
+    global Drill
+    Drill = data.data
+    if Drill > 100:
+        Drill = 100
+    elif Drill < -100:
+        Drill = -100
+
+def DrillActuator_cb(data):
+    global DrillActuator
+    DrillActuator = data.data
+    if DrillActuator > 100:
+        DrillActuator = 100
+    elif DrillActuator < -100:
+        DrillActuator = -100
 
 def setOutputs(lf, lm, lb, rf, rm, rb, str_lf, str_lb, str_rf, str_rb):
 	spark_lf.velocity_output(lf * c_Scale * c_lfDir)
@@ -320,11 +346,13 @@ def talker():
     else:
         snapping = False
 
+    # Subscribers for drivetrain
     sub = rospy.Subscriber("Drive_Train", Drivetrain, driveCallback, queue_size = 10)
     str_sub = rospy.Subscriber("Steer_Train", Steertrain, strCallback, queue_size = 10)
     drive_sens = rospy.Subscriber("Drive/Drive_Sensitivity", Float64, driveSens_cb, queue_size=10)
     str_pub = rospy.Publisher("Drive/Steer_Feedback", Steer, queue_size=10)
 
+    # Subscribers for Armtrain
     SR_sub = rospy.Subscriber("Arm/ShoulderRot", Float64, SR_cb, queue_size=10)
     SP_sub = rospy.Subscriber("Arm/ShoulderPitch", Float64, SP_cb, queue_size=10)
     EP_sub = rospy.Subscriber("Arm/ElbowPitch", Float64, EP_cb, queue_size=10)
@@ -334,9 +362,13 @@ def talker():
     Pos_pub = rospy.Publisher("Arm/JointPosition", ArmData, queue_size=10)
     Vel_pub = rospy.Publisher("Arm/JointVelocity", ArmData, queue_size=10)
 
+    # Subscribers for Drill and Drill actuator for science.
+    Drill_sub = rospy.Subscriber("Science/Drill", Float64, Drill_cb, queue_size=10)
+    DrillActuator_sub = rospy.Subscriber("Science/DrillActuator", Float64, DrillActuator_cb, queue_size=10)
+
     setOutputs(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-    rosRate = rospy.Rate(30)
+    rosRate = rospy.Rate(30)    # hz
 
     while not rospy.is_shutdown():
         setOutputs(lf, lm, lb, rf, rm, rb, slf, slb, srf, srb)
@@ -349,6 +381,8 @@ def talker():
             snap_function(spark_wristRot, c_WristRot * WristRot * c_WristRotDir/100)
         else:
             spark_wristRot.percent_output(c_WristRot * WristRot * c_WristRotDir/100)
+        spark_Drill.percent_output(c_Drill * Drill * c_DrillDir/100)
+        spark_DrillActuator.percent_output(c_DrillActuator * DrillActuator * c_DrillActuator/100)
         
         arm_feedback()
         rosRate.sleep()

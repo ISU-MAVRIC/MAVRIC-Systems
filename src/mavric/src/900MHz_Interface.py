@@ -10,7 +10,7 @@ import driveMath
 from mavric.msg import Drivetrain
 from mavric.msg import Steertrain
 
-port = '/dev/ttyACM0'
+port = '/dev/ttyACM1'
 
 # Defaults and beginning values
 drive = 0.0
@@ -55,9 +55,7 @@ if __name__=='__main__':
         link.open() # open link between rover and LoRa
 
         while not rospy.is_shutdown():
-            print("Starting Loop")
             if link.available():    # Recieve new data from serial
-                print("Data Recieved")
                 recSize = 0
 
                 dataRX.drive = link.rx_obj(obj_type='f', start_pos=recSize)
@@ -68,9 +66,6 @@ if __name__=='__main__':
 
                 dataRX.mode = link.rx_obj(obj_type='f', start_pos=recSize)
                 recSize += txfer.STRUCT_FORMAT_LENGTHS['f']
-
-                #print('drive: {}  steer: {}   mode: {}'.format(dataRX.drive, dataRX.steer, dataRX.mode)) # debug print
-                print("Data converted")
 
                 if LoRaEnabled:
                     # Round data and test against deadzone
@@ -88,10 +83,8 @@ if __name__=='__main__':
                     elif dataRX.mode > 0.5:
                         parameters = driveMath.point_drive(dataRX.drive,dataRX.steer*sensitivity)
 
-                    #print("Drive: {}    Steer: {}".format(dataRX.drive,dataRX.steer)) # Test print statement
                     drive.publish(float(parameters[0]), float(parameters[1]), float(parameters[2]), float(parameters[3]), float(parameters[4]), float(parameters[5]))
                     steer.publish(float(parameters[6]), float(parameters[7]), float(parameters[8]), float(parameters[9]))
-                    print("Publishing New Values")
             elif link.status < 0:   # Error codes for Serial Transfer Library 
                 print("No Message Recieved")
                 if link.status == txfer.CRC_ERROR:
@@ -105,6 +98,5 @@ if __name__=='__main__':
                 drive.publish(0,0,0,0,0,0)
                 steer.publish(0,0,0,0)
     except rospy.ROSInterruptException:
-        print("Ros Interrupt")
         link.close()    # Close serial connection
         pass

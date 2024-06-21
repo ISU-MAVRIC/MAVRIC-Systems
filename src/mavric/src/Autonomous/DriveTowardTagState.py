@@ -64,6 +64,7 @@ class DriveTowardTag(State):
     def next(self):
         frame = self.Aruco.grab_frame()
         markers = self.Aruco.get_markers(frame)
+        # check if the tag hasn't been seen in a while. If failure to caputure the tag occurs, tag finder will be initiated again.
         if len(markers[0]) == 0:
             self.failures = self.failures + 1
             if self.failures > 3:
@@ -71,11 +72,15 @@ class DriveTowardTag(State):
             else:
                 return self._stateMachine.driveTowardTag
         
+        # If auto stopped, return to idle
         elif(not auto_globals.enabled or not auto_globals.good_fix or auto_globals.fix_timeout):
             return self._stateMachine.idle
-            
+        
+        # if within 1.5 meters of the tag, stop and signal
         elif(self.linear_error <= auto_globals.LIN_ERROR_THRESHOLD*1.5):
             return self._stateMachine.reachedWaypoint
+        
+        # if a tag is still detected and far away, continue driving.
         else:
             self.failures = 0
             return self._stateMachine.driveTowardTag

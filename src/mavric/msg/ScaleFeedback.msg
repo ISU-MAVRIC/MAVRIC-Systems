@@ -1,0 +1,6 @@
+float32 Drive
+float32 ShoulderRot
+float32 ShoulderPitch
+float32 ElbowPitch
+float32 WristPitch
+float32 WristRot

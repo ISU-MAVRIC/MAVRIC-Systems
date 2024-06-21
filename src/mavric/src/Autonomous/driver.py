@@ -46,6 +46,21 @@ class Driver():
 	"""
 
     def v_car_steer(self, drive, steer):
+        '''
+        CAR STEER
+        Function to drive the rover alike a car's movement. (Imagine a car with steerable front and back wheels, with two stationary wheels in the middle)
+        Input Parameters:
+            drive = Speed of the fastest wheel, IE outside corner while turning, all while straight
+            steer = -100 to 100 value mapped from full steer left and full steer right
+        Outputs: 
+		left front drive, left middle drive, left back drive, right front drive, right middle drive, right back drive,
+		left front steer, left back steer, right front steer, right back steer
+
+        NOTE FOR FUTURE DEVS:
+        I (Nathan) really tried to make this easier to understand, but for those like me who are mechanically declined, 
+        I hope my explanation will suffice. It's really just a matter of picking your angle and speed of an outer corner wheel
+        and then slowing/adjusting all other wheels to compensate.
+        '''
         if drive < self.threshold and drive != 0:  # check if drive throttle is less than threshold and greater than zero
             drive = math.copysign(self.threshold, drive)    #if less, set to threshold with same sign as input
         if not steer == 0:  # if the steer is actually trying to turn (prevents divide by zero)

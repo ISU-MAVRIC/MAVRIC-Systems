@@ -17,10 +17,10 @@ class StateMachine:
         # check if state publisher is set
         if state_publisher != None:
             message = str(self._currentState)
-            # current state when converted looks like: "NAMEState.NAME object at ADDRESS"
+            # current state message when converted looks like: "NAMEState.NAME object at ADDRESS"
             # splitting message until we get NAME
-            message = message.split(' ')    #NAMEState.NAME
-            message = message[0].split('.') #NAME
+            message = message.split(' ')    # "NAMEState.NAME object at ADDRESS" ---> "NAMEState.NAME"
+            message = message[0].split('.') # "NAMEState.NAME" ---> "NAME"
 
             state_publisher.publish(message[1])
 

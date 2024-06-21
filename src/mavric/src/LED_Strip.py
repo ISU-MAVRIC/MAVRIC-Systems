@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 
 import rospy, time, os, sys
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 os.environ["BLINKA_FT232H"] = "1"
 import neopixel_spi as neopixel
 import board
 state = None
+override = False
 
 def state_cb(data):
     global state
     state = data.data
 
+def complete_cb(data):
+    global override
+    override = data.data
+
 def listener():
-    global state
+    global state, override
     NUM_PIXELS = 31
     PIXEL_ORDER = neopixel.GRB
     spi = board.SPI()
@@ -24,40 +29,60 @@ def listener():
 
     rospy.init_node("LED_Strip")
     state_sub = rospy.Subscriber('State', String, state_cb)
+    complete_sub = rospy.Subscriber('Success', Bool, complete_cb)
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
-        if state == "Idle":
-            strip.fill(red)
-
-        elif state == "TurnTowardWaypoint":
-            strip.fill(red)
-            time.sleep(1)
-            strip.fill(0)
-            time.sleep(1)
-
-        elif state == "DriveTowardWaypoint":
-            for i in pulseRed:
-                strip.fill(i)
-                time.sleep(0.02)
-            for i in pulseRed:
-                strip.fill(i)
-                time.sleep(0.02)
-
-        elif state == "TeleOp":
-            strip.fill(blue)
-
-        elif state == "ReachedWaypoint":
+        if override:
             for i in range(5):
                 strip.fill(green)
                 time.sleep(0.25)
                 strip.fill(0)
                 time.sleep(0.25)
-
-        elif state == "TagFinder":
-            strip.fill(blue)
-
+            override = False
         else:
-            strip.fill(0)
+            if state == "Idle":
+                strip.fill(red)
+
+            elif state == "TurnTowardWaypoint":
+                strip.fill(red)
+                time.sleep(1)
+                strip.fill(0)
+                time.sleep(1)
+
+            elif state == "DriveTowardWaypoint":
+                for i in pulseRed:
+                    strip.fill(i)
+                    time.sleep(0.02)
+                for i in pulseRed:
+                    strip.fill(i)
+                    time.sleep(0.02)
+
+            elif state == "Teleop":
+                strip.fill(blue)
+
+            elif state == "ReachedWaypoint":
+                for i in range(5):
+                    strip.fill(red)
+                    time.sleep(0.25)
+                    strip.fill(0)
+                    time.sleep(0.25)
+
+            elif state == "TagFinder":
+                for i in range(3):
+                    strip.fill(red)
+                    time.sleep(0.1)
+                    strip.fill(0)
+                    time.sleep(0.1)
+                time.sleep(0.5)
+            elif state == "DriveTowardTag":
+                for i in range(3):
+                    strip.fill(red)
+                    time.sleep(0.2)
+                    strip.fill(0)
+                    time.sleep(0.2)
+                time.sleep(0.5)
+            else:
+                strip.fill(0)
         rate.sleep()
     strip.fill(0)
 

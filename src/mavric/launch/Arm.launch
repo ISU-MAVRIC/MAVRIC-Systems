@@ -1,4 +1,6 @@
 <launch>
+<!-- This launch file is for testing just the arm. This launch file is not intended to be added to any "batch"
+launch file like masterDrive and masterAuto-->
     <arg name="ClawActuationPWM_CH" value="/SlowPWM/CH4" />
     <group ns="Arm">
         <node name="Armtrain_Control" pkg="mavric" type="SparkCAN_Arm_Train.py" respawn="true">
